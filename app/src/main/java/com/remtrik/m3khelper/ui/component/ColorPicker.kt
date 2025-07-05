@@ -1,0 +1,115 @@
+package com.remtrik.m3khelper.ui.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import com.remtrik.m3khelper.util.PaddingValue
+import com.remtrik.m3khelper.util.prefs
+import com.remtrik.m3khelper.util.sdp
+import androidx.core.content.edit
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ColorPicker() {
+    var red = rememberSaveable {
+        mutableFloatStateOf(
+            prefs.getFloat("themeengine_red", 0f)
+        )
+    }
+    var green = rememberSaveable {
+        mutableFloatStateOf(
+            prefs.getFloat("themeengine_green", 0f)
+        )
+    }
+    var blue = rememberSaveable {
+        mutableFloatStateOf(
+            prefs.getFloat("themeengine_blue", 0f)
+        )
+    }
+
+    val color by remember {
+        derivedStateOf {
+            Color(red.floatValue, green.floatValue, blue.floatValue, 1f)
+        }
+    }
+
+    Column {
+        Row {
+            Box(
+                modifier = Modifier
+                    .padding(PaddingValue)
+                    .fillMaxWidth()
+                    .height(80.sdp())
+                    .background(color, shape = MaterialTheme.shapes.large)
+            )
+        }
+
+        Column(
+            modifier = Modifier.padding(PaddingValue),
+            verticalArrangement = Arrangement.spacedBy(10.sdp())
+        ) {
+            ColorSlider("R", red, Color.Red)
+            ColorSlider("G", green, Color.Green)
+            ColorSlider("B", blue, Color.Blue)
+        }
+    }
+}
+
+@Composable
+fun ColorSlider(
+    label: String,
+    valueState: MutableState<Float>,
+    color: Color,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.sdp())
+    ) {
+        Text(text = label)
+        Slider(
+            value = valueState.value,
+            onValueChange = valueState.component2(),
+            colors = SliderDefaults.colors(
+                activeTrackColor = color
+            ),
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = valueState.value.toColorInt().toString(),
+            modifier = Modifier.width(25.sdp()),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+
+    when (label) {
+        "R" -> prefs.edit { putFloat("themeengine_red", valueState.value) }
+        "G" -> prefs.edit { putFloat("themeengine_green", valueState.value) }
+        "B" -> prefs.edit { putFloat("themeengine_blue", valueState.value) }
+    }
+}
+
+fun Float.toColorInt(): Int = (this * 255 + 0.5f).toInt()

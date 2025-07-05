@@ -13,7 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,26 +27,21 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
-import com.remtrik.m3khelper.ui.component.AboutCard
 import com.remtrik.m3khelper.ui.component.LinkButton
-import com.remtrik.m3khelper.util.Variables.CurrentDeviceCard
-import com.remtrik.m3khelper.util.Variables.FontSize
-import com.remtrik.m3khelper.util.Variables.PaddingValue
-import com.remtrik.m3khelper.util.Variables.showAboutCard
+import com.remtrik.m3khelper.util.CurrentDeviceCard
+import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.sdp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Destination<RootGraph>()
 @Composable
-fun LinksScreen() {
-    when {
-        showAboutCard.value -> {
-            AboutCard()
-        }
-    }
+fun LinksScreen(navigator: DestinationsNavigator) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,12 +54,10 @@ fun LinksScreen() {
                 },
                 actions = {
                     IconButton(
-                        onClick = {
-                            showAboutCard.value = true
-                        }
+                        onClick = { navigator.navigate(SettingsScreenDestination) }
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Info,
+                            imageVector = Icons.Filled.Settings,
                             contentDescription = null
                         )
                     }
@@ -97,19 +90,19 @@ private fun Landscape() {
             verticalArrangement = Arrangement.spacedBy(10.sdp()),
             modifier = Modifier.width(500.sdp())
         ) {
-            if (CurrentDeviceCard.unifiedDriversUEFI == true &&
-                !(CurrentDeviceCard.noDrivers == true || CurrentDeviceCard.noUEFI == true)
+            if (CurrentDeviceCard.unifiedDriversUEFI
+                && !(CurrentDeviceCard.noDrivers || CurrentDeviceCard.noUEFI)
             ) {
-                LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.driversuefi), null, CurrentDeviceCard.deviceDrivers, R.drawable.ic_drivers, LocalUriHandler.current)
+                LinkButton(M3KApp.getString(R.string.driversuefi, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceDrivers, R.drawable.ic_drivers, LocalUriHandler.current)
             } else {
                 when {
-                    CurrentDeviceCard.noDrivers == false -> {
-                        LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.drivers), M3KApp.getString(R.string.drivers), CurrentDeviceCard.deviceDrivers, R.drawable.ic_drivers, LocalUriHandler.current)
+                    !CurrentDeviceCard.noDrivers -> {
+                        LinkButton(M3KApp.getString(R.string.drivers, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceDrivers, R.drawable.ic_drivers, LocalUriHandler.current)
                     }
                 }
                 when {
-                    CurrentDeviceCard.noUEFI == false -> {
-                        LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.uefi), M3KApp.getString(R.string.uefi), CurrentDeviceCard.deviceUEFI, R.drawable.ic_uefi, LocalUriHandler.current)
+                    !CurrentDeviceCard.noUEFI -> {
+                        LinkButton(M3KApp.getString(R.string.uefi, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceUEFI, R.drawable.ic_uefi, LocalUriHandler.current)
                     }
                 }
             }
@@ -120,13 +113,13 @@ private fun Landscape() {
             modifier = Modifier.width(500.sdp())
         ) {
             when {
-                CurrentDeviceCard.noGroup == false -> {
-                    LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.group), null, CurrentDeviceCard.deviceGroup, Icons.AutoMirrored.Filled.Message, LocalUriHandler.current)
+                !CurrentDeviceCard.noGroup -> {
+                    LinkButton(M3KApp.getString(R.string.group, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceGroup, Icons.AutoMirrored.Filled.Message, LocalUriHandler.current)
                 }
             }
             when {
-                CurrentDeviceCard.noGuide == false -> {
-                    LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.guide), null, CurrentDeviceCard.deviceGuide, Icons.Filled.Book, LocalUriHandler.current)
+                !CurrentDeviceCard.noGuide -> {
+                    LinkButton(M3KApp.getString(R.string.guide, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceGuide, Icons.Filled.Book, LocalUriHandler.current)
                 }
             }
         }
@@ -135,30 +128,30 @@ private fun Landscape() {
 
 @Composable
 private fun Portrait() {
-    if (CurrentDeviceCard.unifiedDriversUEFI == true &&
-        !(CurrentDeviceCard.noDrivers == true || CurrentDeviceCard.noUEFI == true)
+    if (CurrentDeviceCard.unifiedDriversUEFI
+        && !(CurrentDeviceCard.noDrivers || CurrentDeviceCard.noUEFI)
     ) {
-        LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.driversuefi), null, CurrentDeviceCard.deviceDrivers, R.drawable.ic_drivers, LocalUriHandler.current)
+        LinkButton(M3KApp.getString(R.string.driversuefi, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceDrivers, R.drawable.ic_drivers, LocalUriHandler.current)
     } else {
         when {
-            CurrentDeviceCard.noDrivers == false -> {
-                LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.drivers), M3KApp.getString(R.string.drivers), CurrentDeviceCard.deviceDrivers, R.drawable.ic_drivers, LocalUriHandler.current)
+            !CurrentDeviceCard.noDrivers -> {
+                LinkButton(M3KApp.getString(R.string.drivers, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceDrivers, R.drawable.ic_drivers, LocalUriHandler.current)
             }
         }
         when {
-            CurrentDeviceCard.noUEFI == false -> {
-                LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.uefi), M3KApp.getString(R.string.uefi), CurrentDeviceCard.deviceUEFI, R.drawable.ic_uefi, LocalUriHandler.current)
+            !CurrentDeviceCard.noUEFI -> {
+                LinkButton(M3KApp.getString(R.string.uefi, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceUEFI, R.drawable.ic_uefi, LocalUriHandler.current)
             }
         }
     }
     when {
-        CurrentDeviceCard.noGroup == false -> {
-            LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.group), null, CurrentDeviceCard.deviceGroup, Icons.AutoMirrored.Filled.Message, LocalUriHandler.current)
+        !CurrentDeviceCard.noGroup -> {
+            LinkButton(M3KApp.getString(R.string.group, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceGroup, Icons.AutoMirrored.Filled.Message, LocalUriHandler.current)
         }
     }
     when {
-        CurrentDeviceCard.noGuide == false -> {
-            LinkButton(CurrentDeviceCard.deviceName + " " + M3KApp.getString(R.string.guide), null, CurrentDeviceCard.deviceGuide, Icons.Filled.Book, LocalUriHandler.current)
+        !CurrentDeviceCard.noGuide -> {
+            LinkButton(M3KApp.getString(R.string.guide, CurrentDeviceCard.deviceName), null, CurrentDeviceCard.deviceGuide, Icons.Filled.Book, LocalUriHandler.current)
         }
     }
 

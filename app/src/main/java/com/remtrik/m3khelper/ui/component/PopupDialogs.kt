@@ -22,9 +22,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.remtrik.m3khelper.R
-import com.remtrik.m3khelper.util.Variables.FontSize
-import com.remtrik.m3khelper.util.Variables.LineHeight
-import com.remtrik.m3khelper.util.Variables.Warning
+import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LineHeight
+import com.remtrik.m3khelper.util.Warning
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.ssp
 

@@ -3,16 +3,16 @@
 > [!WARNING]
 > We're not responsible for anything that happens with your device.
 
-#### Features
+## Features
 
-| Feature                         | Notes                                                                              | Status |
-|---------------------------------|------------------------------------------------------------------------------------|--------|
-| Backup Android Boot             |                                                                                    | ✅    |
-| Mount/Unmount Windows partition | Needed to view/modify Windows files from Android                                   | ✅    |
-| Flash UEFI                      | To use the UEFI flashing feature, you need to place the UEFI image to /sdcard/UEFI | ✅    |
-| Provisioning Modem              |                                                                                    | ✅    |
-| Provisioning Sensors            | Needs to be tested                                                                 | ⚠️    |
-| Quick Boot to Windows           | To use the Quick Boot feature, you need to place the UEFI image to /sdcard/UEFI    | ✅    |
+| Feature                         | Notes                                                                              | Status   |
+|---------------------------------|------------------------------------------------------------------------------------|----------|
+| Backup Android Boot             |                                                                                    | ✅        |
+| Mount/Unmount Windows partition | Needed to view/modify Windows files from Android                                   | ✅        |
+| Flash UEFI                      | To use the UEFI flashing feature, you need to place the UEFI image to /sdcard/UEFI | ✅        |
+| Provisioning Modem              |                                                                                    | ✅        |
+| Provisioning Sensors            |                                                                                    | ✅        |
+| Quick Boot to Windows           | To use the Quick Boot feature, you need to place the UEFI image to /sdcard/UEFI    | ✅        |
 
 ## Supported devices
 
@@ -33,3 +33,8 @@
 | OnePlus 7 Pro           |                                                                   |
 | OnePlus 7T Pro          |                                                                   |
 | Samsung Galaxy A52s     | <https://github.com/woa-a52s/Samsung-A52s-5G-Guides>              |
+
+## Credits
+
+- [M3Color](https://github.com/Kyant0/m3color)
+- [Compose Destinations](https://github.com/raamcosta/compose-destinations)

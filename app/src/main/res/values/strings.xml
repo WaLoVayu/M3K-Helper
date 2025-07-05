@@ -9,18 +9,12 @@
 
     <string name="mnt_title">Mount Windows</string>
     <string name="umnt_title">Unmount Windows</string>
-    <string name="dump_modem_title">Dump Modem</string>
-    <string name="dump_modemAsensors_title">Dump Modem and Sensors</string>
-    <string name="dump_sensors_title">Dump Sensors</string>
     <string name="quickboot_title">QuickBoot to Windows</string>
     <string name="backup_boot_title">Backup Boot</string>
     <string name="uefi_not_found_title">UEFI not found</string>
 
     <string name="mnt_question">Mount Windows?</string>
     <string name="umnt_question">Unmount Windows?</string>
-    <string name="dump_modem_question">Dump modem to Windows partition?</string>
-    <string name="dump_modemAsensors_question">Dump modem and sensors to Windows partition?</string>
-    <string name="dump_sensors_question">Dump sensors to Windows partition?</string>
     <string name="quickboot_question1">Quick Boot to Windows?</string>
     <string name="quickboot_question60" translatable="false">60Hz</string>
     <string name="quickboot_question90" translatable="false">90Hz</string>
@@ -29,32 +23,30 @@
 
     <string name="backup_boot_subtitle">Backup current boot image to Android/Windows</string>
     <string name="mnt_subtitle">Toggle mounting Windows partition in order to edit content inside</string>
-    <string name="dump_modem_subtitle">Dump modem to fix LTE on SIM1 in Windows every time you want to boot to Windows</string>
-    <string name="dump_modemAsensors_subtitle">Dump modem to Windows to fix LTE on SIM1 on Windows every time you want to boot to Windows (Sensors will be dumped only once)</string>
-    <string name="dump_sensors_subtitle">Dump sensors to Windows to fix them. This will be done only once</string>
     <string name="quickboot_subtitle">Dump Modem, Flash UEFI, and Reboot to Windows in one click</string>
     <string name="quickboot_subtitle_nomodem">Flash UEFI, and Reboot to Windows in one click</string>
     <string name="uefi_not_found_subtitle">Download UEFI for your device and place it under /sdcard/UEFI folder</string>
 
     <string name="no_root">Please grant M3K Helper Root-access to use it!</string>
-    <string name="qs_unsupported">Device isn\'t supported</string>
+    <string name="qs_unsupported">Device isn\’t supported</string>
 
     <string name="unknown_device">Unknown device</string>
-    <string name="model">Model: %s</string>
+    <string name="model">Model: %s (%s)</string>
     <string name="ramvalue">RAM: %s</string>
-    <string name="paneltype">"Panel: "</string>
+    <string name="paneltype">"Panel: %s"</string>
     <string name="unknown_panel">Unknown</string>
     <string name="slot">"Slot: %s"</string>
-    <string name="backup_boot_state">"Boot backed up: "</string>
-    <string name="windows_status">"Windows installed: "</string>
+    <string name="backup_boot_state">"Boot backed up: %s"</string>
+    <string name="windows_status">"Windows installed: %s"</string>
 
 
-    <string name="guide">Installation Guide</string>
-    <string name="group">Support Group</string>
-    <string name="drivers">Drivers</string>
-    <string name="uefi">UEFI</string>
-    <string name="driversuefi">Drivers&amp;UEFI</string>
+    <string name="guide">%s Installation Guide</string>
+    <string name="group">%s Support Group</string>
+    <string name="drivers">%s Drivers</string>
+    <string name="uefi">%s UEFI</string>
+    <string name="driversuefi">%s Drivers&amp;UEFI</string>
 
+    <string name="apply">Apply</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="please_wait">Please Wait…</string>
@@ -67,11 +59,18 @@
     <string name="about">About</string>
     <string name="source">Source code at</string>
     <string name="settings">Settings</string>
+    <string name="themeengine">Theme Engine</string>
 
     <string name="autoupdate">Check for updates"</string>
     <string name="autoupdate_summary">Automatically check for updates when opening the app</string>
 
-    <string name="device_unknown">YOUR DEVICE ISN\'T SUPPORTED!\n USING THIS APP CAN RESULT IN A BRICK</string>
-    <string name="device_unknown_confirm">I\'m fine with that</string>
+    <string name="enable_materialu">Enable system color scheme</string>
+    <string name="enable_materialu_summary">Use system colors instead of default or custom ones</string>
+    <string name="themeengine_enable">Enable custom color scheme</string>
+    <string name="themeengine_enable_summary">Use custom colors instead of system ones</string>
+    <string name="themeenigne_current_palette">Current palette: %s</string>
+
+    <string name="device_unknown">YOUR DEVICE ISN\’T SUPPORTED!\n USING THIS APP WILL RESULT IN A BRICK</string>
+    <string name="device_unknown_confirm">I\’m fine with that</string>
 
 </resources>

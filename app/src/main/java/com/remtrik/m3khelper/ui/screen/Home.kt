@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,19 +25,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
-import com.remtrik.m3khelper.ui.component.AboutCard
 import com.remtrik.m3khelper.ui.component.BackupButton
 import com.remtrik.m3khelper.ui.component.DeviceImage
 import com.remtrik.m3khelper.ui.component.InfoCard
 import com.remtrik.m3khelper.ui.component.MountButton
 import com.remtrik.m3khelper.ui.component.QuickbootButton
-import com.remtrik.m3khelper.util.Variables.CurrentDeviceCard
-import com.remtrik.m3khelper.util.Variables.FontSize
-import com.remtrik.m3khelper.util.Variables.PaddingValue
-import com.remtrik.m3khelper.util.Variables.showAboutCard
+import com.remtrik.m3khelper.util.CurrentDeviceCard
+import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.sdp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,11 +44,6 @@ import com.remtrik.m3khelper.util.sdp
 @Destination<RootGraph>(start = true)
 @Composable
 fun HomeScreen(navigator: DestinationsNavigator) {
-    when {
-        showAboutCard.value -> {
-            AboutCard()
-        }
-    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,23 +56,13 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 },
                 actions = {
                     IconButton(
-                        onClick = {
-                            showAboutCard.value = true
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Info,
-                            contentDescription = null
-                        )
-                    }
-                    /*IconButton(
                         onClick = { navigator.navigate(SettingsScreenDestination) }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
                             contentDescription = null
                         )
-                    }*/
+                    }
                 },
             )
         }
@@ -107,17 +91,17 @@ private fun Landscape() {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.sdp()),
-            modifier = Modifier.width(220.sdp())
+            modifier = Modifier.width(300.sdp())
         ) {
             InfoCard(
                 Modifier
-                    .height(200.sdp())
-                    .width(220.sdp())
+                    .height(210.sdp())
+                    .width(300.sdp())
             )
             DeviceImage(
                 Modifier
-                    .height(200.sdp())
-                    .width(220.sdp())
+                    .height(210.sdp())
+                    .width(300.sdp())
             )
         }
         Column(
@@ -125,17 +109,17 @@ private fun Landscape() {
             modifier = Modifier.fillMaxWidth()
         ) {
             when {
-                CurrentDeviceCard.noBoot == false -> {
+                !CurrentDeviceCard.noBoot -> {
                     BackupButton()
                 }
             }
             when {
-                CurrentDeviceCard.noMount == false -> {
+                !CurrentDeviceCard.noMount -> {
                     MountButton()
                 }
             }
             when {
-                CurrentDeviceCard.noFlash == false -> {
+                !CurrentDeviceCard.noFlash -> {
                     QuickbootButton()
                 }
             }
@@ -158,18 +142,18 @@ private fun Portrait() {
         )
     }
     when {
-        CurrentDeviceCard.noBoot == false -> {
+        !CurrentDeviceCard.noBoot -> {
             BackupButton()
         }
     }
 
     when {
-        CurrentDeviceCard.noMount == false -> {
+        !CurrentDeviceCard.noMount -> {
             MountButton()
         }
     }
     when {
-        CurrentDeviceCard.noFlash == false -> {
+        !CurrentDeviceCard.noFlash -> {
             QuickbootButton()
         }
     }

@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.R
-import com.remtrik.m3khelper.util.Variables.FontSize
-import com.remtrik.m3khelper.util.Variables.LineHeight
-import com.remtrik.m3khelper.util.Variables.showAboutCard
+import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LineHeight
+import com.remtrik.m3khelper.util.showAboutCard
 import com.remtrik.m3khelper.util.sdp
 
 @Composable
@@ -74,7 +74,7 @@ fun AboutCard() {
                             Spacer(Modifier.height(10.sdp()))
                             Text(
                                 AnnotatedString.Companion.fromHtml(
-                                    htmlString = stringResource(id = R.string.source) + " <b><a href=\"https://github.com/woa-vayu/M3K-Helper\">GitHub</a></b>",
+                                    htmlString = stringResource(id = R.string.source) + " " + "<b><a href=\"https://github.com/woa-vayu/M3K-Helper\">GitHub</a></b>",
                                     linkStyles = TextLinkStyles(
                                         style = SpanStyle(textDecoration = TextDecoration.Underline)
                                     )

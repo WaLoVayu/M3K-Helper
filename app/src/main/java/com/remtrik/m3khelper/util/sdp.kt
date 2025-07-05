@@ -23,9 +23,13 @@ private fun AssValsToTheSdpObject() {
 private fun approximateWidth(value: Int): Int {
     val remainder = value % 30
     return when {
-        remainder <= 15 -> { value - remainder }
+        remainder <= 15 -> {
+            value - remainder
+        }
 
-        else -> { value + (30 - remainder) }
+        else -> {
+            value + (30 - remainder)
+        }
     }
 }
 

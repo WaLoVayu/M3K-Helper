@@ -18,24 +18,22 @@ data class DeviceCard(
     val noUEFI: Boolean, val unifiedDriversUEFI: Boolean
 )
 
-val vayuCard = DeviceCard(
-    arrayOf("vayu"),
+val vayuCard: DeviceCard = DeviceCard(
+    arrayOf("vayu", "bhima"),
     "POCO X3 Pro",
     R.drawable.vayu,
     "https://github.com/woa-vayu/POCOX3Pro-Guides",
-    "https://t.me/winonvayualt",
+    "https://t.me/windowsonvayu",
     "https://github.com/woa-vayu/POCOX3Pro-Releases/releases/latest",
     "",
-    true, false,
-    false, false,
-    false, false,
-    false, false,
-    false, true
+    noModem = true, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = true
 )
 
-val bhimaCard = vayuCard.copy(deviceCodename = arrayOf("bhima"), deviceName = "POCO X3 Pro")
-
-val nabuCard = DeviceCard(
+val nabuCard: DeviceCard = DeviceCard(
     arrayOf("nabu"),
     "Xiaomi Pad 5",
     R.drawable.nabu,
@@ -43,14 +41,14 @@ val nabuCard = DeviceCard(
     "https://t.me/nabuwoa",
     "https://github.com/erdilS/Port-Windows-11-Xiaomi-Pad-5/releases/tag/Drivers",
     "https://github.com/erdilS/Port-Windows-11-Xiaomi-Pad-5/releases/tag/UEFI",
-    true, false,
-    false, false,
-    false, false,
-    false, false,
-    false, false
+    noModem = true, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = false
 )
 
-val raphaelCard = DeviceCard(
+val raphaelCard: DeviceCard = DeviceCard(
     arrayOf("raphael"),
     "Xiaomi Mi 9T Pro",
     R.drawable.raphael,
@@ -58,32 +56,32 @@ val raphaelCard = DeviceCard(
     "https://t.me/woaraphael",
     "https://github.com/woa-raphael/raphael-drivers/releases/latest",
     "https://github.com/woa-raphael/woa-raphael/releases/tag/raphael-uefi",
-    false, false,
-    false, false,
-    true, false,
-    false, false,
-    false, false
+    noModem = false, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = true, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = false
 )
 
-val raphaelinCard = raphaelCard.copy(deviceCodename = arrayOf("raphaelin"), deviceName = "Redmi K20 Pro")
-val raphaelsCard = raphaelCard.copy(deviceCodename = arrayOf("raphaels"), deviceName = "Redmi K20 Pro Premium")
+val raphaelinCard: DeviceCard = raphaelCard.copy(deviceCodename = arrayOf("raphaelin"), deviceName = "Redmi K20 Pro")
+val raphaelsCard: DeviceCard = raphaelCard.copy(deviceCodename = arrayOf("raphaels"), deviceName = "Redmi K20 Pro Premium")
 
-val cepheusCard = DeviceCard(
-    arrayOf("chepheus"),
+val cepheusCard: DeviceCard = DeviceCard(
+    arrayOf("cepheus"),
     "Xiaomi Mi 9",
     R.drawable.cepheus,
     "https://github.com/ivnvrvnn/Port-Windows-XiaoMI-9",
     "https://t.me/woacepheus",
     "https://github.com/qaz6750/XiaoMi9-Drivers/releases/latest",
     "",
-    true, false,
-    false, false,
-    false, false,
-    false, false,
-    false, true
+    noModem = true, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = true
 )
 
-val berylliumCard = DeviceCard(
+val berylliumCard: DeviceCard = DeviceCard(
     arrayOf("beryllium"),
     "POCO F1",
     R.drawable.beryllium,
@@ -91,14 +89,14 @@ val berylliumCard = DeviceCard(
     "https://t.me/WinOnF1",
     "https://github.com/n00b69/woa-beryllium/releases/tag/Drivers",
     "https://github.com/n00b69/woa-beryllium/releases/tag/UEFI",
-    false, false,
-    false, false,
-    false, false,
-    false, false,
-    false, false
+    noModem = false, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = false
 )
 
-val miatolCard = DeviceCard(
+val miatollCard: DeviceCard = DeviceCard(
     arrayOf("miatoll"),
     "Xiaomi Redmi Note 9 Pro",
     R.drawable.miatoll,
@@ -106,21 +104,21 @@ val miatolCard = DeviceCard(
     "http://t.me/woamiatoll",
     "https://github.com/woa-miatoll/Miatoll-Releases/releases/latest",
     "",
-    true, false,
-    false, false,
-    false, false,
-    false, false,
-    false, true
+    noModem = true, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = true
 )
 
-val durandalCard = miatolCard.copy(deviceCodename = arrayOf("durandal"), deviceName = "Xiaomi Redmi Note 9S")
-val curtana_indiaCard = durandalCard.copy(deviceCodename = arrayOf("curtana_india"), deviceName = "Xiaomi Redmi Note 9S")
-val curtanaCard = miatolCard.copy(deviceCodename = arrayOf("curtana"), deviceName = "Xiaomi Redmi Note 9S NFC")
-val excaliburCard = miatolCard.copy(deviceCodename = arrayOf("excalibur"), deviceName = "Xiaomi Redmi Note 9 Pro Max")
-val gramCard = miatolCard.copy(deviceCodename = arrayOf("gram"), deviceName = "POCO M2 Pro")
-val joyeuseCard = miatolCard.copy(deviceCodename = arrayOf("joyeuse"), deviceName = "Xiaomi Redmi Note 9 Pro")
+val durandalCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("durandal"), deviceName = "Xiaomi Redmi Note 9 Pro")
+val curtana_indiaCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("curtana_india"), deviceName = "Xiaomi Redmi Note 9 Pro")
+val curtanaCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("curtana"), deviceName = "Xiaomi Redmi Note 9S")
+val excaliburCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("excalibur"), deviceName = "Xiaomi Redmi Note 9 Pro Max")
+val gramCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("gram"), deviceName = "POCO M2 Pro")
+val joyeuseCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("joyeuse"), deviceName = "Xiaomi Redmi Note 9 Pro")
 
-val alphaCard = DeviceCard(
+val alphaCard: DeviceCard = DeviceCard(
     arrayOf("alpha"),
     "LG G8",
     R.drawable.alpha,
@@ -128,14 +126,14 @@ val alphaCard = DeviceCard(
     "https://t.me/lgedevices",
     "https://github.com/n00b69/woa-alphaplus/releases/tag/Drivers",
     "https://github.com/n00b69/woa-alphaplus/releases/tag/UEFI",
-    false, false,
-    false, false,
-    false, false,
-    false, false,
-    false, false
+    noModem = false, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = false
 )
 
-val mh2lm5gCard = DeviceCard(
+val mh2lm5gCard: DeviceCard = DeviceCard(
     arrayOf("mh2lm5g"),
     "LG V50S",
     R.drawable.mh2,
@@ -143,16 +141,16 @@ val mh2lm5gCard = DeviceCard(
     "https://t.me/lgedevices",
     "https://github.com/n00b69/woa-mh2lm5g/releases/tag/Drivers",
     "https://github.com/n00b69/woa-mh2lm5g/releases/tag/UEFI",
-    false, false,
-    false, false,
-    false, false,
-    false, false,
-    false, false
+    noModem = false, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = false
 )
 
-val mh2Card = mh2lm5gCard.copy(deviceCodename = arrayOf("mh2"), deviceName = "LG V50S", deviceGuide = "https://github.com/n00b69/woa-mh2lm")
+val mh2Card: DeviceCard = mh2lm5gCard.copy(deviceCodename = arrayOf("mh2"), deviceName = "LG V50S", deviceGuide = "https://github.com/n00b69/woa-mh2lm")
 
-val betaCard = DeviceCard(
+val betaCard: DeviceCard = DeviceCard(
     arrayOf("beta"),
     "LG G8S",
     R.drawable.beta,
@@ -160,16 +158,16 @@ val betaCard = DeviceCard(
     "https://t.me/lgedevices",
     "https://github.com/n00b69/woa-betalm/releases/tag/Drivers",
     "https://github.com/n00b69/woa-betalm/releases/tag/UEFI",
-    true, false,
-    false, false,
-    false, false,
-    false, false,
-    false, false
+    noModem = true, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = false
 )
 
-val flashCard = mh2lm5gCard.copy(deviceCodename = arrayOf("flash"), deviceName = "LG V50", deviceGuide = "https://github.com/n00b69/woa-flashlmdd", deviceImage = R.drawable.flashlm)
+val flashCard: DeviceCard = mh2lm5gCard.copy(deviceCodename = arrayOf("flash"), deviceName = "LG V50", deviceGuide = "https://github.com/n00b69/woa-flashlmdd", deviceImage = R.drawable.flashlm)
 
-val guacamoleCard = DeviceCard(
+val guacamoleCard: DeviceCard = DeviceCard(
     arrayOf("guacamole", "OnePlus7Pro"),
     "OnePlus 7 Pro",
     R.drawable.guacamole,
@@ -177,16 +175,16 @@ val guacamoleCard = DeviceCard(
     "https://t.me/onepluswoachat",
     "",
     "",
-    true, true,
-    true, false,
-    false, true,
-    false, true,
-    true, false
+    noModem = true, noFlash = true,
+    noBoot = true, noMount = false,
+    sensors = false, noGuide = true,
+    noGroup = false, noDrivers = true,
+    noUEFI = true, unifiedDriversUEFI = false
 )
 
-val hotdogCard = guacamoleCard.copy(deviceCodename = arrayOf("hotdog", "OnePlus7TPro"), deviceName = "OnePlus 7T Pro", deviceImage = R.drawable.hotdog)
+val hotdogCard: DeviceCard = guacamoleCard.copy(deviceCodename = arrayOf("hotdog", "OnePlus7TPro"), deviceName = "OnePlus 7T Pro", deviceImage = R.drawable.hotdog)
 
-val suryaCard = DeviceCard(
+val suryaCard: DeviceCard = DeviceCard(
     arrayOf("surya"),
     "POCO X3 NFC",
     R.drawable.vayu,
@@ -194,16 +192,16 @@ val suryaCard = DeviceCard(
     "https://t.me/windows_on_pocox3_nfc",
     "",
     "",
-    true, true,
-    true, false,
-    false, true,
-    true, true,
-    true, true
+    noModem = true, noFlash = true,
+    noBoot = true, noMount = false,
+    sensors = false, noGuide = true,
+    noGroup = true, noDrivers = true,
+    noUEFI = true, unifiedDriversUEFI = true
 )
 
-val karnaCard = suryaCard.copy(deviceCodename = arrayOf("karna"), deviceName = "POCO X3")
+val karnaCard: DeviceCard = suryaCard.copy(deviceCodename = arrayOf("karna"), deviceName = "POCO X3")
 
-val a52sxqCard = DeviceCard(
+val a52sxqCard: DeviceCard = DeviceCard(
     arrayOf("a52sxq"),
     "Samsung Galaxy A52s",
     R.drawable.a52sxq,
@@ -211,14 +209,29 @@ val a52sxqCard = DeviceCard(
     "https://t.me/a52sxq_uefi",
     "https://github.com/woa-a52s/Samsung-A52s-5G-Releases/releases/latest",
     "",
-    true, false,
-    false, false,
-    false, false,
-    false, false,
-    false, true
+    noModem = true, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = true
 )
 
-val emu64xaCard = DeviceCard(
+val beyond1Card: DeviceCard = DeviceCard(
+    arrayOf("beyond1"),
+    "Samsung Galaxy S10",
+    R.drawable.beyond1,
+    "",
+    "https://t.me/woahelperchat",
+    "",
+    "",
+    noModem = true, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = true,
+    noGroup = false, noDrivers = true,
+    noUEFI = true, unifiedDriversUEFI = false
+)
+
+val emu64xaCard: DeviceCard = DeviceCard(
     arrayOf("emu64xa"),
     "emu64xa",
     R.drawable.vayu,
@@ -226,14 +239,14 @@ val emu64xaCard = DeviceCard(
     "https://google.com",
     "https://google.com",
     "https://google.com",
-    false, false,
-    false, false,
-    false, false,
-    false, false,
-    false, true
+    noModem = false, noFlash = false,
+    noBoot = false, noMount = false,
+    sensors = false, noGuide = false,
+    noGroup = false, noDrivers = false,
+    noUEFI = false, unifiedDriversUEFI = true
 )
 
-val unknownCard = DeviceCard(
+val unknownCard: DeviceCard = DeviceCard(
     arrayOf("unknown"),
     M3KApp.getString(R.string.unknown_device),
     R.drawable.ic_device_unknown,
@@ -241,9 +254,9 @@ val unknownCard = DeviceCard(
     "",
     "",
     "",
-    false, false,
-    false, false,
-    false, true,
-    true, true,
-    true, false
+    noModem = true, noFlash = true,
+    noBoot = true, noMount = false,
+    sensors = false, noGuide = true,
+    noGroup = true, noDrivers = true,
+    noUEFI = true, unifiedDriversUEFI = false
 )

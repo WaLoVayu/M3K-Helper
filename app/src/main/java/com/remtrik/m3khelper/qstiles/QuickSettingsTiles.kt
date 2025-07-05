@@ -9,9 +9,9 @@ import com.remtrik.m3khelper.util.mountStatus
 import com.remtrik.m3khelper.util.mountWindows
 import com.remtrik.m3khelper.util.quickboot
 import com.remtrik.m3khelper.util.umountWindows
-import com.remtrik.m3khelper.util.Variables.CurrentDeviceCard
-import com.remtrik.m3khelper.util.Variables.UEFICardsArray
-import com.remtrik.m3khelper.util.Variables.UEFIList
+import com.remtrik.m3khelper.util.CurrentDeviceCard
+import com.remtrik.m3khelper.util.UEFICardsArray
+import com.remtrik.m3khelper.util.UEFIList
 
 class MountTile : TileService() { // PoC
 
@@ -45,7 +45,7 @@ class QuickBootTile : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
-        if (CurrentDeviceCard.noFlash == true) {
+        if (CurrentDeviceCard.noFlash) {
             qsTile.state = STATE_UNAVAILABLE
             qsTile.subtitle = M3KApp.getString(
                 R.string.qs_unsupported

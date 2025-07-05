@@ -1,6 +1,7 @@
 package com.remtrik.m3khelper.util
 
-import com.remtrik.m3khelper.util.Variables.CurrentDeviceCard
+import android.content.Context
+import android.content.Intent
 import com.topjohnwu.superuser.ShellUtils
 
 fun dumpBoot(where: Int) {
@@ -13,8 +14,8 @@ fun dumpBoot(where: Int) {
         }
 
         2 -> {
-            ShellUtils.fastCmd("mkdir /sdcard/m3khelper || true ")
-            ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=/sdcard/m3khelper/boot.img")
+            ShellUtils.fastCmd("rm -rf /sdcard/m3khelper || true ")
+            ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=/sdcard/boot.img")
         }
     }
 }
@@ -48,7 +49,7 @@ fun flashUEFI(uefiPath: String) {
 }
 
 fun checkSensors(): Boolean {
-    return if (CurrentDeviceCard.sensors == false) true
+    return if (!CurrentDeviceCard.sensors) true
     else {
         mountWindows()
         val check =
@@ -72,18 +73,27 @@ fun quickboot(uefiPath: String) {
         ) {
             dumpBoot(1)
         }
-        if (CurrentDeviceCard.noModem == false) {
+        if (!CurrentDeviceCard.noModem) {
             dumpModem()
         }
-        if (CurrentDeviceCard.sensors == true && checkSensors() == false) {
+        if (CurrentDeviceCard.sensors && !checkSensors()) {
             dumpSensors()
         }
     }
-    if (ShellUtils.fastCmd("find /sdcard/m3khelper/boot.img")
+    if (ShellUtils.fastCmd("find /sdcard/boot.img")
             .isEmpty()
     ) {
         dumpBoot(2)
     }
     flashUEFI(uefiPath)
     ShellUtils.fastCmd("svc power reboot")
+}
+
+fun Context.restart() {
+    val packageManager = packageManager
+    val intent = packageManager.getLaunchIntentForPackage(packageName)!!
+    val componentName = intent.component!!
+    val restartIntent = Intent.makeRestartActivityTask(componentName)
+    startActivity(restartIntent)
+    Runtime.getRuntime().exit(0)
 }

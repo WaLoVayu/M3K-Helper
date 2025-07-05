@@ -13,15 +13,15 @@ plugins {
 
 android {
     namespace = "com.remtrik.m3khelper"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.remtrik.m3khelper"
         minSdk = 29
-        targetSdk = 35
-        versionCode = 31
-        versionName = "2.7"
-        compileSdk = 35
+        targetSdk = 36
+        versionCode = 35
+        versionName = "3.3"
+        compileSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -109,9 +109,9 @@ dependencies {
     implementation(libs.com.github.topjohnwu.libsu.core)
     implementation(libs.com.github.topjohnwu.libsu.service)
 
-    implementation(libs.io.coil.kt.coil.compose)
-
     implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.material)
+
+    implementation(libs.m3color)
 }

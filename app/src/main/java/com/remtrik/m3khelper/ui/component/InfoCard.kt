@@ -15,28 +15,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
-import com.remtrik.m3khelper.util.Variables.BootIsPresent
-import com.remtrik.m3khelper.util.Variables.CurrentDeviceCard
-import com.remtrik.m3khelper.util.Variables.FontSize
-import com.remtrik.m3khelper.util.Variables.LineHeight
-import com.remtrik.m3khelper.util.Variables.PaddingValue
-import com.remtrik.m3khelper.util.Variables.PanelType
-import com.remtrik.m3khelper.util.Variables.Ram
-import com.remtrik.m3khelper.util.Variables.Slot
-import com.remtrik.m3khelper.util.Variables.WindowsIsPresent
-import com.remtrik.m3khelper.util.Variables.specialDeviceCardsArray
+import com.remtrik.m3khelper.util.BootIsPresent
+import com.remtrik.m3khelper.util.CurrentDeviceCard
+import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LineHeight
+import com.remtrik.m3khelper.util.PaddingValue
+import com.remtrik.m3khelper.util.PanelType
+import com.remtrik.m3khelper.util.Ram
+import com.remtrik.m3khelper.util.Slot
+import com.remtrik.m3khelper.util.WindowsIsPresent
+import com.remtrik.m3khelper.util.specialDeviceCardsArray
 import com.remtrik.m3khelper.util.sdp
 
 @Composable
 fun InfoCard(modifier: Modifier) {
     ElevatedCard(
         modifier =
-        if (specialDeviceCardsArray.contains(CurrentDeviceCard) && M3KApp.resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
-            modifier
-        } else {
-            Modifier
-                .height(300.sdp())
-        },
+            if (specialDeviceCardsArray.contains(CurrentDeviceCard) && M3KApp.resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+                modifier
+            } else {
+                Modifier
+                    .height(210.sdp())
+            },
         shape = RoundedCornerShape(8.sdp()),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(3.sdp())) {
@@ -54,7 +54,7 @@ fun InfoCard(modifier: Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = PaddingValue),
-                text = M3KApp.getString(R.string.model, CurrentDeviceCard.deviceName),
+                text = M3KApp.getString(R.string.model, CurrentDeviceCard.deviceName, CurrentDeviceCard.deviceCodename[0]),
                 fontSize = FontSize,
                 lineHeight = LineHeight
             )
@@ -71,7 +71,7 @@ fun InfoCard(modifier: Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = PaddingValue),
-                text = M3KApp.getString(R.string.paneltype) + PanelType,
+                text = M3KApp.getString(R.string.paneltype, PanelType),
                 fontSize = FontSize,
                 lineHeight = LineHeight
             )
@@ -81,7 +81,7 @@ fun InfoCard(modifier: Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = PaddingValue),
-                        text = M3KApp.getString(R.string.backup_boot_state) + M3KApp.getString(BootIsPresent),
+                        text = M3KApp.getString(R.string.backup_boot_state, M3KApp.getString(BootIsPresent)),
                         fontSize = FontSize,
                         lineHeight = LineHeight
                     )
@@ -105,7 +105,7 @@ fun InfoCard(modifier: Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 10.sdp()),
-                        text = M3KApp.getString(R.string.windows_status) + M3KApp.getString(WindowsIsPresent),
+                        text = M3KApp.getString(R.string.windows_status, M3KApp.getString(WindowsIsPresent)),
                         fontSize = FontSize,
                         lineHeight = LineHeight
                     )

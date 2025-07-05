@@ -3,26 +3,17 @@
 
     <string name="mnt_title">Монтировать Windows</string>
     <string name="umnt_title">Размонтировать Windows</string>
-    <string name="dump_modem_title">Исправить модем</string>
-    <string name="dump_modemAsensors_title">Исправить модем и сенсоры</string>
-    <string name="dump_sensors_title">Исправить сенсоры</string>
     <string name="quickboot_title">Перезагрузиться в Windows</string>
     <string name="backup_boot_title">Резервная копия boot образа</string>
     <string name="uefi_not_found_title">UEFI не найден</string>
 
     <string name="mnt_question">Монтировать Windows?</string>
     <string name="umnt_question">Размонтировать Windows?</string>
-    <string name="dump_modem_question">Скопировать модем в раздел Windows?</string>
-    <string name="dump_modemAsensors_question">Скопировать модем и сенсоры в раздел Windows?</string>
-    <string name="dump_sensors_question">Скопировать сенсоры в раздел Windows?</string>
     <string name="quickboot_question1">Перезагрузиться в Windows?</string>
     <string name="backup_boot_question">Хотите сделать резервную копию текущего boot образа?</string>
 
     <string name="backup_boot_subtitle">Резервное копирование текущего boot образа</string>
     <string name="mnt_subtitle">Нужно для редактирования содержимого раздела Windows</string>
-    <string name="dump_modem_subtitle">Нужно перед каждым запуском Windows если вам нужен LTE</string>
-    <string name="dump_modemAsensors_subtitle">Нужно перед каждым запуском Windows если вам нужен LTE (Сенсоры исправляются только 1 раз)</string>
-    <string name="dump_sensors_subtitle">Нужно сделать всего 1 раз если вам нужны сенсоры</string>
     <string name="quickboot_subtitle">Исправить модем, прошить UEFI и перезагрузиться в Windows в одно нажатие</string>
     <string name="quickboot_subtitle_nomodem">Прошейте UEFI и перезагрузитесь в Windows в одно нажатие</string>
     <string name="uefi_not_found_subtitle">Скачайте UEFI для вашего устройства и поместите его в папку /sdcard/UEFI</string>
@@ -31,20 +22,21 @@
     <string name="qs_unsupported">Устройство неподдерживается</string>
 
     <string name="unknown_device">Неизвестное устройство</string>
-    <string name="model">Модель: %s</string>
+    <string name="model">Модель: %s (%s)</string>
     <string name="ramvalue">ОЗУ: %s</string>
-    <string name="paneltype">"Дисплей: "</string>
+    <string name="paneltype">"Дисплей: %s"</string>
     <string name="unknown_panel">Неизвестно</string>
     <string name="slot">Слот: %s</string>
-    <string name="backup_boot_state">"Бекап boot образа: "</string>
-    <string name="windows_status">"Windows установленна: "</string>
+    <string name="backup_boot_state">"Бекап boot образа: %s"</string>
+    <string name="windows_status">"Windows установленна: %s"</string>
 
-    <string name="guide">Гайд</string>
-    <string name="group">Группа</string>
-    <string name="drivers">Драйвера</string>
-    <string name="uefi">UEFI</string>
-    <string name="driversuefi">Драйвера и UEFI</string>
+    <string name="guide">Инструкция для %s</string>
+    <string name="group">Чат для %s</string>
+    <string name="drivers">Драйвера для %s</string>
+    <string name="uefi">UEFI для %s</string>
+    <string name="driversuefi">Драйвера и UEFI для %s</string>
 
+    <string name="apply">Применить</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="please_wait">Пожалуйста подождите…</string>
@@ -56,5 +48,10 @@
     <string name="links">Дополнительные материалы</string>
     <string name="device_unknown">ВАШЕ УСТРОЙСТВО НЕ ПОДДЕРЖИВАЕТСЯ!\n ПОЛЬЗУЙТЕСЬ ДАННЫМ ПРИЛОЖЕНИЕМ НА ВАШ СТРАХ И РИСК</string>
     <string name="device_unknown_confirm">Меня это устраивает</string>
+    <string name="about">О приложении</string>
+    <string name="source">Исходный код на</string>
+    <string name="settings">Настройки</string>
+    <string name="autoupdate">Проверять обновления</string>
+    <string name="autoupdate_summary">Автоматически проверять на наличие обновлений</string>
 
 </resources>
