@@ -13,10 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -27,7 +24,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
@@ -52,7 +48,7 @@ fun LinksScreen(navigator: DestinationsNavigator) {
                         fontWeight = FontWeight.Bold
                     )
                 },
-                actions = {
+                /*actions = {
                     IconButton(
                         onClick = { navigator.navigate(SettingsScreenDestination) }
                     ) {
@@ -61,7 +57,7 @@ fun LinksScreen(navigator: DestinationsNavigator) {
                             contentDescription = null
                         )
                     }
-                }
+                }*/
             )
         })
     { innerPadding ->

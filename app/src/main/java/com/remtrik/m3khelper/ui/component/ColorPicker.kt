@@ -99,8 +99,8 @@ fun ColorSlider(
         )
         Text(
             text = valueState.value.toColorInt().toString(),
-            modifier = Modifier.width(25.sdp()),
-            textAlign = TextAlign.End,
+            modifier = Modifier.width(35.sdp()),
+            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall
         )
     }

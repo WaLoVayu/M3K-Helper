@@ -34,9 +34,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.core.content.edit
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -44,12 +47,12 @@ import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.ui.component.ColorPicker
 import com.remtrik.m3khelper.ui.component.SwitchItem
+import com.remtrik.m3khelper.ui.theme.PaletteStyle
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.prefs
 import com.remtrik.m3khelper.util.restart
 import com.remtrik.m3khelper.util.sdp
-import androidx.core.content.edit
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +80,7 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
             TopAppBar(
                 navigationIcon = {
                     IconButton(
-                        onClick = { navigator.popBackStack() },
+                        onClick = dropUnlessResumed { navigator.popBackStack() },
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
@@ -126,8 +129,8 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
             ElevatedCard(Modifier.padding(PaddingValue)) {
                 AnimatedVisibility(
                     visible = enableThemeEngine,
-                    enter = fadeIn() + expandVertically(),
-                    exit = shrinkVertically() + fadeOut(),
+                    enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
                     modifier = Modifier.padding(PaddingValue).fillMaxWidth()
                 ) {
                     IconButton(onClick = { expanded = !expanded }, modifier = Modifier.fillMaxWidth()) {
@@ -143,48 +146,18 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
                     ) {
-                        DropdownMenuItem(
-                            text = { Text("TonalSpot") },
-                            onClick = { prefs.edit { putString("paletteStyle", "TonalSpot") }; paletteStyle = "TonalSpot"; expanded = !expanded }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Neutral") },
-                            onClick = { prefs.edit { putString("paletteStyle", "Neutral") }; paletteStyle = "Neutral"; expanded = !expanded }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Vibrant") },
-                            onClick = { prefs.edit { putString("paletteStyle", "Vibrant") }; paletteStyle = "Vibrant"; expanded = !expanded }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Expressive") },
-                            onClick = { prefs.edit { putString("paletteStyle", "Expressive") }; paletteStyle = "Expressive"; expanded = !expanded }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Rainbow") },
-                            onClick = { prefs.edit { putString("paletteStyle", "Rainbow") }; paletteStyle = "Rainbow"; expanded = !expanded }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("FruitSalad") },
-                            onClick = { prefs.edit { putString("paletteStyle", "FruitSalad") }; paletteStyle = "FruitSalad"; expanded = !expanded }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Monochrome") },
-                            onClick = { prefs.edit { putString("paletteStyle", "Monochrome") }; paletteStyle = "Monochrome"; expanded = !expanded }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Fidelity") },
-                            onClick = { prefs.edit { putString("paletteStyle", "Fidelity") }; paletteStyle = "Fidelity"; expanded = !expanded }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Content") },
-                            onClick = { prefs.edit { putString("paletteStyle", "Content") }; paletteStyle = "Content"; expanded = !expanded }
-                        )
+                        PaletteStyle.entries.forEach {
+                            DropdownMenuItem(
+                                text = { Text(it.name) },
+                                onClick = { prefs.edit { putString("paletteStyle", it.name) }; paletteStyle = it.name; expanded = !expanded }
+                            )
+                        }
                     }
                 }
                 AnimatedVisibility(
                     visible = enableThemeEngine,
-                    enter = fadeIn() + expandVertically(),
-                    exit = shrinkVertically() + fadeOut()
+                    enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
                 ) {
                     ColorPicker()
                 }

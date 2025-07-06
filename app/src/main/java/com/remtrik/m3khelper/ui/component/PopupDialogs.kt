@@ -21,10 +21,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.Warning
+import com.remtrik.m3khelper.util.restart
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.ssp
 
@@ -121,7 +123,22 @@ fun NoRoot() {
         },
         onDismissRequest = {},
         dismissButton = {},
-        confirmButton = {}
+        confirmButton = {
+            AssistChip(
+                onClick = {
+                    M3KApp.restart()
+                },
+                label = {
+                    Text(
+                        modifier = Modifier.padding(
+                            top = 2.sdp(),
+                            bottom = 2.sdp()
+                        ),
+                        text = stringResource(R.string.reload),
+                    )
+                }
+            )
+        }
     )
 }
 

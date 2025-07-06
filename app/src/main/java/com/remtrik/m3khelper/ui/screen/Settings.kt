@@ -36,6 +36,7 @@ import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.ui.component.SwitchItem
 import com.remtrik.m3khelper.util.showAboutCard
 import androidx.core.content.edit
+import androidx.lifecycle.compose.dropUnlessResumed
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +48,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
             TopAppBar(
                 navigationIcon = {
                     IconButton(
-                        onClick = { navigator.popBackStack() },
+                        onClick = dropUnlessResumed { navigator.popBackStack() },
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
