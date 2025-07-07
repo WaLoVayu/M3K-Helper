@@ -17,16 +17,24 @@ class MountTile : TileService() { // PoC
 
     override fun onStartListening() {
         super.onStartListening()
-        if (mountStatus()) {
-            qsTile.state = STATE_ACTIVE
-            qsTile.label = M3KApp.getString(
-                R.string.mnt_question
+        if (CurrentDeviceCard.noMount) {
+            qsTile.state = STATE_UNAVAILABLE
+            qsTile.subtitle = M3KApp.getString(
+                R.string.qs_unsupported
             )
+            qsTile.updateTile()
         } else {
-            qsTile.state = STATE_ACTIVE
-            qsTile.label = M3KApp.getString(
-                R.string.umnt_question
-            )
+            if (mountStatus()) {
+                qsTile.state = STATE_ACTIVE
+                qsTile.label = M3KApp.getString(
+                    R.string.mnt_question
+                )
+            } else {
+                qsTile.state = STATE_ACTIVE
+                qsTile.label = M3KApp.getString(
+                    R.string.umnt_question
+                )
+            }
         }
     }
 
@@ -36,6 +44,29 @@ class MountTile : TileService() { // PoC
             mountWindows()
         } else {
             umountWindows()
+        }
+    }
+
+    override fun onTileAdded() {
+        super.onTileAdded()
+        if (CurrentDeviceCard.noMount) {
+            qsTile.state = STATE_UNAVAILABLE
+            qsTile.subtitle = M3KApp.getString(
+                R.string.qs_unsupported
+            )
+            qsTile.updateTile()
+        } else {
+            if (mountStatus()) {
+                qsTile.state = STATE_ACTIVE
+                qsTile.label = M3KApp.getString(
+                    R.string.mnt_question
+                )
+            } else {
+                qsTile.state = STATE_ACTIVE
+                qsTile.label = M3KApp.getString(
+                    R.string.umnt_question
+                )
+            }
         }
     }
 
@@ -59,7 +90,28 @@ class QuickBootTile : TileService() {
                 )
                 qsTile.updateTile()
             } else {
-                qsTile.state = STATE_ACTIVE; qsTile.subtitle = ""
+                qsTile.state = STATE_ACTIVE; qsTile.subtitle = null
+            }
+        }
+    }
+
+    override fun onTileAdded() {
+        super.onTileAdded()
+        if (CurrentDeviceCard.noFlash) {
+            qsTile.state = STATE_UNAVAILABLE
+            qsTile.subtitle = M3KApp.getString(
+                R.string.qs_unsupported
+            )
+            qsTile.updateTile()
+        } else {
+            if (UEFIList.isEmpty()) {
+                qsTile.state = STATE_UNAVAILABLE
+                qsTile.subtitle = M3KApp.getString(
+                    R.string.uefi_not_found_title
+                )
+                qsTile.updateTile()
+            } else {
+                qsTile.state = STATE_ACTIVE; qsTile.subtitle = null
             }
         }
     }

@@ -51,7 +51,9 @@ import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.ui.component.SwitchItem
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.PaddingValue
+import com.remtrik.m3khelper.util.beyond1Card
 import com.remtrik.m3khelper.util.deviceCardsArray
+import com.remtrik.m3khelper.util.emu64xaCard
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.showAboutCard
 
@@ -153,15 +155,17 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                         onDismissRequest = { expanded = false },
                     ) {
                         deviceCardsArray.forEach {
-                            DropdownMenuItem(
-                                text = { Text(it.deviceName) },
-                                onClick = {
-                                    com.remtrik.m3khelper.util.prefs.edit { putString("overriden_device_codename", it.deviceCodename[0]) }
-                                    com.remtrik.m3khelper.util.prefs.edit { putString("overriden_device_name", it.deviceName) }
-                                    overridenDeviceName = it.deviceName
-                                    expanded = !expanded
-                                }
-                            )
+                            if (!(it.deviceCodename == beyond1Card.deviceCodename || it.deviceCodename == emu64xaCard.deviceCodename)) {
+                                DropdownMenuItem(
+                                    text = { Text(it.deviceName) },
+                                    onClick = {
+                                        com.remtrik.m3khelper.util.prefs.edit { putString("overriden_device_codename", it.deviceCodename[0]) }
+                                        com.remtrik.m3khelper.util.prefs.edit { putString("overriden_device_name", it.deviceName) }
+                                        overridenDeviceName = it.deviceName
+                                        expanded = !expanded
+                                    }
+                                )
+                            }
                         }
                     }
                 }

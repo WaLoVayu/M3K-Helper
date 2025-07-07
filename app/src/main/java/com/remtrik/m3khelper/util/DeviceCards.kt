@@ -15,7 +15,8 @@ data class DeviceCard(
     val noBoot: Boolean, val noMount: Boolean,
     val sensors: Boolean, val noGuide: Boolean,
     val noGroup: Boolean, val noDrivers: Boolean,
-    val noUEFI: Boolean, val unifiedDriversUEFI: Boolean
+    val noUEFI: Boolean, val unifiedDriversUEFI: Boolean,
+    val noLinks: Boolean = false
 )
 
 val vayuCard: DeviceCard = DeviceCard(
@@ -192,7 +193,8 @@ val suryaCard: DeviceCard = DeviceCard(
     noBoot = true, noMount = false,
     sensors = false, noGuide = true,
     noGroup = true, noDrivers = true,
-    noUEFI = true, unifiedDriversUEFI = true
+    noUEFI = true, unifiedDriversUEFI = true,
+    noLinks = true
 )
 
 val a52sxqCard: DeviceCard = DeviceCard(
