@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.topjohnwu.superuser.ShellUtils
@@ -21,22 +22,22 @@ data class UEFICard(
 )
 
 // static vars
-private val deviceCardsArray =
+val deviceCardsArray: Array<DeviceCard> =
     arrayOf(
         vayuCard,
+        suryaCard,
         nabuCard,
         raphaelCard, raphaelinCard, raphaelsCard,
         cepheusCard,
         berylliumCard,
-        curtana_indiaCard, durandalCard, curtanaCard, excaliburCard, gramCard, joyeuseCard, miatollCard,
+        curtanaCard, excaliburCard, gramCard, miatollCard,
         alphaCard,
-        mh2lm5gCard,
         mh2Card,
         betaCard,
+        mh2lm5gCard,
         flashCard,
         guacamoleCard,
         hotdogCard,
-        suryaCard, karnaCard,
         a52sxqCard,
         beyond1Card,
         emu64xaCard
@@ -44,7 +45,8 @@ private val deviceCardsArray =
 
 val specialDeviceCardsArray: Array<DeviceCard> =
     arrayOf(
-        nabuCard
+        nabuCard,
+        emu64xaCard
     )
 
 var UEFICardsArray: Array<UEFICard> =
@@ -81,48 +83,77 @@ var LineHeight: TextUnit = 0.sp
 
 @SuppressLint("RestrictedApi")
 fun vars() {
-    for (card: DeviceCard in deviceCardsArray) {
-        for (num: String in card.deviceCodename) {
-            if (Codename1.contains(num)) {
-                CurrentDeviceCard = card; CurrentDeviceCard.deviceCodename[0] = Codename1; break
-            } else if (Codename2.contains(num)) {
-                CurrentDeviceCard = card; CurrentDeviceCard.deviceCodename[0] = Codename2; break
-            } else if (Codename3.contains(num)) {
-                CurrentDeviceCard = card; CurrentDeviceCard.deviceCodename[0] = Codename3; break
+    if ((prefs.getBoolean("firstboot", true)) || (prefs.getBoolean("unknown", true))) {
+        var cardNum = 0
+        for (card: DeviceCard in deviceCardsArray) {
+            for (num: String in card.deviceCodename) {
+                if ((prefs.getBoolean("override_device", false) && prefs.getString("overriden_device_codename", "vayu")?.contains(num) == true)) {
+                    CurrentDeviceCard = card; break
+                } else {
+                    if (Codename1.contains(num)) {
+                        CurrentDeviceCard = card; CurrentDeviceCard.deviceCodename[0] = Codename1
+                        prefs.edit { putInt("deviceCard", cardNum) }; prefs.edit { putBoolean("firstboot", false) }; prefs.edit { putBoolean("unknown", false) }
+                        break
+                    } else if (Codename2.contains(num)) {
+                        CurrentDeviceCard = card; CurrentDeviceCard.deviceCodename[0] = Codename2
+                        prefs.edit { putInt("deviceCard", cardNum) }; prefs.edit { putBoolean("firstboot", false) }; prefs.edit { putBoolean("unknown", false) }
+                        break
+                    } else if (Codename3.contains(num)) {
+                        CurrentDeviceCard = card; CurrentDeviceCard.deviceCodename[0] = Codename3
+                        prefs.edit { putInt("deviceCard", cardNum) }; prefs.edit { putBoolean("firstboot", false) }; prefs.edit { putBoolean("unknown", false) }
+                        break
+                    }
+                }
             }
+            if (CurrentDeviceCard != unknownCard) {
+                Warning.value = false; break
+            }
+            cardNum += 1
         }
-        if (CurrentDeviceCard != unknownCard) {
-            Warning.value = false; break
+
+        val panel = ShellUtils.fastCmd("cat /proc/cmdline")
+        PanelType = when {
+            panel.contains("j20s_42")
+                    || panel.contains("k82_42")
+                    || panel.contains("huaxing") -> "Huaxing"
+
+            panel.contains("j20s_36")
+                    || panel.contains("tianma")
+                    || panel.contains("k82_36") -> "Tianma"
+
+            panel.contains("ebbg") -> "EBBG"
+
+            panel.contains("samsung")
+                    || panel.contains("ea8076_f1mp")
+                    || panel.contains("ea8076_f1p2")
+                    || panel.contains("ea8076_global")
+                    || panel.contains("S6E3FC3")
+                    || panel.contains("AMS646YD01") -> "Samsung"
+
+            else -> M3KApp.getString(R.string.unknown_panel)
         }
-    }
+        prefs.edit { putString("devicePanel", PanelType) }
 
-
-    val panel = ShellUtils.fastCmd("cat /proc/cmdline")
-    PanelType = when {
-        panel.contains("j20s_42")
-                || panel.contains("k82_42")
-                || panel.contains("huaxing") -> "Huaxing"
-
-        panel.contains("j20s_36")
-                || panel.contains("tianma")
-                || panel.contains("k82_36") -> "Tianma"
-
-        panel.contains("ebbg") -> "EBBG"
-
-        panel.contains("samsung")
-                || panel.contains("ea8076_f1mp")
-                || panel.contains("ea8076_f1p2")
-                || panel.contains("ea8076_global")
-                || panel.contains("S6E3FC3")
-                || panel.contains("AMS646YD01") -> "Samsung"
-
-        else -> M3KApp.getString(R.string.unknown_panel)
+    } else {
+        if (prefs.getBoolean("override_device", false)) {
+            for (card: DeviceCard in deviceCardsArray) {
+                for (num: String in card.deviceCodename) {
+                    if (prefs.getString("overriden_device_codename", "vayu")?.contains(num) == true) {
+                        CurrentDeviceCard = card; break
+                    }
+                }
+            }
+        } else {
+            CurrentDeviceCard = deviceCardsArray[prefs.getInt("deviceCard", 0)]
+        }
+        Warning.value = false;
+        PanelType = prefs.getString("devicePanel", M3KApp.getString(R.string.unknown_panel)).toString()
+        Warning.value = false
     }
 
     if (mountStatus()) {
         mountWindows()
-        dynamicVars()
-        bootBackupStatus()
+        dynamicVars(); bootBackupStatus()
         umountWindows()
     } else {
         dynamicVars(); bootBackupStatus()
@@ -145,7 +176,6 @@ fun bootBackupStatus() {
 
 fun dynamicVars() {
     WindowsIsPresent = when {
-        CurrentDeviceCard.noMount -> R.string.no
         ShellUtils.fastCmd("find /sdcard/Windows/Windows/explorer.exe")
             .isNotEmpty() -> R.string.yes
 
@@ -156,7 +186,7 @@ fun dynamicVars() {
     if (find.isNotEmpty()) {
         var index = 1
         for (uefi: String in arrayOf("60", "90", "120")) {
-            val path = ShellUtils.fastCmd("find /mnt/sdcard/UEFI/ -type f  | grep .img | grep $uefi")
+            val path = ShellUtils.fastCmd("find /mnt/sdcard/UEFI/ -type f  | grep .img | grep $uefi" + "hz")
             if (path.isNotEmpty()
             ) {
                 UEFIList += uefi.toInt()

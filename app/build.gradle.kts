@@ -20,8 +20,8 @@ android {
         applicationId = "com.remtrik.m3khelper"
         minSdk = 29
         targetSdk = 36
-        versionCode = 36
-        versionName = "3.3.1"
+        versionCode = 37
+        versionName = "3.4"
         compileSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

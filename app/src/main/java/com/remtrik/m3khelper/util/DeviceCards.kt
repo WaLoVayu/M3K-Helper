@@ -97,8 +97,8 @@ val berylliumCard: DeviceCard = DeviceCard(
 )
 
 val miatollCard: DeviceCard = DeviceCard(
-    arrayOf("miatoll"),
-    "Xiaomi Redmi Note 9 Pro",
+    arrayOf("miatoll", "durandal", "curtana_india", "joyeuse"),
+    "Redmi Note 9 Pro",
     R.drawable.miatoll,
     "https://github.com/woa-miatoll/Port-Windows-11-Redmi-Note-9-Pro",
     "http://t.me/woamiatoll",
@@ -110,13 +110,9 @@ val miatollCard: DeviceCard = DeviceCard(
     noGroup = false, noDrivers = false,
     noUEFI = false, unifiedDriversUEFI = true
 )
-
-val durandalCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("durandal"), deviceName = "Xiaomi Redmi Note 9 Pro")
-val curtana_indiaCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("curtana_india"), deviceName = "Xiaomi Redmi Note 9 Pro")
-val curtanaCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("curtana"), deviceName = "Xiaomi Redmi Note 9S")
-val excaliburCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("excalibur"), deviceName = "Xiaomi Redmi Note 9 Pro Max")
+val curtanaCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("curtana"), deviceName = "Redmi Note 9S")
+val excaliburCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("excalibur"), deviceName = "Redmi Note 9 Pro Max")
 val gramCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("gram"), deviceName = "POCO M2 Pro")
-val joyeuseCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("joyeuse"), deviceName = "Xiaomi Redmi Note 9 Pro")
 
 val alphaCard: DeviceCard = DeviceCard(
     arrayOf("alpha"),
@@ -148,7 +144,7 @@ val mh2lm5gCard: DeviceCard = DeviceCard(
     noUEFI = false, unifiedDriversUEFI = false
 )
 
-val mh2Card: DeviceCard = mh2lm5gCard.copy(deviceCodename = arrayOf("mh2"), deviceName = "LG V50S", deviceGuide = "https://github.com/n00b69/woa-mh2lm")
+val mh2Card: DeviceCard = mh2lm5gCard.copy(deviceCodename = arrayOf("mh2"), deviceName = "LG G8X", deviceGuide = "https://github.com/n00b69/woa-mh2lm")
 
 val betaCard: DeviceCard = DeviceCard(
     arrayOf("beta"),
@@ -185,8 +181,8 @@ val guacamoleCard: DeviceCard = DeviceCard(
 val hotdogCard: DeviceCard = guacamoleCard.copy(deviceCodename = arrayOf("hotdog", "OnePlus7TPro"), deviceName = "OnePlus 7T Pro", deviceImage = R.drawable.hotdog)
 
 val suryaCard: DeviceCard = DeviceCard(
-    arrayOf("surya"),
-    "POCO X3 NFC",
+    arrayOf("surya", "karna"),
+    "POCO X3",
     R.drawable.vayu,
     "https://github.com/woa-surya/POCOX3NFC-Guides",
     "https://t.me/windows_on_pocox3_nfc",
@@ -198,8 +194,6 @@ val suryaCard: DeviceCard = DeviceCard(
     noGroup = true, noDrivers = true,
     noUEFI = true, unifiedDriversUEFI = true
 )
-
-val karnaCard: DeviceCard = suryaCard.copy(deviceCodename = arrayOf("karna"), deviceName = "POCO X3")
 
 val a52sxqCard: DeviceCard = DeviceCard(
     arrayOf("a52sxq"),
