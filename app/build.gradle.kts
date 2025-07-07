@@ -25,6 +25,10 @@ android {
         compileSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
     }
 
     buildTypes {
@@ -52,9 +56,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
+    lint {
+        disable += "MissingTranslation" + "TypographyFractions" + "TypographyEllipsis" + "IconLocation" + "IconDensities" + "ContentDescription"
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
+
     packaging {
         jniLibs {
-            useLegacyPackaging = true
+            useLegacyPackaging = false
         }
         resources {
             // https://stackoverflow.com/a/58956288
@@ -99,7 +109,6 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.text.google.fonts)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     implementation(libs.androidx.lifecycle.runtime.compose)

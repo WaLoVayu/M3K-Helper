@@ -2,8 +2,10 @@ package com.remtrik.m3khelper.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Interests
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Interests
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ramcosta.composedestinations.generated.destinations.HomeScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.LinksScreenDestination
