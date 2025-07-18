@@ -7,17 +7,18 @@ import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.util.mountStatus
 import com.remtrik.m3khelper.util.mountWindows
-import com.remtrik.m3khelper.util.quickboot
+import com.remtrik.m3khelper.util.quickBoot
 import com.remtrik.m3khelper.util.umountWindows
-import com.remtrik.m3khelper.util.CurrentDeviceCard
 import com.remtrik.m3khelper.util.UEFICardsArray
 import com.remtrik.m3khelper.util.UEFIList
+import com.remtrik.m3khelper.util.deviceCardsArray
+import com.remtrik.m3khelper.util.prefs
 
 class MountTile : TileService() { // PoC
 
     override fun onStartListening() {
         super.onStartListening()
-        if (CurrentDeviceCard.noMount) {
+        if (prefs.getBoolean("firstboot", true) || deviceCardsArray[prefs.getInt("deviceCard", 0)].noMount) {
             qsTile.state = STATE_UNAVAILABLE
             qsTile.subtitle = M3KApp.getString(
                 R.string.qs_unsupported
@@ -47,57 +48,13 @@ class MountTile : TileService() { // PoC
         }
     }
 
-    override fun onTileAdded() {
-        super.onTileAdded()
-        if (CurrentDeviceCard.noMount) {
-            qsTile.state = STATE_UNAVAILABLE
-            qsTile.subtitle = M3KApp.getString(
-                R.string.qs_unsupported
-            )
-            qsTile.updateTile()
-        } else {
-            if (mountStatus()) {
-                qsTile.state = STATE_ACTIVE
-                qsTile.label = M3KApp.getString(
-                    R.string.mnt_question
-                )
-            } else {
-                qsTile.state = STATE_ACTIVE
-                qsTile.label = M3KApp.getString(
-                    R.string.umnt_question
-                )
-            }
-        }
-    }
-
 }
 
 class QuickBootTile : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
-        if (CurrentDeviceCard.noFlash) {
-            qsTile.state = STATE_UNAVAILABLE
-            qsTile.subtitle = M3KApp.getString(
-                R.string.qs_unsupported
-            )
-            qsTile.updateTile()
-        } else {
-            if (UEFIList.isEmpty()) {
-                qsTile.state = STATE_UNAVAILABLE
-                qsTile.subtitle = M3KApp.getString(
-                    R.string.uefi_not_found_title
-                )
-                qsTile.updateTile()
-            } else {
-                qsTile.state = STATE_ACTIVE; qsTile.subtitle = null
-            }
-        }
-    }
-
-    override fun onTileAdded() {
-        super.onTileAdded()
-        if (CurrentDeviceCard.noFlash) {
+        if (prefs.getBoolean("firstboot", true) || deviceCardsArray[prefs.getInt("deviceCard", 0)].noFlash) {
             qsTile.state = STATE_UNAVAILABLE
             qsTile.subtitle = M3KApp.getString(
                 R.string.qs_unsupported
@@ -120,13 +77,13 @@ class QuickBootTile : TileService() {
         super.onClick()
         if (UEFIList.isNotEmpty()) {
             if (UEFIList.contains(120)) {
-                quickboot(UEFICardsArray[3].uefiPath)
+                quickBoot(UEFICardsArray[3].uefiPath)
             } else if (UEFIList.contains(90)) {
-                quickboot(UEFICardsArray[2].uefiPath)
+                quickBoot(UEFICardsArray[2].uefiPath)
             } else if (UEFIList.contains(60)) {
-                quickboot(UEFICardsArray[1].uefiPath)
+                quickBoot(UEFICardsArray[1].uefiPath)
             } else if (UEFIList.contains(1)) {
-                quickboot(UEFICardsArray[0].uefiPath)
+                quickBoot(UEFICardsArray[0].uefiPath)
             }
         } else {
             qsTile.state = STATE_UNAVAILABLE

@@ -8,6 +8,10 @@ lateinit var GMNT_SHELL: Shell
 lateinit var SHELL: Shell
 
 class M3KHelperApplication : Application() {
+    init {
+        System.loadLibrary("variables")
+    }
+
     override fun onCreate() {
         super.onCreate()
         M3KApp = this

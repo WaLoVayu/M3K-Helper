@@ -67,7 +67,7 @@ fun AboutCard() {
                                 lineHeight = LineHeight
                             )
                             Text(
-                                "v" + BuildConfig.VERSION_NAME,
+                                "v${BuildConfig.VERSION_NAME}",
                                 fontSize = FontSize,
                                 lineHeight = LineHeight
                             )

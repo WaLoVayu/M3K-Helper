@@ -30,21 +30,20 @@ import com.remtrik.m3khelper.util.prefs
 import com.remtrik.m3khelper.util.sdp
 import androidx.core.content.edit
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorPicker() {
-    var red = rememberSaveable {
+    val red = rememberSaveable {
         mutableFloatStateOf(
             prefs.getFloat("themeengine_red", 0f)
         )
     }
-    var green = rememberSaveable {
+    val green = rememberSaveable {
         mutableFloatStateOf(
             prefs.getFloat("themeengine_green", 0f)
         )
     }
-    var blue = rememberSaveable {
+    val blue = rememberSaveable {
         mutableFloatStateOf(
             prefs.getFloat("themeengine_blue", 0f)
         )
@@ -105,11 +104,13 @@ fun ColorSlider(
         )
     }
 
-    when (label) {
-        "R" -> prefs.edit { putFloat("themeengine_red", valueState.value) }
-        "G" -> prefs.edit { putFloat("themeengine_green", valueState.value) }
-        "B" -> prefs.edit { putFloat("themeengine_blue", valueState.value) }
-    }
+    Thread {
+        when (label) {
+            "R" -> prefs.edit { putFloat("themeengine_red", valueState.value) }
+            "G" -> prefs.edit { putFloat("themeengine_green", valueState.value) }
+            "B" -> prefs.edit { putFloat("themeengine_blue", valueState.value) }
+        }
+    }.start()
 }
 
 fun Float.toColorInt(): Int = (this * 255 + 0.5f).toInt()

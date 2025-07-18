@@ -20,8 +20,8 @@ android {
         applicationId = "com.remtrik.m3khelper"
         minSdk = 29
         targetSdk = 36
-        versionCode = 38
-        versionName = "3.4.1"
+        versionCode = 51
+        versionName = "4.0-NCIA"
         compileSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -29,6 +29,14 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a", "x86_64")
         }
+
+        externalNativeBuild {
+            cmake { cppFlags += "-std=c++17" }
+        }
+    }
+
+    externalNativeBuild {
+        cmake { path = file("src/main/cpp/CMakeLists.txt") }
     }
 
     buildTypes {

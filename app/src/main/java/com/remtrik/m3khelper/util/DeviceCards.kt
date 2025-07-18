@@ -64,8 +64,10 @@ val raphaelCard: DeviceCard = DeviceCard(
     noUEFI = false, unifiedDriversUEFI = false
 )
 
-val raphaelinCard: DeviceCard = raphaelCard.copy(deviceCodename = arrayOf("raphaelin"), deviceName = "Redmi K20 Pro")
-val raphaelsCard: DeviceCard = raphaelCard.copy(deviceCodename = arrayOf("raphaels"), deviceName = "Redmi K20 Pro Premium")
+val raphaelinCard: DeviceCard =
+    raphaelCard.copy(deviceCodename = arrayOf("raphaelin"), deviceName = "Redmi K20 Pro")
+val raphaelsCard: DeviceCard =
+    raphaelCard.copy(deviceCodename = arrayOf("raphaels"), deviceName = "Redmi K20 Pro Premium")
 
 val cepheusCard: DeviceCard = DeviceCard(
     arrayOf("cepheus"),
@@ -111,9 +113,12 @@ val miatollCard: DeviceCard = DeviceCard(
     noGroup = false, noDrivers = false,
     noUEFI = false, unifiedDriversUEFI = true
 )
-val curtanaCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("curtana"), deviceName = "Redmi Note 9S")
-val excaliburCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("excalibur"), deviceName = "Redmi Note 9 Pro Max")
-val gramCard: DeviceCard = miatollCard.copy(deviceCodename = arrayOf("gram"), deviceName = "POCO M2 Pro")
+val curtanaCard: DeviceCard =
+    miatollCard.copy(deviceCodename = arrayOf("curtana"), deviceName = "Redmi Note 9S")
+val excaliburCard: DeviceCard =
+    miatollCard.copy(deviceCodename = arrayOf("excalibur"), deviceName = "Redmi Note 9 Pro Max")
+val gramCard: DeviceCard =
+    miatollCard.copy(deviceCodename = arrayOf("gram"), deviceName = "POCO M2 Pro")
 
 val alphaCard: DeviceCard = DeviceCard(
     arrayOf("alpha"),
@@ -145,7 +150,11 @@ val mh2lm5gCard: DeviceCard = DeviceCard(
     noUEFI = false, unifiedDriversUEFI = false
 )
 
-val mh2Card: DeviceCard = mh2lm5gCard.copy(deviceCodename = arrayOf("mh2"), deviceName = "LG G8X", deviceGuide = "https://github.com/n00b69/woa-mh2lm")
+val mh2Card: DeviceCard = mh2lm5gCard.copy(
+    deviceCodename = arrayOf("mh2"),
+    deviceName = "LG G8X",
+    deviceGuide = "https://github.com/n00b69/woa-mh2lm"
+)
 
 val betaCard: DeviceCard = DeviceCard(
     arrayOf("beta"),
@@ -162,7 +171,12 @@ val betaCard: DeviceCard = DeviceCard(
     noUEFI = false, unifiedDriversUEFI = false
 )
 
-val flashCard: DeviceCard = mh2lm5gCard.copy(deviceCodename = arrayOf("flash"), deviceName = "LG V50", deviceGuide = "https://github.com/n00b69/woa-flashlmdd", deviceImage = R.drawable.flashlm)
+val flashCard: DeviceCard = mh2lm5gCard.copy(
+    deviceCodename = arrayOf("flash"),
+    deviceName = "LG V50",
+    deviceGuide = "https://github.com/n00b69/woa-flashlmdd",
+    deviceImage = R.drawable.flashlm
+)
 
 val guacamoleCard: DeviceCard = DeviceCard(
     arrayOf("guacamole", "OnePlus7Pro"),
@@ -179,7 +193,11 @@ val guacamoleCard: DeviceCard = DeviceCard(
     noUEFI = true, unifiedDriversUEFI = false
 )
 
-val hotdogCard: DeviceCard = guacamoleCard.copy(deviceCodename = arrayOf("hotdog", "OnePlus7TPro"), deviceName = "OnePlus 7T Pro", deviceImage = R.drawable.hotdog)
+val hotdogCard: DeviceCard = guacamoleCard.copy(
+    deviceCodename = arrayOf("hotdog", "OnePlus7TPro"),
+    deviceName = "OnePlus 7T Pro",
+    deviceImage = R.drawable.hotdog
+)
 
 val suryaCard: DeviceCard = DeviceCard(
     arrayOf("surya", "karna"),
@@ -254,5 +272,6 @@ val unknownCard: DeviceCard = DeviceCard(
     noBoot = true, noMount = false,
     sensors = false, noGuide = true,
     noGroup = true, noDrivers = true,
-    noUEFI = true, unifiedDriversUEFI = false
+    noUEFI = true, unifiedDriversUEFI = false,
+    noLinks = true
 )

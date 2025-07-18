@@ -51,6 +51,7 @@ import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.ssp
 import com.topjohnwu.superuser.Shell
 
+
 class MainActivity : ComponentActivity() {
 
     @SuppressLint("SourceLockedOrientationActivity", "UnusedMaterial3ScaffoldPaddingParameter")
@@ -76,14 +77,17 @@ class MainActivity : ComponentActivity() {
                         bottomBar = {
                             NavigationBar(
                                 tonalElevation = 12.dp,
-                                windowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout).only(
-                                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-                                )
+                                windowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout)
+                                    .only(
+                                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                                    )
                             ) {
                                 Destinations.entries.forEach { destination ->
                                     if (CurrentDeviceCard.noLinks && destination.route == LinksScreenDestination) {
                                     } else {
-                                        val isCurrentDestOnBackStack by navController.isRouteOnBackStackAsState(destination.route)
+                                        val isCurrentDestOnBackStack by navController.isRouteOnBackStackAsState(
+                                            destination.route
+                                        )
                                         NavigationBarItem(
                                             selected = isCurrentDestOnBackStack,
                                             onClick = {
@@ -100,9 +104,15 @@ class MainActivity : ComponentActivity() {
                                             },
                                             icon = {
                                                 if (isCurrentDestOnBackStack) {
-                                                    Icon(destination.iconSelected, stringResource(destination.label))
+                                                    Icon(
+                                                        destination.iconSelected,
+                                                        stringResource(destination.label)
+                                                    )
                                                 } else {
-                                                    Icon(destination.iconNotSelected, stringResource(destination.label))
+                                                    Icon(
+                                                        destination.iconNotSelected,
+                                                        stringResource(destination.label)
+                                                    )
                                                 }
                                             },
                                             label = { Text(stringResource(destination.label)) },

@@ -54,7 +54,11 @@ fun InfoCard(modifier: Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = PaddingValue),
-                text = M3KApp.getString(R.string.model, CurrentDeviceCard.deviceName, CurrentDeviceCard.deviceCodename[0]),
+                text = M3KApp.getString(
+                    R.string.model,
+                    CurrentDeviceCard.deviceName,
+                    CurrentDeviceCard.deviceCodename[0]
+                ),
                 fontSize = FontSize,
                 lineHeight = LineHeight
             )
@@ -71,7 +75,7 @@ fun InfoCard(modifier: Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = PaddingValue),
-                text = M3KApp.getString(R.string.paneltype, PanelType),
+                text = M3KApp.getString(R.string.paneltype, PanelType.value),
                 fontSize = FontSize,
                 lineHeight = LineHeight
             )
@@ -81,7 +85,10 @@ fun InfoCard(modifier: Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = PaddingValue),
-                        text = M3KApp.getString(R.string.backup_boot_state, M3KApp.getString(BootIsPresent)),
+                        text = M3KApp.getString(
+                            R.string.backup_boot_state,
+                            M3KApp.getString(BootIsPresent.value)
+                        ),
                         fontSize = FontSize,
                         lineHeight = LineHeight
                     )
@@ -105,7 +112,10 @@ fun InfoCard(modifier: Modifier) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 10.sdp()),
-                        text = M3KApp.getString(R.string.windows_status, M3KApp.getString(WindowsIsPresent)),
+                        text = M3KApp.getString(
+                            R.string.windows_status,
+                            M3KApp.getString(WindowsIsPresent)
+                        ),
                         fontSize = FontSize,
                         lineHeight = LineHeight
                     )

@@ -133,13 +133,21 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                     exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
                     modifier = Modifier.padding(PaddingValue).fillMaxWidth()
                 ) {
-                    IconButton(onClick = { expanded = !expanded }, modifier = Modifier.fillMaxWidth()) {
+                    IconButton(
+                        onClick = { expanded = !expanded },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(5.sdp())
                         ) {
                             Icon(Icons.Filled.Palette, contentDescription = "More options")
-                            Text(text = M3KApp.getString(R.string.themeenigne_current_palette, paletteStyle), modifier = Modifier.fillMaxWidth())
+                            Text(
+                                text = M3KApp.getString(
+                                    R.string.themeenigne_current_palette,
+                                    paletteStyle
+                                ), modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
                     DropdownMenu(
@@ -149,7 +157,14 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                         PaletteStyle.entries.forEach {
                             DropdownMenuItem(
                                 text = { Text(it.name) },
-                                onClick = { prefs.edit { putString("paletteStyle", it.name) }; paletteStyle = it.name; expanded = !expanded }
+                                onClick = {
+                                    prefs.edit {
+                                        putString(
+                                            "paletteStyle",
+                                            it.name
+                                        )
+                                    }; paletteStyle = it.name; expanded = !expanded
+                                }
                             )
                         }
                     }

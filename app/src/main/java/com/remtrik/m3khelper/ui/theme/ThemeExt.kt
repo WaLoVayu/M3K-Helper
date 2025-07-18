@@ -20,7 +20,9 @@ import com.remtrik.m3khelper.util.prefs
 fun dynamicColorScheme(
     keyColor: Color,
     isDark: Boolean,
-    style: PaletteStyle = PaletteStyle.valueOf(prefs.getString("paletteStyle", "TonalSpot").toString()),
+    style: PaletteStyle = PaletteStyle.valueOf(
+        prefs.getString("paletteStyle", "TonalSpot").toString()
+    ),
     contrastLevel: Double = 0.0
 ): ColorScheme {
     val hct = Hct.fromInt(keyColor.toArgb())

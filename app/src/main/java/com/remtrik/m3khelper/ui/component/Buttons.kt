@@ -37,7 +37,7 @@ import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.util.dumpBoot
 import com.remtrik.m3khelper.util.mountStatus
 import com.remtrik.m3khelper.util.mountWindows
-import com.remtrik.m3khelper.util.quickboot
+import com.remtrik.m3khelper.util.quickBoot
 import com.remtrik.m3khelper.util.umountWindows
 import com.remtrik.m3khelper.util.CurrentDeviceCard
 import com.remtrik.m3khelper.util.FontSize
@@ -409,7 +409,7 @@ fun MountButton() {
 }
 
 @Composable
-fun QuickbootButton() {
+fun QuickBootButton() {
     val showQuickBootDialog = remember { mutableStateOf(false) }
     val showQuickBootSpinner = remember { mutableStateOf(false) }
     ElevatedCard(
@@ -461,7 +461,7 @@ fun QuickbootButton() {
                                         Thread {
                                             showQuickBootDialog.value = false
                                             showQuickBootSpinner.value = true
-                                            quickboot(
+                                            quickBoot(
                                                 UEFICardsArray[
                                                     when (type) {
                                                         120 -> 3

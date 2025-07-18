@@ -33,7 +33,7 @@ import com.remtrik.m3khelper.ui.component.BackupButton
 import com.remtrik.m3khelper.ui.component.DeviceImage
 import com.remtrik.m3khelper.ui.component.InfoCard
 import com.remtrik.m3khelper.ui.component.MountButton
-import com.remtrik.m3khelper.ui.component.QuickbootButton
+import com.remtrik.m3khelper.ui.component.QuickBootButton
 import com.remtrik.m3khelper.util.CurrentDeviceCard
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.PaddingValue
@@ -120,7 +120,7 @@ private fun Landscape() {
             }
             when {
                 !CurrentDeviceCard.noFlash -> {
-                    QuickbootButton()
+                    QuickBootButton()
                 }
             }
         }
@@ -154,7 +154,7 @@ private fun Portrait() {
     }
     when {
         !CurrentDeviceCard.noFlash -> {
-            QuickbootButton()
+            QuickBootButton()
         }
     }
 }

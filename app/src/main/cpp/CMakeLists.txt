@@ -1,0 +1,1 @@
+add_library(variables SHARED variables.cpp)
