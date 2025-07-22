@@ -50,7 +50,7 @@ class MountTile : TileService() { // PoC
 
 }
 
-class QuickBootTile : TileService() {
+class QuickBootTile : TileService() { // PoC
 
     override fun onStartListening() {
         super.onStartListening()
