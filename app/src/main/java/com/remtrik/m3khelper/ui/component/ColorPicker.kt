@@ -20,15 +20,20 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.prefs
 import com.remtrik.m3khelper.util.sdp
 import androidx.core.content.edit
+import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LineHeight
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +60,8 @@ fun ColorPicker() {
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
     Column {
         Row {
             Box(
@@ -70,9 +77,39 @@ fun ColorPicker() {
             modifier = Modifier.padding(PaddingValue),
             verticalArrangement = Arrangement.spacedBy(10.sdp())
         ) {
-            ColorSlider("R", red, Color.Red)
-            ColorSlider("G", green, Color.Green)
-            ColorSlider("B", blue, Color.Blue)
+            ColorSlider(
+                "R",
+                red,
+                { newValue ->
+                    red.floatValue = newValue
+                    coroutineScope.launch {
+                        prefs.edit { putFloat("themeengine_red", newValue) }
+                    }
+                },
+                Color.Red
+            )
+            ColorSlider(
+                "G",
+                green,
+                { newValue ->
+                    green.floatValue = newValue
+                    coroutineScope.launch {
+                        prefs.edit { putFloat("themeengine_green", newValue) }
+                    }
+                },
+                Color.Green
+            )
+            ColorSlider(
+                "B",
+                blue,
+                { newValue ->
+                    blue.floatValue = newValue
+                    coroutineScope.launch {
+                        prefs.edit { putFloat("themeengine_blue", newValue) }
+                    }
+                },
+                Color.Blue
+            )
         }
     }
 }
@@ -81,24 +118,29 @@ fun ColorPicker() {
 fun ColorSlider(
     label: String,
     valueState: MutableState<Float>,
+    onValueChange: (Float) -> Unit,
     color: Color,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.sdp())
     ) {
-        Text(text = label)
+        Text(text = label, fontSize = FontSize, lineHeight = LineHeight)
         Slider(
             value = valueState.value,
-            onValueChange = valueState.component2(),
+            onValueChange = onValueChange,
             colors = SliderDefaults.colors(
-                activeTrackColor = color
+                thumbColor = color,
+                activeTrackColor = color,
+                inactiveTrackColor = color.copy(alpha = 0.14f)
             ),
             modifier = Modifier.weight(1f)
         )
         Text(
             text = valueState.value.toColorInt().toString(),
             modifier = Modifier.width(35.sdp()),
+            fontSize = FontSize,
+            lineHeight = LineHeight,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall
         )

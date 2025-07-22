@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DevicesOther
@@ -50,6 +52,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.ui.component.SwitchItem
 import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.beyond1Card
 import com.remtrik.m3khelper.util.deviceCardsArray
@@ -72,13 +75,18 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     IconButton(
                         onClick = dropUnlessResumed { navigator.popBackStack() },
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.sdp())
+                        )
                     }
                 },
                 title = {
                     Text(
                         text = stringResource(R.string.settings),
                         fontSize = FontSize,
+                        lineHeight = LineHeight,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -87,7 +95,10 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
+                )
                 .fillMaxWidth(),
         ) {
             val context = LocalContext.current
@@ -109,12 +120,28 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
             }
             ListItem(
                 leadingContent = {
-                    Icon(
-                        Icons.Filled.Palette,
-                        stringResource(R.string.themeengine)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(PaddingValue),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.sdp())
+                    ) {
+                        Icon(
+                            Icons.Filled.Palette,
+                            stringResource(R.string.themeengine),
+                            Modifier.size(25.sdp())
+                        )
+                        Column() {
+                            Text(
+                                stringResource(R.string.themeengine),
+                                fontSize = FontSize,
+                                lineHeight = LineHeight
+                            )
+                        }
+                    }
                 },
-                headlineContent = { Text(stringResource(R.string.themeengine), fontSize = FontSize) },
+                headlineContent = {},
                 modifier = Modifier.clickable {
                     navigator.navigate(ThemeEngineScreenDestination)
                 }
@@ -142,24 +169,36 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     visible = overrideDevice,
                     enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
                     exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
-                    modifier = Modifier.padding(PaddingValue).fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Button(onClick = { expanded = !expanded }, modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(5.sdp())
                         ) {
-                            Text(text = "device: $overridenDeviceName", modifier = Modifier.fillMaxWidth())
+                            Text(
+                                text = "device: $overridenDeviceName",
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = FontSize,
+                                lineHeight = LineHeight
+                            )
                         }
                     }
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
+                        modifier = Modifier.padding(PaddingValue).width(250.sdp())
                     ) {
                         deviceCardsArray.forEach {
                             if (!(it.deviceCodename.contentEquals(beyond1Card.deviceCodename) || it.deviceCodename.contentEquals(emu64xaCard.deviceCodename))) {
                                 DropdownMenuItem(
-                                    text = { Text(it.deviceName) },
+                                    text = {
+                                        Text(
+                                            text = it.deviceName,
+                                            fontSize = FontSize,
+                                            lineHeight = LineHeight
+                                        )
+                                    },
                                     onClick = {
                                         com.remtrik.m3khelper.util.prefs.edit { putString("overriden_device_codename", it.deviceCodename[0]) }
                                         com.remtrik.m3khelper.util.prefs.edit { putString("overriden_device_name", it.deviceName) }
@@ -175,15 +214,33 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
             }
             ListItem(
                 leadingContent = {
-                    Icon(
-                        Icons.Filled.Info,
-                        stringResource(R.string.about)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(PaddingValue),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.sdp())
+                    ) {
+                        Icon(
+                            Icons.Filled.Info,
+                            stringResource(R.string.about),
+                            Modifier.size(25.sdp())
+                        )
+                        Column() {
+                            Text(
+                                text = stringResource(R.string.about),
+                                fontSize = FontSize,
+                                lineHeight = LineHeight
+                            )
+                        }
+                    }
                 },
-                headlineContent = { Text(stringResource(R.string.about), fontSize = FontSize) },
-                modifier = Modifier.clickable {
-                    showAboutCard.value = true
-                }
+                headlineContent = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        showAboutCard.value = true
+                    }
             )
         }
     }

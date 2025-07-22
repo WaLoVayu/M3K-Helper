@@ -25,7 +25,7 @@ import com.remtrik.m3khelper.util.prefs
 private val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
-    onPrimaryContainer = md_theme_dark_primaryContainer,
+    primaryContainer = md_theme_dark_primaryContainer,
     secondary = md_theme_dark_secondary,
     onSecondary = md_theme_dark_onSecondary,
     secondaryContainer = md_theme_dark_secondaryContainer,
@@ -35,7 +35,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
-    onPrimaryContainer = md_theme_light_primaryContainer,
+    primaryContainer = md_theme_light_primaryContainer,
     secondary = md_theme_light_secondary,
     onSecondary = md_theme_light_onSecondary,
     secondaryContainer = md_theme_light_secondaryContainer,
@@ -50,51 +50,37 @@ fun M3KHelperTheme(
     dynamicColor: Boolean = DynamicColors.isDynamicColorAvailable(),
     content: @Composable () -> Unit
 ) {
-    val red = rememberSaveable {
-        mutableFloatStateOf(
-            prefs.getFloat("themeengine_red", 0f)
-        )
-    }
-    val green = rememberSaveable {
-        mutableFloatStateOf(
-            prefs.getFloat("themeengine_green", 0f)
-        )
-    }
-    val blue = rememberSaveable {
-        mutableFloatStateOf(
-            prefs.getFloat("themeengine_blue", 0f)
+    val themeSettings = remember {
+        ThemeSettings(
+            red = prefs.getFloat("themeengine_red", 0f),
+            green = prefs.getFloat("themeengine_green", 0f),
+            blue = prefs.getFloat("themeengine_blue", 0f),
+            enableThemeEngine = prefs.getBoolean("enable_themeengine", false),
+            enableMaterialU = prefs.getBoolean("enable_materialu", true)
         )
     }
 
-    val color by remember {
-        derivedStateOf {
-            Color(red.floatValue, green.floatValue, blue.floatValue, 1f)
+    val colorScheme = remember(darkTheme, dynamicColor, themeSettings) {
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                    && themeSettings.enableMaterialU -> {
+                if (darkTheme) dynamicDarkColorScheme(M3KApp) else dynamicLightColorScheme(M3KApp)
+            }
+
+            themeSettings.enableThemeEngine ->
+                dynamicColorScheme(
+                    keyColor = Color(
+                        red = themeSettings.red,
+                        green = themeSettings.green,
+                        blue = themeSettings.blue
+                    ),
+                    isDark = darkTheme
+                )
+
+            darkTheme && !themeSettings.enableThemeEngine && !themeSettings.enableMaterialU -> DarkColorScheme
+
+            else -> LightColorScheme
         }
-    }
-    var enableThemeEngine by rememberSaveable {
-        mutableStateOf(
-            prefs.getBoolean("enable_themeengine", false)
-        )
-    }
-    var enableMaterialU by rememberSaveable {
-        mutableStateOf(
-            prefs.getBoolean("enable_materialu", true)
-        )
-    }
-
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !enableThemeEngine && enableMaterialU -> {
-            if (darkTheme) dynamicDarkColorScheme(M3KApp) else dynamicLightColorScheme(M3KApp)
-        }
-
-        darkTheme && !enableThemeEngine && !enableMaterialU -> DarkColorScheme
-        !darkTheme && !enableThemeEngine && !enableMaterialU -> LightColorScheme
-
-        enableThemeEngine && !enableMaterialU -> dynamicColorScheme(
-            keyColor = color, isDark = isSystemInDarkTheme()
-        )
-
-        else -> LightColorScheme
     }
     MaterialTheme(
         colorScheme = colorScheme,
@@ -103,3 +89,11 @@ fun M3KHelperTheme(
         motionScheme = MotionScheme.expressive()
     )
 }
+
+private data class ThemeSettings(
+    val red: Float,
+    val green: Float,
+    val blue: Float,
+    val enableThemeEngine: Boolean,
+    val enableMaterialU: Boolean
+)

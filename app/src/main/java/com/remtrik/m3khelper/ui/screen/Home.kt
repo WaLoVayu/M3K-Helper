@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -36,6 +37,7 @@ import com.remtrik.m3khelper.ui.component.MountButton
 import com.remtrik.m3khelper.ui.component.QuickBootButton
 import com.remtrik.m3khelper.util.CurrentDeviceCard
 import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.sdp
 
@@ -51,6 +53,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                     Text(
                         text = M3KApp.getString(R.string.app_name),
                         fontSize = FontSize,
+                        lineHeight = LineHeight,
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -60,7 +63,8 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(25.sdp())
                         )
                     }
                 },

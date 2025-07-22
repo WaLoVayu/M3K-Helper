@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -577,26 +578,37 @@ fun SwitchItem(
                 indication = LocalIndication.current,
                 onValueChange = onCheckedChange
             ),
-        headlineContent = {
-            if (title != null) {
-                Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
-            }
-        },
+        headlineContent = {},
         leadingContent = icon?.let {
-            { Icon(icon, title) }
-        },
-        trailingContent = {
-            Switch(
-                checked = checked,
-                enabled = enabled,
-                onCheckedChange = onCheckedChange,
-                interactionSource = interactionSource
-            )
-        },
-        supportingContent = {
-            if (summary != null) {
-                Text(text = summary, fontSize = FontSize, lineHeight = LineHeight)
+            {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(PaddingValue),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.sdp())
+                ) {
+                    Icon(icon, title, Modifier.size(25.sdp()))
+                    Column() {
+                        if (title != null) {
+                            Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
+                        }
+                        if (summary != null) {
+                            Text(text = summary, fontSize = FontSize, lineHeight = LineHeight)
+                        }
+                    }
+                    Spacer(Modifier.fillMaxWidth())
+                    Switch(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        checked = checked,
+                        enabled = enabled,
+                        onCheckedChange = onCheckedChange,
+                        interactionSource = interactionSource
+                    )
+                }
             }
-        }
+        },
+        trailingContent = {},
+        supportingContent = {}
     )
 }

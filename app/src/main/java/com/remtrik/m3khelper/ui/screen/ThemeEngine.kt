@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Brush
@@ -49,6 +50,7 @@ import com.remtrik.m3khelper.ui.component.ColorPicker
 import com.remtrik.m3khelper.ui.component.SwitchItem
 import com.remtrik.m3khelper.ui.theme.PaletteStyle
 import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.prefs
 import com.remtrik.m3khelper.util.restart
@@ -82,13 +84,18 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                     IconButton(
                         onClick = dropUnlessResumed { navigator.popBackStack() },
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.sdp())
+                        )
                     }
                 },
                 title = {
                     Text(
                         text = stringResource(R.string.themeengine),
                         fontSize = FontSize,
+                        lineHeight = LineHeight,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -97,7 +104,10 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
+                )
                 .fillMaxWidth(),
         ) {
             SwitchItem(
@@ -135,7 +145,7 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                 ) {
                     IconButton(
                         onClick = { expanded = !expanded },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().size(25.sdp())
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -146,17 +156,27 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                                 text = M3KApp.getString(
                                     R.string.themeenigne_current_palette,
                                     paletteStyle
-                                ), modifier = Modifier.fillMaxWidth()
+                                ),
+                                modifier = Modifier.fillMaxWidth(),
+                                fontSize = FontSize,
+                                lineHeight = LineHeight
                             )
                         }
                     }
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
+                        modifier = Modifier.padding(PaddingValue)
                     ) {
                         PaletteStyle.entries.forEach {
                             DropdownMenuItem(
-                                text = { Text(it.name) },
+                                text = {
+                                    Text(
+                                        text = it.name,
+                                        fontSize = FontSize,
+                                        lineHeight = LineHeight
+                                    )
+                                },
                                 onClick = {
                                     prefs.edit {
                                         putString(
@@ -179,12 +199,28 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
             }
             ListItem(
                 leadingContent = {
-                    Icon(
-                        Icons.Filled.Refresh,
-                        stringResource(R.string.apply)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(PaddingValue),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.sdp())
+                    ) {
+                        Icon(
+                            Icons.Filled.Refresh,
+                            stringResource(R.string.apply),
+                            Modifier.size(25.sdp())
+                        )
+                        Column() {
+                            Text(
+                                stringResource(R.string.apply),
+                                fontSize = FontSize,
+                                lineHeight = LineHeight
+                            )
+                        }
+                    }
                 },
-                headlineContent = { Text(stringResource(R.string.apply), fontSize = FontSize) },
+                headlineContent = {},
                 modifier = Modifier.clickable {
                     M3KApp.restart()
                 }
