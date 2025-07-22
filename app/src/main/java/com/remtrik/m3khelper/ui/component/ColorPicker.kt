@@ -145,14 +145,6 @@ fun ColorSlider(
             style = MaterialTheme.typography.bodySmall
         )
     }
-
-    Thread {
-        when (label) {
-            "R" -> prefs.edit { putFloat("themeengine_red", valueState.value) }
-            "G" -> prefs.edit { putFloat("themeengine_green", valueState.value) }
-            "B" -> prefs.edit { putFloat("themeengine_blue", valueState.value) }
-        }
-    }.start()
 }
 
 fun Float.toColorInt(): Int = (this * 255 + 0.5f).toInt()
