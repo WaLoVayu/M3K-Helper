@@ -142,6 +142,7 @@ fun vars() {
         fastLoadSavedDevice()
     }
 
+    // TODO: Examine the OS behavior with different paths
     CurrentDeviceCommands.mountPath = when {
         ShellUtils.fastCmd("find /mnt/pass_through").isNotEmpty() -> "/mnt/pass_trough/0/emulated/0"
         else -> Environment.getExternalStorageDirectory().path
@@ -160,6 +161,7 @@ fun vars() {
 
 }
 
+// TODO: Adapt to .find
 fun fastLoadSavedDevice() {
     if (prefs.getBoolean("override_device", false)) {
         for (card: DeviceCard in deviceCardsArray) {
@@ -199,6 +201,7 @@ private fun dynamicVars() {
 
         else -> R.string.no
     }
+    // TODO: Move to c++ implementation 
     UEFIList = arrayOf()
     val find = ShellUtils.fastCmd("find /mnt/sdcard/UEFI/ -type f | grep .img")
     if (find.isNotEmpty()) {
