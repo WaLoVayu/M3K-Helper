@@ -144,7 +144,7 @@ fun vars() {
 
     // TODO: Examine the OS behavior with different paths
     CurrentDeviceCommands.mountPath = when {
-        ShellUtils.fastCmd("find /mnt/pass_through").isNotEmpty() -> "/mnt/pass_trough/0/emulated/0"
+        ShellUtils.fastCmd("find /mnt/pass_through -maxdepth 0").isNotEmpty() -> "/mnt/pass_through/0/emulated/0" // passthrough+getExternalStorageDirectory maybe?
         else -> Environment.getExternalStorageDirectory().path
     }
 
