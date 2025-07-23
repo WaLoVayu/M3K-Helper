@@ -90,6 +90,9 @@ var FontSize: TextUnit = 0.sp
 var PaddingValue: Dp = 0.dp
 var LineHeight: TextUnit = 0.sp
 
+// app state
+var FirstBoot: Boolean = prefs.getBoolean("firstboot", true)
+
 private val deviceCodenames by lazy {
     arrayOf(
         Build.DEVICE,
