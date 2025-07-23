@@ -72,9 +72,10 @@ data class DeviceCommands(
 val prefs: SharedPreferences = M3KApp.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
 // device state
-var PanelType: MutableState<String> = mutableStateOf("Unknown")
+var PanelType: MutableState<String> = mutableStateOf(prefs.getString("devicePanel", M3KApp.getString(R.string.unknown_panel)).toString())
 
 var CurrentDeviceCard: DeviceCard = unknownCard
+var SavedDeviceCard: DeviceCard = deviceCardsArray[prefs.getInt("deviceCard", 0)]
 val Ram: String = getMemory(M3KApp)
 val Slot: String = ShellUtils.fastCmd("getprop ro.boot.slot_suffix").drop(1).uppercase()
 
@@ -175,11 +176,9 @@ fun fastLoadSavedDevice() {
             }
         }
     } else {
-        CurrentDeviceCard = deviceCardsArray[prefs.getInt("deviceCard", 0)]
+        CurrentDeviceCard = SavedDeviceCard
     }
     Warning.value = false
-    PanelType.value =
-        prefs.getString("devicePanel", M3KApp.getString(R.string.unknown_panel)).toString()
 }
 
 private fun getPanel() {
