@@ -12,13 +12,14 @@ import com.remtrik.m3khelper.util.umountWindows
 import com.remtrik.m3khelper.util.UEFICardsArray
 import com.remtrik.m3khelper.util.UEFIList
 import com.remtrik.m3khelper.util.deviceCardsArray
+import com.remtrik.m3khelper.util.FirstBoot
 import com.remtrik.m3khelper.util.prefs
 
 class MountTile : TileService() { // PoC
 
     override fun onStartListening() {
         super.onStartListening()
-        if (prefs.getBoolean("firstboot", true) || deviceCardsArray[prefs.getInt("deviceCard", 0)].noMount) {
+        if (FirstBoot || deviceCardsArray[prefs.getInt("deviceCard", 0)].noMount) {
             qsTile.state = STATE_UNAVAILABLE
             qsTile.subtitle = M3KApp.getString(
                 R.string.qs_unsupported
@@ -54,7 +55,7 @@ class QuickBootTile : TileService() { // PoC
 
     override fun onStartListening() {
         super.onStartListening()
-        if (prefs.getBoolean("firstboot", true) || deviceCardsArray[prefs.getInt("deviceCard", 0)].noFlash) {
+        if (FirstBoot || deviceCardsArray[prefs.getInt("deviceCard", 0)].noFlash) {
             qsTile.state = STATE_UNAVAILABLE
             qsTile.subtitle = M3KApp.getString(
                 R.string.qs_unsupported
