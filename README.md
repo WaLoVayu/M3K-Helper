@@ -19,7 +19,7 @@
 | Device                  | Guide                                                             |
 |-------------------------|-------------------------------------------------------------------|
 | POCOPHONE F1            | <https://github.com/n00b69/woa-beryllium>                         |
-| Redmi POCO X3 Pro       | <https://github.com/woa-vayu/POCOX3Pro-Guides>                    |
+| Redmi POCO X3 Pro       | <https://github.com/WaLoVayu/POCOX3Pro-Windows-Guides>                    |
 | Redmi POCO X3 NFC       | <https://github.com/woa-surya/POCOX3NFC-Guides>                   |
 | Redmi Note 9 Pro        | <https://github.com/woa-miatoll/Port-Windows-11-Redmi-Note-9-Pro> |
 | Xiaomi Pad 5            | <https://github.com/erdilS/Port-Windows-11-Xiaomi-Pad-5>          |
