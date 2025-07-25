@@ -33,6 +33,14 @@ android {
         externalNativeBuild {
             cmake { cppFlags += "-std=c++17" }
         }
+
+        splits {
+            abi {
+                isEnable = true
+                reset()
+                include("arm64-v8a")
+            }
+        }
     }
 
     externalNativeBuild {
