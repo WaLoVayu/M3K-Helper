@@ -60,7 +60,7 @@ fun flashUEFI(uefiPath: String) {
 }
 
 fun checkSensors(): Boolean {
-    return if (!CurrentDeviceCard.sensors) true
+    return if (!Device.currentDeviceCard.sensors) true
     else {
         if (mountStatus()) {
             mountWindows()
@@ -89,16 +89,16 @@ fun dumpSensors() {
 }
 
 fun quickBoot(uefiPath: String) {
-    if (!CurrentDeviceCard.noMount) {
+    if (!Device.currentDeviceCard.noMount) {
         if (ShellUtils.fastCmd("find $sdcardpath/Windows/boot.img")
                 .isEmpty()
         ) {
             dumpBoot(1)
         }
-        if (!CurrentDeviceCard.noModem) {
+        if (!Device.currentDeviceCard.noModem) {
             dumpModem()
         }
-        if (CurrentDeviceCard.sensors && !checkSensors()) {
+        if (Device.currentDeviceCard.sensors && !checkSensors()) {
             dumpSensors()
         }
     }

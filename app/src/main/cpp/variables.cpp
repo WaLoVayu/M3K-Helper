@@ -61,22 +61,19 @@ Java_com_remtrik_m3khelper_util_VariablesKt_getPanelNative(
         panel.find("s6e3fc3") != std::string::npos ||
         panel.find("ams646yd01") != std::string::npos) {
         return env->NewStringUTF("Samsung");
-    }
-    else if (panel.find("j20s_42") != std::string::npos ||
-             panel.find("k82_42") != std::string::npos ||
-             panel.find("huaxing") != std::string::npos) {
+    } else if (panel.find("j20s_42") != std::string::npos ||
+               panel.find("k82_42") != std::string::npos ||
+               panel.find("huaxing") != std::string::npos) {
         return env->NewStringUTF("Huaxing");
-    }
-    else if (panel.find("j20s_36") != std::string::npos ||
-             panel.find("tianma") != std::string::npos ||
-             panel.find("k82_36") != std::string::npos) {
+    } else if (panel.find("j20s_36") != std::string::npos ||
+               panel.find("tianma") != std::string::npos ||
+               panel.find("k82_36") != std::string::npos) {
         return env->NewStringUTF("Tianma");
-    }
-    else if (panel.find("ebbg") != std::string::npos) {
+    } else if (panel.find("ebbg") != std::string::npos) {
         return env->NewStringUTF("EBBG");
     }
 
-    return env->NewStringUTF("Unknown");
+    return env->NewStringUTF("Invalid");
 }
 
 JNIEXPORT jintArray

@@ -20,25 +20,24 @@ android {
         applicationId = "com.remtrik.m3khelper"
         minSdk = 29
         targetSdk = 36
-        versionCode = 54
-        versionName = "4.1.2-FUCK"
+        versionCode = 55
+        versionName = "4.3-BTNE"
         compileSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        ndk {
-            abiFilters += listOf("arm64-v8a", "x86_64")
-        }
-
         externalNativeBuild {
-            cmake { cppFlags += "-std=c++17" }
+            cmake {
+                cppFlags += "-std=c++17"
+                arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
+            }
         }
 
         splits {
             abi {
                 isEnable = true
                 reset()
-                include("arm64-v8a")
+                include("arm64-v8a", "x86_64")
             }
         }
     }
@@ -96,7 +95,7 @@ android {
     applicationVariants.all {
         outputs.forEach {
             val output = it as BaseVariantOutputImpl
-            output.outputFileName = "M3K_Helper_v${versionName}_${name}.apk"
+            output.outputFileName = "M3K_Helper_v${versionName}_${name}_${output.getFilter(com.android.build.OutputFile.ABI)}.apk"
         }
         kotlin.sourceSets {
             getByName(name) {
@@ -118,18 +117,17 @@ android {
 
 dependencies {
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.navigation.compose)
+    //implementation(libs.androidx.navigation.compose)
 
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.compose.material)
+    //implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    //implementation(libs.androidx.lifecycle.runtime.compose)
+    //implementation(libs.androidx.lifecycle.runtime.ktx)
+    //implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.compose.destinations.core)
     ksp(libs.compose.destinations.ksp)

@@ -1,11 +1,11 @@
 package com.remtrik.m3khelper.ui.component
 
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,9 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -27,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.painterResource
@@ -34,19 +36,22 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.remtrik.m3khelper.M3KApp
-import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.R.drawable.ic_backup
+import com.remtrik.m3khelper.R.drawable.ic_folder
+import com.remtrik.m3khelper.R.drawable.ic_folder_open
+import com.remtrik.m3khelper.R.drawable.ic_windows
+import com.remtrik.m3khelper.R.string
+import com.remtrik.m3khelper.util.Device
+import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LineHeight
+import com.remtrik.m3khelper.util.PaddingValue
+import com.remtrik.m3khelper.util.UEFICard
 import com.remtrik.m3khelper.util.dumpBoot
 import com.remtrik.m3khelper.util.mountStatus
 import com.remtrik.m3khelper.util.mountWindows
 import com.remtrik.m3khelper.util.quickBoot
-import com.remtrik.m3khelper.util.umountWindows
-import com.remtrik.m3khelper.util.CurrentDeviceCard
-import com.remtrik.m3khelper.util.FontSize
-import com.remtrik.m3khelper.util.LineHeight
-import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.UEFICardsArray
-import com.remtrik.m3khelper.util.UEFIList
 import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.umountWindows
 
 @Composable
 fun CommandButton(
@@ -68,7 +73,7 @@ fun CommandButton(
             showSpinner.value -> {
                 StatusDialog(
                     icon = painterResource(id = icon),
-                    title = R.string.please_wait,
+                    title = string.please_wait,
                     showDialog = showSpinner.value,
                 )
             }
@@ -192,8 +197,8 @@ fun BackupButton() {
         when {
             showBackupSpinner.value -> {
                 StatusDialog(
-                    icon = painterResource(id = R.drawable.ic_backup),
-                    title = R.string.please_wait,
+                    icon = painterResource(id = ic_backup),
+                    title = string.please_wait,
                     showDialog = showBackupSpinner.value,
                 )
             }
@@ -203,7 +208,7 @@ fun BackupButton() {
                 AlertDialog(
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_backup),
+                            painter = painterResource(id = ic_backup),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(40.sdp())
@@ -214,7 +219,7 @@ fun BackupButton() {
                     text = {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = M3KApp.getString(R.string.backup_boot_question),
+                            text = M3KApp.getString(string.backup_boot_question),
                             textAlign = TextAlign.Center,
                             fontSize = FontSize,
                             lineHeight = LineHeight
@@ -241,13 +246,13 @@ fun BackupButton() {
                                             top = 2.sdp(),
                                             bottom = 2.sdp()
                                         ),
-                                        text = M3KApp.getString(R.string.android),
+                                        text = M3KApp.getString(string.android),
                                         fontSize = FontSize
                                     )
                                 }
                             )
                             when {
-                                !CurrentDeviceCard.noMount -> {
+                                !Device.currentDeviceCard.noMount -> {
                                     AssistChip(
                                         onClick = {
                                             Thread {
@@ -263,7 +268,7 @@ fun BackupButton() {
                                                     top = 2.sdp(),
                                                     bottom = 2.sdp()
                                                 ),
-                                                text = M3KApp.getString(R.string.windows),
+                                                text = M3KApp.getString(string.windows),
                                                 fontSize = FontSize
                                             )
                                         }
@@ -278,7 +283,7 @@ fun BackupButton() {
                                             top = 2.sdp(),
                                             bottom = 2.sdp()
                                         ),
-                                        text = M3KApp.getString(R.string.no),
+                                        text = M3KApp.getString(string.no),
                                         fontSize = FontSize
                                     )
                                 }
@@ -300,19 +305,19 @@ fun BackupButton() {
             Icon(
                 modifier = Modifier
                     .size(40.sdp()),
-                painter = painterResource(id = R.drawable.ic_backup),
+                painter = painterResource(id = ic_backup),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
             Column {
                 Text(
-                    M3KApp.getString(R.string.backup_boot_title),
+                    M3KApp.getString(string.backup_boot_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = FontSize,
                     lineHeight = LineHeight,
                 )
                 Text(
-                    M3KApp.getString(R.string.backup_boot_subtitle),
+                    M3KApp.getString(string.backup_boot_subtitle),
                     lineHeight = LineHeight,
                     fontSize = FontSize
                 )
@@ -335,9 +340,9 @@ fun MountButton() {
             showMountDialog.value -> {
                 if (mount) {
                     Dialog(
-                        icon = painterResource(id = R.drawable.ic_folder_open),
+                        icon = painterResource(id = ic_folder_open),
                         title = null,
-                        description = M3KApp.getString(R.string.mnt_question),
+                        description = M3KApp.getString(string.mnt_question),
                         showDialog = showMountDialog.value,
                         onDismiss = { showMountDialog.value = false },
                         onConfirm = ({
@@ -350,9 +355,9 @@ fun MountButton() {
                     )
                 } else {
                     Dialog(
-                        painterResource(id = R.drawable.ic_folder),
+                        painterResource(id = ic_folder),
                         null,
-                        M3KApp.getString(R.string.umnt_question),
+                        M3KApp.getString(string.umnt_question),
                         showMountDialog.value,
                         onDismiss = ({ showMountDialog.value = false; }),
                         onConfirm = ({
@@ -378,9 +383,9 @@ fun MountButton() {
                     .size(40.sdp()),
                 painter = painterResource(
                     id = if (mount) {
-                        R.drawable.ic_folder_open
+                        ic_folder_open
                     } else {
-                        R.drawable.ic_folder
+                        ic_folder
                     }
                 ),
                 contentDescription = null,
@@ -389,9 +394,9 @@ fun MountButton() {
             Column {
                 val mounted: Int =
                     if (mount) {
-                        R.string.mnt_title
+                        string.mnt_title
                     } else {
-                        R.string.umnt_title
+                        string.umnt_title
                     }
                 Text(
                     M3KApp.getString(mounted),
@@ -400,7 +405,7 @@ fun MountButton() {
                     fontSize = FontSize
                 )
                 Text(
-                    M3KApp.getString(R.string.mnt_subtitle),
+                    M3KApp.getString(string.mnt_subtitle),
                     lineHeight = LineHeight,
                     fontSize = FontSize
                 )
@@ -418,13 +423,13 @@ fun QuickBootButton() {
         Modifier
             .height(105.sdp())
             .fillMaxWidth(),
-        enabled = UEFIList.isNotEmpty()
+        enabled = Device.uefiCardsArray.isNotEmpty()
     ) {
         when {
             showQuickBootSpinner.value -> {
                 StatusDialog(
-                    icon = painterResource(id = R.drawable.ic_windows),
-                    title = R.string.please_wait,
+                    icon = painterResource(id = ic_windows),
+                    title = string.please_wait,
                     showDialog = showQuickBootSpinner.value,
                 )
             }
@@ -434,7 +439,7 @@ fun QuickBootButton() {
                 AlertDialog(
                     icon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_windows),
+                            painter = painterResource(id = ic_windows),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(40.sdp())
@@ -445,7 +450,7 @@ fun QuickBootButton() {
                     text = {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = M3KApp.getString(R.string.quickboot_question1),
+                            text = M3KApp.getString(string.quickboot_question1),
                             textAlign = TextAlign.Center,
                             fontSize = FontSize
                         )
@@ -456,15 +461,15 @@ fun QuickBootButton() {
                             Modifier.align(Alignment.CenterHorizontally),
                             horizontalArrangement = Arrangement.spacedBy(10.sdp())
                         ) {
-                            for (type: Int in UEFIList) {
+                            for (type: UEFICard in Device.uefiCardsArray) {
                                 AssistChip(
                                     onClick = {
                                         Thread {
                                             showQuickBootDialog.value = false
                                             showQuickBootSpinner.value = true
                                             quickBoot(
-                                                UEFICardsArray[
-                                                    when (type) {
+                                                Device.uefiCardsArray[
+                                                    when (type.uefiType) {
                                                         120 -> 3
                                                         90 -> 2
                                                         60 -> 1
@@ -482,11 +487,11 @@ fun QuickBootButton() {
                                                 bottom = 2.sdp()
                                             ),
                                             text = M3KApp.getString(
-                                                when (type) {
-                                                    120 -> R.string.quickboot_question120
-                                                    90 -> R.string.quickboot_question90
-                                                    60 -> R.string.quickboot_question60
-                                                    else -> R.string.yes
+                                                when (type.uefiType) {
+                                                    120 -> string.quickboot_question120
+                                                    90 -> string.quickboot_question90
+                                                    60 -> string.quickboot_question60
+                                                    else -> string.yes
                                                 }
                                             ),
                                             fontSize = FontSize
@@ -502,7 +507,7 @@ fun QuickBootButton() {
                                             top = 2.sdp(),
                                             bottom = 2.sdp()
                                         ),
-                                        text = M3KApp.getString(R.string.no),
+                                        text = M3KApp.getString(string.no),
                                         fontSize = FontSize
                                     )
                                 }
@@ -524,22 +529,22 @@ fun QuickBootButton() {
             Icon(
                 modifier = Modifier
                     .size(40.sdp()),
-                painter = painterResource(id = R.drawable.ic_windows),
+                painter = painterResource(id = ic_windows),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
             Column {
                 val title: Int
                 val subtitle: Int
-                if (UEFIList.isNotEmpty()) {
-                    title = R.string.quickboot_title
-                    subtitle = when (CurrentDeviceCard.noModem) {
-                        true -> R.string.quickboot_subtitle_nomodem
-                        else -> R.string.quickboot_subtitle
+                if (Device.uefiCardsArray.isNotEmpty()) {
+                    title = string.quickboot_title
+                    subtitle = when (Device.currentDeviceCard.noModem) {
+                        true -> string.quickboot_subtitle_nomodem
+                        else -> string.quickboot_subtitle
                     }
                 } else {
-                    title = R.string.uefi_not_found_title
-                    subtitle = R.string.uefi_not_found_subtitle
+                    title = string.uefi_not_found_title
+                    subtitle = string.uefi_not_found_subtitle
                 }
                 Text(
                     M3KApp.getString(title),
@@ -567,8 +572,8 @@ fun SwitchItem(
     onCheckedChange: (Boolean) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-
-    ListItem(
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         modifier = Modifier
             .toggleable(
                 value = checked,
@@ -578,37 +583,74 @@ fun SwitchItem(
                 indication = LocalIndication.current,
                 onValueChange = onCheckedChange
             ),
-        headlineContent = {},
-        leadingContent = icon?.let {
-            {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(PaddingValue),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.sdp())
-                ) {
-                    Icon(icon, title, Modifier.size(25.sdp()))
-                    Column() {
-                        if (title != null) {
-                            Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
-                        }
-                        if (summary != null) {
-                            Text(text = summary, fontSize = FontSize, lineHeight = LineHeight)
-                        }
-                    }
-                    Spacer(Modifier.fillMaxWidth())
-                    Switch(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        checked = checked,
-                        enabled = enabled,
-                        onCheckedChange = onCheckedChange,
-                        interactionSource = interactionSource
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(PaddingValue)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.sdp())
+        ) {
+            if (icon != null) {
+                Column(Modifier.padding(end = 10.sdp())) {
+                    Icon(
+                        icon,
+                        title,
+                        Modifier.size(25.sdp()).align(Alignment.CenterHorizontally)
                     )
                 }
             }
-        },
-        trailingContent = {},
-        supportingContent = {}
-    )
+            Column(Modifier.weight(1f).fillMaxWidth()) {
+                if (title != null) {
+                    Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
+                }
+                if (summary != null) {
+                    Text(text = summary, fontSize = FontSize, lineHeight = LineHeight)
+                }
+            }
+            Column {
+                Switch(
+                    checked = checked,
+                    enabled = enabled,
+                    onCheckedChange = onCheckedChange,
+                    interactionSource = interactionSource
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ButtonItem(
+    icon: ImageVector? = null,
+    title: String?,
+    summary: String? = null,
+    onClick: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        modifier = Modifier.clickable { onClick() }
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(PaddingValue)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.sdp())
+        ) {
+            if (icon != null) {
+                Column(Modifier.padding(end = 10.sdp())) {
+                    Icon(icon, title, Modifier.size(25.sdp()).align(Alignment.CenterHorizontally))
+                }
+            }
+            Column(Modifier.weight(1f).fillMaxWidth()) {
+                if (title != null) {
+                    Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
+                }
+                if (summary != null) {
+                    Text(text = summary, fontSize = FontSize, lineHeight = LineHeight)
+                }
+            }
+        }
+    }
 }

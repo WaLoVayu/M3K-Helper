@@ -42,7 +42,7 @@ import com.remtrik.m3khelper.ui.component.AboutCard
 import com.remtrik.m3khelper.ui.component.NoRoot
 import com.remtrik.m3khelper.ui.component.UnknownDevice
 import com.remtrik.m3khelper.ui.theme.M3KHelperTheme
-import com.remtrik.m3khelper.util.CurrentDeviceCard
+import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
                                     )
                             ) {
                                 Destinations.entries.forEach { destination ->
-                                    if (CurrentDeviceCard.noLinks && destination.route == LinksScreenDestination) {
+                                    if (Device.currentDeviceCard.noLinks && destination.route == LinksScreenDestination) {
                                     } else {
                                         val isCurrentDestOnBackStack by navController.isRouteOnBackStackAsState(
                                             destination.route

@@ -7,7 +7,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,13 +21,13 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -40,6 +39,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +50,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ThemeEngineScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.ui.component.ButtonItem
 import com.remtrik.m3khelper.ui.component.SwitchItem
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
@@ -60,7 +61,7 @@ import com.remtrik.m3khelper.util.emu64xaCard
 import com.remtrik.m3khelper.util.fastLoadSavedDevice
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.showAboutCard
-import com.remtrik.m3khelper.util.vars
+import com.remtrik.m3khelper.util.unknownCard
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,10 +96,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    bottom = innerPadding.calculateBottomPadding()
-                )
+                .padding(innerPadding)
                 .fillMaxWidth(),
         ) {
             val context = LocalContext.current
@@ -118,33 +116,10 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     prefs.getString("overriden_device_name", "Poco X3 Pro")
                 )
             }
-            ListItem(
-                leadingContent = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(PaddingValue),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.sdp())
-                    ) {
-                        Icon(
-                            Icons.Filled.Palette,
-                            stringResource(R.string.themeengine),
-                            Modifier.size(25.sdp())
-                        )
-                        Column() {
-                            Text(
-                                stringResource(R.string.themeengine),
-                                fontSize = FontSize,
-                                lineHeight = LineHeight
-                            )
-                        }
-                    }
-                },
-                headlineContent = {},
-                modifier = Modifier.clickable {
-                    navigator.navigate(ThemeEngineScreenDestination)
-                }
+            ButtonItem(
+                icon = Icons.Filled.Palette,
+                title = stringResource(R.string.theme_engine),
+                onClick = { navigator.navigate(ThemeEngineScreenDestination) }
             )
             SwitchItem(
                 icon = Icons.Filled.Update,
@@ -164,12 +139,17 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 prefs.edit { putBoolean("override_device", it) }
                 overrideDevice = it
             }
-            ElevatedCard(Modifier.padding(PaddingValue)) {
-                AnimatedVisibility(
-                    visible = overrideDevice,
-                    enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
-                    modifier = Modifier.fillMaxWidth()
+            AnimatedVisibility(
+                visible = overrideDevice,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.Transparent,
+                    ),
+                    modifier = Modifier.padding(PaddingValue)
                 ) {
                     Button(onClick = { expanded = !expanded }, modifier = Modifier.fillMaxWidth()) {
                         Row(
@@ -190,7 +170,11 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                         modifier = Modifier.padding(PaddingValue).width(250.sdp())
                     ) {
                         deviceCardsArray.forEach {
-                            if (!(it.deviceCodename.contentEquals(beyond1Card.deviceCodename) || it.deviceCodename.contentEquals(emu64xaCard.deviceCodename))) {
+                            if (!(it.deviceCodename.contentEquals(beyond1Card.deviceCodename)
+                                        || it.deviceCodename.contentEquals(emu64xaCard.deviceCodename)
+                                        || it.deviceCodename.contentEquals(unknownCard.deviceCodename)
+                                        )
+                            ) {
                                 DropdownMenuItem(
                                     text = {
                                         Text(
@@ -200,8 +184,18 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                                         )
                                     },
                                     onClick = {
-                                        com.remtrik.m3khelper.util.prefs.edit { putString("overriden_device_codename", it.deviceCodename[0]) }
-                                        com.remtrik.m3khelper.util.prefs.edit { putString("overriden_device_name", it.deviceName) }
+                                        com.remtrik.m3khelper.util.prefs.edit {
+                                            putString(
+                                                "overriden_device_codename",
+                                                it.deviceCodename[0]
+                                            )
+                                        }
+                                        com.remtrik.m3khelper.util.prefs.edit {
+                                            putString(
+                                                "overriden_device_name",
+                                                it.deviceName
+                                            )
+                                        }
                                         overridenDeviceName = it.deviceName
                                         expanded = !expanded
                                         Thread { fastLoadSavedDevice() }.start()
@@ -212,35 +206,10 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     }
                 }
             }
-            ListItem(
-                leadingContent = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(PaddingValue),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.sdp())
-                    ) {
-                        Icon(
-                            Icons.Filled.Info,
-                            stringResource(R.string.about),
-                            Modifier.size(25.sdp())
-                        )
-                        Column() {
-                            Text(
-                                text = stringResource(R.string.about),
-                                fontSize = FontSize,
-                                lineHeight = LineHeight
-                            )
-                        }
-                    }
-                },
-                headlineContent = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        showAboutCard.value = true
-                    }
+            ButtonItem(
+                icon = Icons.Filled.Info,
+                title = stringResource(R.string.about),
+                onClick = { showAboutCard.value = true }
             )
         }
     }

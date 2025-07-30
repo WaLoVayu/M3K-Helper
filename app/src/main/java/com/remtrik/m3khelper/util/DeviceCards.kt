@@ -1,8 +1,13 @@
 package com.remtrik.m3khelper.util
 
+import android.os.Parcelable
+import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.M3KApp
-import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.R.drawable
+import com.remtrik.m3khelper.R.string.unknown_device
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class DeviceCard(
     val deviceCodename: Array<String>,
     val deviceName: String,
@@ -17,15 +22,15 @@ data class DeviceCard(
     val noGroup: Boolean, val noDrivers: Boolean,
     val noUEFI: Boolean, val unifiedDriversUEFI: Boolean,
     val noLinks: Boolean = false
-)
+) : Parcelable
 
 val vayuCard: DeviceCard = DeviceCard(
     arrayOf("vayu", "bhima"),
     "POCO X3 Pro",
-    R.drawable.vayu,
-    "https://github.com/woa-vayu/POCOX3Pro-Guides",
-    "https://t.me/windowsonvayu",
-    "https://github.com/woa-vayu/POCOX3Pro-Releases/releases/latest",
+    drawable.vayu,
+    "https://github.com/WaLoVayu/POCOX3Pro-Windows-Guides",
+    "https://t.me/WaLoVayu",
+    "https://github.com/WaLoVayu/POCOX3Pro-Windows-Releases/releases/latest",
     "",
     noModem = true, noFlash = false,
     noBoot = false, noMount = false,
@@ -37,7 +42,7 @@ val vayuCard: DeviceCard = DeviceCard(
 val nabuCard: DeviceCard = DeviceCard(
     arrayOf("nabu"),
     "Xiaomi Pad 5",
-    R.drawable.nabu,
+    drawable.nabu,
     "https://github.com/erdilS/Port-Windows-11-Xiaomi-Pad-5",
     "https://t.me/nabuwoa",
     "https://github.com/erdilS/Port-Windows-11-Xiaomi-Pad-5/releases/tag/Drivers",
@@ -52,7 +57,7 @@ val nabuCard: DeviceCard = DeviceCard(
 val raphaelCard: DeviceCard = DeviceCard(
     arrayOf("raphael"),
     "Xiaomi Mi 9T Pro",
-    R.drawable.raphael,
+    drawable.raphael,
     "https://github.com/graphiks/woa-raphael",
     "https://t.me/woaraphael",
     "https://github.com/woa-raphael/raphael-drivers/releases/latest",
@@ -72,7 +77,7 @@ val raphaelsCard: DeviceCard =
 val cepheusCard: DeviceCard = DeviceCard(
     arrayOf("cepheus"),
     "Xiaomi Mi 9",
-    R.drawable.cepheus,
+    drawable.cepheus,
     "https://github.com/ivnvrvnn/Port-Windows-XiaoMI-9",
     "https://t.me/woacepheus",
     "https://github.com/qaz6750/XiaoMi9-Drivers/releases/latest",
@@ -87,7 +92,7 @@ val cepheusCard: DeviceCard = DeviceCard(
 val berylliumCard: DeviceCard = DeviceCard(
     arrayOf("beryllium"),
     "POCO F1",
-    R.drawable.beryllium,
+    drawable.beryllium,
     "https://github.com/n00b69/woa-beryllium",
     "https://t.me/WinOnF1",
     "https://github.com/n00b69/woa-beryllium/releases/tag/Drivers",
@@ -102,7 +107,7 @@ val berylliumCard: DeviceCard = DeviceCard(
 val miatollCard: DeviceCard = DeviceCard(
     arrayOf("miatoll", "durandal", "curtana_india", "joyeuse"),
     "Redmi Note 9 Pro",
-    R.drawable.miatoll,
+    drawable.miatoll,
     "https://github.com/woa-miatoll/Port-Windows-11-Redmi-Note-9-Pro",
     "http://t.me/woamiatoll",
     "https://github.com/woa-miatoll/Miatoll-Releases/releases/latest",
@@ -123,7 +128,7 @@ val gramCard: DeviceCard =
 val alphaCard: DeviceCard = DeviceCard(
     arrayOf("alpha"),
     "LG G8",
-    R.drawable.alpha,
+    drawable.alpha,
     "https://github.com/n00b69/woa-alphaplus",
     "https://t.me/lgedevices",
     "https://github.com/n00b69/woa-alphaplus/releases/tag/Drivers",
@@ -138,7 +143,7 @@ val alphaCard: DeviceCard = DeviceCard(
 val mh2lm5gCard: DeviceCard = DeviceCard(
     arrayOf("mh2lm5g"),
     "LG V50S",
-    R.drawable.mh2,
+    drawable.mh2,
     "https://github.com/n00b69/woa-mh2lm5g",
     "https://t.me/lgedevices",
     "https://github.com/n00b69/woa-mh2lm5g/releases/tag/Drivers",
@@ -159,7 +164,7 @@ val mh2Card: DeviceCard = mh2lm5gCard.copy(
 val betaCard: DeviceCard = DeviceCard(
     arrayOf("beta"),
     "LG G8S",
-    R.drawable.beta,
+    drawable.beta,
     "https://github.com/n00b69/woa-betalm",
     "https://t.me/lgedevices",
     "https://github.com/n00b69/woa-betalm/releases/tag/Drivers",
@@ -175,13 +180,13 @@ val flashCard: DeviceCard = mh2lm5gCard.copy(
     deviceCodename = arrayOf("flash"),
     deviceName = "LG V50",
     deviceGuide = "https://github.com/n00b69/woa-flashlmdd",
-    deviceImage = R.drawable.flashlm
+    deviceImage = drawable.flashlm
 )
 
 val guacamoleCard: DeviceCard = DeviceCard(
     arrayOf("guacamole", "OnePlus7Pro"),
     "OnePlus 7 Pro",
-    R.drawable.guacamole,
+    drawable.guacamole,
     "",
     "https://t.me/onepluswoachat",
     "",
@@ -196,13 +201,13 @@ val guacamoleCard: DeviceCard = DeviceCard(
 val hotdogCard: DeviceCard = guacamoleCard.copy(
     deviceCodename = arrayOf("hotdog", "OnePlus7TPro"),
     deviceName = "OnePlus 7T Pro",
-    deviceImage = R.drawable.hotdog
+    deviceImage = drawable.hotdog
 )
 
 val suryaCard: DeviceCard = DeviceCard(
     arrayOf("surya", "karna"),
     "POCO X3",
-    R.drawable.vayu,
+    drawable.vayu,
     "https://github.com/woa-surya/POCOX3NFC-Guides",
     "https://t.me/windows_on_pocox3_nfc",
     "",
@@ -218,7 +223,7 @@ val suryaCard: DeviceCard = DeviceCard(
 val a52sxqCard: DeviceCard = DeviceCard(
     arrayOf("a52sxq"),
     "Samsung Galaxy A52s",
-    R.drawable.a52sxq,
+    drawable.a52sxq,
     "https://github.com/woa-a52s/Samsung-A52s-5G-Guides",
     "https://t.me/a52sxq_uefi",
     "https://github.com/woa-a52s/Samsung-A52s-5G-Releases/releases/latest",
@@ -233,7 +238,7 @@ val a52sxqCard: DeviceCard = DeviceCard(
 val beyond1Card: DeviceCard = DeviceCard(
     arrayOf("beyond1"),
     "Samsung Galaxy S10",
-    R.drawable.beyond1,
+    drawable.beyond1,
     "",
     "https://t.me/woahelperchat",
     "",
@@ -248,7 +253,7 @@ val beyond1Card: DeviceCard = DeviceCard(
 val emu64xaCard: DeviceCard = DeviceCard(
     arrayOf("emu64xa"),
     "emu64xa",
-    R.drawable.vayu,
+    drawable.vayu,
     "https://google.com",
     "https://google.com",
     "https://google.com",
@@ -262,8 +267,8 @@ val emu64xaCard: DeviceCard = DeviceCard(
 
 val unknownCard: DeviceCard = DeviceCard(
     arrayOf("unknown"),
-    M3KApp.getString(R.string.unknown_device),
-    R.drawable.ic_device_unknown,
+    M3KApp.getString(unknown_device),
+    drawable.ic_device_unknown,
     "",
     "",
     "",
@@ -275,3 +280,30 @@ val unknownCard: DeviceCard = DeviceCard(
     noUEFI = true, unifiedDriversUEFI = false,
     noLinks = true
 )
+
+val deviceCardsArray: Array<DeviceCard> =
+    arrayOf(
+        unknownCard,
+        vayuCard,
+        suryaCard,
+        nabuCard,
+        raphaelCard, raphaelinCard, raphaelsCard,
+        cepheusCard,
+        berylliumCard,
+        curtanaCard, excaliburCard, gramCard, miatollCard,
+        alphaCard,
+        mh2lm5gCard,
+        mh2Card,
+        betaCard,
+        flashCard,
+        guacamoleCard,
+        hotdogCard,
+        a52sxqCard,
+        if (BuildConfig.DEBUG) emu64xaCard else beyond1Card
+    )
+
+val specialDeviceCardsArray: Array<DeviceCard> =
+    arrayOf(
+        nabuCard,
+        emu64xaCard
+    )

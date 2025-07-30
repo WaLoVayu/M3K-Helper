@@ -1,14 +1,15 @@
 package com.remtrik.m3khelper.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -26,13 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.prefs
-import com.remtrik.m3khelper.util.sdp
 import androidx.core.content.edit
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
+import com.remtrik.m3khelper.util.PaddingValue
+import com.remtrik.m3khelper.util.prefs
+import com.remtrik.m3khelper.util.sdp
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,17 +40,17 @@ import kotlinx.coroutines.launch
 fun ColorPicker() {
     val red = rememberSaveable {
         mutableFloatStateOf(
-            prefs.getFloat("themeengine_red", 0f)
+            prefs.getFloat("theme_engine_red", 0f)
         )
     }
     val green = rememberSaveable {
         mutableFloatStateOf(
-            prefs.getFloat("themeengine_green", 0f)
+            prefs.getFloat("theme_engine_green", 0f)
         )
     }
     val blue = rememberSaveable {
         mutableFloatStateOf(
-            prefs.getFloat("themeengine_blue", 0f)
+            prefs.getFloat("theme_engine_blue", 0f)
         )
     }
 
@@ -70,6 +70,11 @@ fun ColorPicker() {
                     .fillMaxWidth()
                     .height(80.sdp())
                     .background(color, shape = MaterialTheme.shapes.large)
+                    .border(
+                        width = 5.sdp(),
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = MaterialTheme.shapes.large
+                    )
             )
         }
 
@@ -83,7 +88,7 @@ fun ColorPicker() {
                 { newValue ->
                     red.floatValue = newValue
                     coroutineScope.launch {
-                        prefs.edit { putFloat("themeengine_red", newValue) }
+                        prefs.edit { putFloat("theme_engine_red", newValue) }
                     }
                 },
                 Color.Red
@@ -94,7 +99,7 @@ fun ColorPicker() {
                 { newValue ->
                     green.floatValue = newValue
                     coroutineScope.launch {
-                        prefs.edit { putFloat("themeengine_green", newValue) }
+                        prefs.edit { putFloat("theme_engine_green", newValue) }
                     }
                 },
                 Color.Green
@@ -105,7 +110,7 @@ fun ColorPicker() {
                 { newValue ->
                     blue.floatValue = newValue
                     coroutineScope.launch {
-                        prefs.edit { putFloat("themeengine_blue", newValue) }
+                        prefs.edit { putFloat("theme_engine_blue", newValue) }
                     }
                 },
                 Color.Blue

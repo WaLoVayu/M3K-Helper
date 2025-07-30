@@ -16,6 +16,7 @@
         android:supportsRtl="false"
         android:theme="@style/Theme.M3KHelper"
         tools:replace="android:supportsRtl"
+        android:enableOnBackInvokedCallback="true"
         tools:targetApi="tiramisu">
 
         <activity

@@ -4,7 +4,7 @@
     android:width="25dp"
     android:height="28dp"
     android:autoMirrored="true"
-    android:tint="?android:colorControlNormal"
+    android:tint="?android:attr/colorControlNormal"
     android:viewportWidth="367.92"
     android:viewportHeight="424.8">
 

@@ -6,7 +6,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,13 +18,13 @@ import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.FormatPaint
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -37,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.edit
@@ -46,6 +46,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.ui.component.ButtonItem
 import com.remtrik.m3khelper.ui.component.ColorPicker
 import com.remtrik.m3khelper.ui.component.SwitchItem
 import com.remtrik.m3khelper.ui.theme.PaletteStyle
@@ -63,7 +64,7 @@ import com.remtrik.m3khelper.util.sdp
 fun ThemeEngineScreen(navigator: DestinationsNavigator) {
     var enableThemeEngine by rememberSaveable {
         mutableStateOf(
-            prefs.getBoolean("enable_themeengine", false)
+            prefs.getBoolean("enable_theme_engine", false)
         )
     }
     var enableMaterialU by rememberSaveable {
@@ -93,7 +94,7 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                 },
                 title = {
                     Text(
-                        text = stringResource(R.string.themeengine),
+                        text = stringResource(R.string.theme_engine),
                         fontSize = FontSize,
                         lineHeight = LineHeight,
                         fontWeight = FontWeight.Bold
@@ -119,29 +120,32 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                 prefs.edit { putBoolean("enable_materialu", it) }
                 enableMaterialU = it
                 if (it) {
-                    prefs.edit { putBoolean("enable_themeengine", !it) }
-                    enableThemeEngine = !it
+                    prefs.edit { putBoolean("enable_theme_engine", false) }
+                    enableThemeEngine = false
                 }
             }
             SwitchItem(
                 icon = Icons.Filled.FormatPaint,
-                title = stringResource(R.string.themeengine_enable),
-                summary = stringResource(R.string.themeengine_enable_summary),
+                title = stringResource(R.string.theme_engine_enable),
+                summary = stringResource(R.string.theme_engine_enable_summary),
                 checked = enableThemeEngine
             ) {
-                prefs.edit { putBoolean("enable_themeengine", it) }
+                prefs.edit { putBoolean("enable_theme_engine", it) }
                 enableThemeEngine = it
                 if (it) {
-                    prefs.edit { putBoolean("enable_materialu", !it) }
-                    enableMaterialU = !it
+                    prefs.edit { putBoolean("enable_materialu", false) }
+                    enableMaterialU = false
                 }
             }
-            ElevatedCard(Modifier.padding(PaddingValue)) {
-                AnimatedVisibility(
-                    visible = enableThemeEngine,
-                    enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
-                    modifier = Modifier.padding(PaddingValue).fillMaxWidth()
+            AnimatedVisibility(
+                visible = enableThemeEngine,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+                modifier = Modifier.padding(PaddingValue).fillMaxWidth()
+            ) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    modifier = Modifier.padding(PaddingValue)
                 ) {
                     IconButton(
                         onClick = { expanded = !expanded },
@@ -151,7 +155,11 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(5.sdp())
                         ) {
-                            Icon(Icons.Filled.Palette, contentDescription = "More options")
+                            Icon(
+                                Icons.Filled.Palette,
+                                contentDescription = "More options",
+                                modifier = Modifier.size(25.sdp()).align(Alignment.CenterVertically)
+                            )
                             Text(
                                 text = M3KApp.getString(
                                     R.string.themeenigne_current_palette,
@@ -188,42 +196,13 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                             )
                         }
                     }
-                }
-                AnimatedVisibility(
-                    visible = enableThemeEngine,
-                    enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-                    exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                ) {
                     ColorPicker()
                 }
             }
-            ListItem(
-                leadingContent = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(PaddingValue),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.sdp())
-                    ) {
-                        Icon(
-                            Icons.Filled.Refresh,
-                            stringResource(R.string.apply),
-                            Modifier.size(25.sdp())
-                        )
-                        Column() {
-                            Text(
-                                stringResource(R.string.apply),
-                                fontSize = FontSize,
-                                lineHeight = LineHeight
-                            )
-                        }
-                    }
-                },
-                headlineContent = {},
-                modifier = Modifier.clickable {
-                    M3KApp.restart()
-                }
+            ButtonItem(
+                icon = Icons.Filled.Refresh,
+                title = stringResource(R.string.apply),
+                onClick = { M3KApp.restart() }
             )
         }
     }

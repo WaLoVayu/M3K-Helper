@@ -4,8 +4,8 @@ import android.app.Application
 import com.topjohnwu.superuser.Shell
 
 lateinit var M3KApp: M3KHelperApplication
-lateinit var GMNT_SHELL: Shell
-lateinit var SHELL: Shell
+//lateinit var GMNT_SHELL: Shell
+//lateinit var SHELL: Shell
 
 class M3KHelperApplication : Application() {
     init {

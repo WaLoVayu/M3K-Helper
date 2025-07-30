@@ -14,15 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.remtrik.m3khelper.M3KApp
-import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.R.string
 import com.remtrik.m3khelper.util.BootIsPresent
-import com.remtrik.m3khelper.util.CurrentDeviceCard
+import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.PanelType
-import com.remtrik.m3khelper.util.Ram
-import com.remtrik.m3khelper.util.Slot
 import com.remtrik.m3khelper.util.WindowsIsPresent
 import com.remtrik.m3khelper.util.specialDeviceCardsArray
 import com.remtrik.m3khelper.util.sdp
@@ -31,7 +28,7 @@ import com.remtrik.m3khelper.util.sdp
 fun InfoCard(modifier: Modifier) {
     ElevatedCard(
         modifier =
-            if (specialDeviceCardsArray.contains(CurrentDeviceCard) && M3KApp.resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            if (specialDeviceCardsArray.contains(Device.currentDeviceCard) && M3KApp.resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
                 modifier
             } else {
                 Modifier
@@ -44,7 +41,7 @@ fun InfoCard(modifier: Modifier) {
                 modifier = Modifier
                     .padding(top = PaddingValue)
                     .fillMaxWidth(),
-                text = M3KApp.getString(R.string.woa),
+                text = M3KApp.getString(string.woa),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 fontSize = FontSize,
@@ -55,9 +52,9 @@ fun InfoCard(modifier: Modifier) {
                     .fillMaxWidth()
                     .padding(start = PaddingValue),
                 text = M3KApp.getString(
-                    R.string.model,
-                    CurrentDeviceCard.deviceName,
-                    CurrentDeviceCard.deviceCodename[0]
+                    string.model,
+                    Device.currentDeviceCard.deviceName,
+                    Device.currentDeviceCard.deviceCodename[0]
                 ),
                 fontSize = FontSize,
                 lineHeight = LineHeight
@@ -67,7 +64,7 @@ fun InfoCard(modifier: Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = PaddingValue),
-                text = M3KApp.getString(R.string.ramvalue, Ram),
+                text = M3KApp.getString(string.ramvalue, Device.ram),
                 fontSize = FontSize,
                 lineHeight = LineHeight
             )
@@ -75,18 +72,18 @@ fun InfoCard(modifier: Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = PaddingValue),
-                text = M3KApp.getString(R.string.paneltype, PanelType.value),
+                text = M3KApp.getString(string.paneltype, Device.panelType.value),
                 fontSize = FontSize,
                 lineHeight = LineHeight
             )
             when {
-                !CurrentDeviceCard.noBoot && !CurrentDeviceCard.noMount -> {
+                !Device.currentDeviceCard.noBoot && !Device.currentDeviceCard.noMount -> {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = PaddingValue),
                         text = M3KApp.getString(
-                            R.string.backup_boot_state,
+                            string.backup_boot_state,
                             M3KApp.getString(BootIsPresent.value)
                         ),
                         fontSize = FontSize,
@@ -95,26 +92,26 @@ fun InfoCard(modifier: Modifier) {
                 }
             }
             when {
-                Slot.isNotEmpty() -> {
+                Device.slot.isNotEmpty() -> {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = PaddingValue),
-                        text = M3KApp.getString(R.string.slot, Slot),
+                        text = M3KApp.getString(string.slot, Device.slot),
                         fontSize = FontSize,
                         lineHeight = LineHeight
                     )
                 }
             }
             when {
-                !CurrentDeviceCard.noMount -> {
+                !Device.currentDeviceCard.noMount -> {
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 10.sdp()),
                         text = M3KApp.getString(
-                            R.string.windows_status,
-                            M3KApp.getString(WindowsIsPresent)
+                            string.windows_status,
+                            M3KApp.getString(WindowsIsPresent.value)
                         ),
                         fontSize = FontSize,
                         lineHeight = LineHeight

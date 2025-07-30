@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.remtrik.m3khelper.util.SdpScreenDimensionValues.smallestWidth
 
-object SdpScreenDimensionValues {
+internal object SdpScreenDimensionValues {
     var smallestWidth: Int = 0
 }
 

@@ -35,7 +35,7 @@ import com.remtrik.m3khelper.ui.component.DeviceImage
 import com.remtrik.m3khelper.ui.component.InfoCard
 import com.remtrik.m3khelper.ui.component.MountButton
 import com.remtrik.m3khelper.ui.component.QuickBootButton
-import com.remtrik.m3khelper.util.CurrentDeviceCard
+import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
@@ -113,17 +113,17 @@ private fun Landscape() {
             modifier = Modifier.fillMaxWidth()
         ) {
             when {
-                !CurrentDeviceCard.noBoot -> {
+                !Device.currentDeviceCard.noBoot -> {
                     BackupButton()
                 }
             }
             when {
-                !CurrentDeviceCard.noMount -> {
+                !Device.currentDeviceCard.noMount -> {
                     MountButton()
                 }
             }
             when {
-                !CurrentDeviceCard.noFlash -> {
+                !Device.currentDeviceCard.noFlash -> {
                     QuickBootButton()
                 }
             }
@@ -146,18 +146,18 @@ private fun Portrait() {
         )
     }
     when {
-        !CurrentDeviceCard.noBoot -> {
+        !Device.currentDeviceCard.noBoot -> {
             BackupButton()
         }
     }
 
     when {
-        !CurrentDeviceCard.noMount -> {
+        !Device.currentDeviceCard.noMount -> {
             MountButton()
         }
     }
     when {
-        !CurrentDeviceCard.noFlash -> {
+        !Device.currentDeviceCard.noFlash -> {
             QuickBootButton()
         }
     }

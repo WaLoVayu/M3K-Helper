@@ -28,7 +28,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.remtrik.m3khelper.BuildConfig
-import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.R.string.app_name
+import com.remtrik.m3khelper.R.string.source
+import com.remtrik.m3khelper.R.drawable.ic_windows
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.showAboutCard
@@ -55,14 +57,14 @@ fun AboutCard() {
                             Icon(
                                 modifier = Modifier.size(40.sdp()),
                                 tint = MaterialTheme.colorScheme.primary,
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_windows),
+                                imageVector = ImageVector.vectorResource(ic_windows),
                                 contentDescription = null
                             )
                         }
                         Spacer(Modifier.width(10.sdp()))
                         Column {
                             Text(
-                                stringResource(id = R.string.app_name),
+                                stringResource(id = app_name),
                                 fontSize = FontSize,
                                 lineHeight = LineHeight
                             )
@@ -74,7 +76,7 @@ fun AboutCard() {
                             Spacer(Modifier.height(10.sdp()))
                             Text(
                                 AnnotatedString.Companion.fromHtml(
-                                    htmlString = stringResource(id = R.string.source) + " " + "<b><a href=\"https://github.com/woa-vayu/M3K-Helper\">GitHub</a></b>",
+                                    htmlString = stringResource(id = source) + " " + "<b><a href=\"https://github.com/WaLoVayu/M3K-Helper\">GitHub</a></b>",
                                     linkStyles = TextLinkStyles(
                                         style = SpanStyle(textDecoration = TextDecoration.Underline)
                                     )

@@ -59,15 +59,15 @@
     <string name="about">About</string>
     <string name="source">Source code at</string>
     <string name="settings">Settings</string>
-    <string name="themeengine">Theme Engine</string>
+    <string name="theme_engine">Theme Engine</string>
 
     <string name="autoupdate">Check for updates"</string>
     <string name="autoupdate_summary">Automatically check for updates when opening the app</string>
 
     <string name="enable_materialu">Enable system color scheme</string>
     <string name="enable_materialu_summary">Use system colors instead of default or custom ones</string>
-    <string name="themeengine_enable">Enable custom color scheme</string>
-    <string name="themeengine_enable_summary">Use custom colors instead of system ones</string>
+    <string name="theme_engine_enable">Enable custom color scheme</string>
+    <string name="theme_engine_enable_summary">Use custom colors instead of system ones</string>
     <string name="themeenigne_current_palette">Current palette: %s</string>
 
     <string name="device_unknown">YOUR DEVICE ISN\’T SUPPORTED!\n USING THIS APP WILL RESULT IN A BRICK</string>
