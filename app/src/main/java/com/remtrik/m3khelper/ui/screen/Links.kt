@@ -38,6 +38,8 @@ import com.remtrik.m3khelper.util.sdp
 @Destination<RootGraph>()
 @Composable
 fun LinksScreen(navigator: DestinationsNavigator) {
+    val isLandscape = M3KApp.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -69,105 +71,40 @@ fun LinksScreen(navigator: DestinationsNavigator) {
                 .padding(horizontal = PaddingValue)
                 .fillMaxWidth(),
         ) {
-            if (M3KApp.resources.configuration.orientation != Configuration.ORIENTATION_PORTRAIT) Landscape()
-            else Portrait()
-        }
-    }
-}
-
-@Composable
-private fun Landscape() {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(10.sdp()),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.sdp()),
-            modifier = Modifier.width(500.sdp())
-        ) {
-            if (Device.currentDeviceCard.unifiedDriversUEFI
-                && !(Device.currentDeviceCard.noDrivers || Device.currentDeviceCard.noUEFI)
-            ) {
-                LinkButton(
-                    M3KApp.getString(
-                        R.string.driversuefi,
-                        Device.currentDeviceCard.deviceName
-                    ),
-                    null,
-                    Device.currentDeviceCard.deviceDrivers,
-                    R.drawable.ic_drivers,
-                    LocalUriHandler.current
-                )
+            if (isLandscape) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.sdp()),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.sdp()),
+                        modifier = Modifier.width(500.sdp())
+                    ) { FilesLinks() }
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.sdp()),
+                        modifier = Modifier.width(500.sdp())
+                    ) { SocialLinks() }
+                }
             } else {
-                when {
-                    !Device.currentDeviceCard.noDrivers -> {
-                        LinkButton(
-                            M3KApp.getString(
-                                R.string.drivers,
-                                Device.currentDeviceCard.deviceName
-                            ),
-                            null,
-                            Device.currentDeviceCard.deviceDrivers,
-                            R.drawable.ic_drivers,
-                            LocalUriHandler.current
-                        )
-                    }
-                }
-                when {
-                    !Device.currentDeviceCard.noUEFI -> {
-                        LinkButton(
-                            M3KApp.getString(
-                                R.string.uefi,
-                                Device.currentDeviceCard.deviceName
-                            ),
-                            null,
-                            Device.currentDeviceCard.deviceUEFI,
-                            R.drawable.ic_uefi,
-                            LocalUriHandler.current
-                        )
-                    }
-                }
-            }
-        }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.sdp()),
-            modifier = Modifier.width(500.sdp())
-        ) {
-            when {
-                !Device.currentDeviceCard.noGroup -> {
-                    LinkButton(
-                        M3KApp.getString(R.string.group, Device.currentDeviceCard.deviceName),
-                        null,
-                        Device.currentDeviceCard.deviceGroup,
-                        Icons.AutoMirrored.Filled.Message,
-                        LocalUriHandler.current
-                    )
-                }
-            }
-            when {
-                !Device.currentDeviceCard.noGuide -> {
-                    LinkButton(
-                        M3KApp.getString(R.string.guide, Device.currentDeviceCard.deviceName),
-                        null,
-                        Device.currentDeviceCard.deviceGuide,
-                        Icons.Filled.Book,
-                        LocalUriHandler.current
-                    )
-                }
+                FilesLinks()
+                SocialLinks()
             }
         }
     }
 }
 
 @Composable
-private fun Portrait() {
+private fun FilesLinks() {
     if (Device.currentDeviceCard.unifiedDriversUEFI
         && !(Device.currentDeviceCard.noDrivers || Device.currentDeviceCard.noUEFI)
     ) {
         LinkButton(
-            M3KApp.getString(R.string.driversuefi, Device.currentDeviceCard.deviceName),
+            M3KApp.getString(
+                R.string.driversuefi,
+                Device.currentDeviceCard.deviceName
+            ),
             null,
             Device.currentDeviceCard.deviceDrivers,
             R.drawable.ic_drivers,
@@ -177,7 +114,10 @@ private fun Portrait() {
         when {
             !Device.currentDeviceCard.noDrivers -> {
                 LinkButton(
-                    M3KApp.getString(R.string.drivers, Device.currentDeviceCard.deviceName),
+                    M3KApp.getString(
+                        R.string.drivers,
+                        Device.currentDeviceCard.deviceName
+                    ),
                     null,
                     Device.currentDeviceCard.deviceDrivers,
                     R.drawable.ic_drivers,
@@ -188,7 +128,10 @@ private fun Portrait() {
         when {
             !Device.currentDeviceCard.noUEFI -> {
                 LinkButton(
-                    M3KApp.getString(R.string.uefi, Device.currentDeviceCard.deviceName),
+                    M3KApp.getString(
+                        R.string.uefi,
+                        Device.currentDeviceCard.deviceName
+                    ),
                     null,
                     Device.currentDeviceCard.deviceUEFI,
                     R.drawable.ic_uefi,
@@ -197,6 +140,10 @@ private fun Portrait() {
             }
         }
     }
+}
+
+@Composable
+private fun SocialLinks() {
     when {
         !Device.currentDeviceCard.noGroup -> {
             LinkButton(
@@ -219,5 +166,4 @@ private fun Portrait() {
             )
         }
     }
-
 }

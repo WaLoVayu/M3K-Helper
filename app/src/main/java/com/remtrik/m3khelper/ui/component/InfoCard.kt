@@ -15,17 +15,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R.string
-import com.remtrik.m3khelper.util.BootIsPresent
 import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.WindowsIsPresent
+import com.remtrik.m3khelper.util.rememberDeviceStrings
 import com.remtrik.m3khelper.util.specialDeviceCardsArray
 import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.string
 
 @Composable
 fun InfoCard(modifier: Modifier) {
+    val deviceStrings = rememberDeviceStrings()
+
     ElevatedCard(
         modifier =
             if (specialDeviceCardsArray.contains(Device.currentDeviceCard) && M3KApp.resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
@@ -41,82 +43,29 @@ fun InfoCard(modifier: Modifier) {
                 modifier = Modifier
                     .padding(top = PaddingValue)
                     .fillMaxWidth(),
-                text = M3KApp.getString(string.woa),
+                text = string.woa.string(),
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 fontSize = FontSize,
                 lineHeight = LineHeight
             )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = PaddingValue),
-                text = M3KApp.getString(
-                    string.model,
-                    Device.currentDeviceCard.deviceName,
-                    Device.currentDeviceCard.deviceCodename[0]
-                ),
-                fontSize = FontSize,
-                lineHeight = LineHeight
-            )
 
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = PaddingValue),
-                text = M3KApp.getString(string.ramvalue, Device.ram),
-                fontSize = FontSize,
-                lineHeight = LineHeight
-            )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = PaddingValue),
-                text = M3KApp.getString(string.paneltype, Device.panelType.value),
-                fontSize = FontSize,
-                lineHeight = LineHeight
-            )
-            when {
-                !Device.currentDeviceCard.noBoot && !Device.currentDeviceCard.noMount -> {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = PaddingValue),
-                        text = M3KApp.getString(
-                            string.backup_boot_state,
-                            M3KApp.getString(BootIsPresent.value)
-                        ),
-                        fontSize = FontSize,
-                        lineHeight = LineHeight
-                    )
-                }
-            }
-            when {
-                Device.slot.isNotEmpty() -> {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = PaddingValue),
-                        text = M3KApp.getString(string.slot, Device.slot),
-                        fontSize = FontSize,
-                        lineHeight = LineHeight
-                    )
-                }
-            }
-            when {
-                !Device.currentDeviceCard.noMount -> {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 10.sdp()),
-                        text = M3KApp.getString(
-                            string.windows_status,
-                            M3KApp.getString(WindowsIsPresent.value)
-                        ),
-                        fontSize = FontSize,
-                        lineHeight = LineHeight
-                    )
-                }
+            listOfNotNull(
+                deviceStrings.model,
+                deviceStrings.ram,
+                deviceStrings.panel,
+                deviceStrings.bootState,
+                deviceStrings.slot,
+                deviceStrings.windowsStatus
+            ).forEach {
+                Text(
+                    text = it,
+                    fontSize = FontSize,
+                    lineHeight = LineHeight,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = PaddingValue)
+                )
             }
         }
     }

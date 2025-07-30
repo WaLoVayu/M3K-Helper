@@ -6,9 +6,11 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Environment
 import android.os.Parcelable
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -18,6 +20,9 @@ import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R.string
 import com.topjohnwu.superuser.ShellUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 
 private external fun findUEFIImages(baseCmd: String): IntArray
@@ -204,20 +209,66 @@ private fun dynamicVars() {
         else -> string.no
     }
     // TODO: Move to c++ implementation
-    val find = ShellUtils.fastCmd("find /mnt/sdcard/UEFI/ -type f | grep .img")
-    if (find.isNotEmpty()) {
-        var index = 1
-        for (uefi: String in arrayOf("60", "90", "120")) {
-            val path =
-                ShellUtils.fastCmd("find /mnt/sdcard/UEFI/ -type f  | grep .img | grep ${uefi}hz")
-            if (path.isNotEmpty()
-            ) {
-                Device.uefiCardsArray += UEFICard(path, uefi.toInt())
+    if (Device.uefiCardsArray.isEmpty()) {
+        val find = ShellUtils.fastCmd("find /mnt/sdcard/UEFI/ -type f | grep .img")
+        if (find.isNotEmpty()) {
+            var index = 1
+            for (uefi: String in arrayOf("60", "90", "120")) {
+                val path =
+                    ShellUtils.fastCmd("find /mnt/sdcard/UEFI/ -type f  | grep .img | grep ${uefi}hz")
+                if (path.isNotEmpty()
+                ) {
+                    Device.uefiCardsArray += UEFICard(path, uefi.toInt())
+                }
+                index += 1
             }
-            index += 1
-        }
-        if (Device.uefiCardsArray.isEmpty()) {
-            Device.uefiCardsArray += UEFICard(find, 1)
+            if (Device.uefiCardsArray.isEmpty()) {
+                Device.uefiCardsArray += UEFICard(find, 1)
+            }
         }
     }
 }
+
+// MAKE THIS THE MAIN THING
+// MAKE THIS THE MAIN THING
+// MAKE THIS THE MAIN THING
+// MAKE THIS THE MAIN THING
+// MAKE THIS THE MAIN THING
+// MAKE THIS THE MAIN THING
+// MAKE THIS THE MAIN THING
+// MAKE THIS THE MAIN THING
+// MAKE THIS THE MAIN THING
+@Composable
+fun rememberDeviceStrings(): DeviceStrings {
+    return remember(BootIsPresent.value, Device.currentDeviceCard, WindowsIsPresent.value) {
+        DeviceStrings(
+            woa = M3KApp.getString(string.woa),
+            model = M3KApp.getString(
+                string.model,
+                Device.currentDeviceCard.deviceName,
+                Device.currentDeviceCard.deviceCodename[0]
+            ),
+            ram = M3KApp.getString(string.ramvalue, Device.ram),
+            panel = M3KApp.getString(string.paneltype, Device.panelType.value),
+            bootState = if (!Device.currentDeviceCard.noBoot && !Device.currentDeviceCard.noMount) {
+                M3KApp.getString(string.backup_boot_state, M3KApp.getString(BootIsPresent.value))
+            } else null,
+            slot = if (Device.slot.isNotEmpty()) {
+                M3KApp.getString(string.slot, Device.slot)
+            } else null,
+            windowsStatus = if (!Device.currentDeviceCard.noMount) {
+                M3KApp.getString(string.windows_status, M3KApp.getString(WindowsIsPresent.value))
+            } else null
+        )
+    }
+}
+
+data class DeviceStrings(
+    val woa: String,
+    val model: String,
+    val ram: String,
+    val panel: String,
+    val bootState: String?,
+    val slot: String?,
+    val windowsStatus: String?
+)

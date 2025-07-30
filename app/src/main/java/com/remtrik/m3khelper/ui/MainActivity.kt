@@ -107,15 +107,15 @@ class MainActivity : ComponentActivity() {
                                             icon = {
                                                 if (isCurrentDestOnBackStack) {
                                                     Icon(
-                                                        destination.iconSelected,
-                                                        stringResource(destination.label),
-                                                        Modifier.size(20.sdp())
+                                                        imageVector = destination.iconSelected,
+                                                        contentDescription = stringResource(destination.label),
+                                                        modifier = Modifier.size(20.sdp())
                                                     )
                                                 } else {
                                                     Icon(
-                                                        destination.iconNotSelected,
-                                                        stringResource(destination.label),
-                                                        Modifier.size(20.sdp())
+                                                        imageVector = destination.iconNotSelected,
+                                                        contentDescription = stringResource(destination.label),
+                                                        modifier = Modifier.size(20.sdp())
                                                     )
                                                 }
                                             },

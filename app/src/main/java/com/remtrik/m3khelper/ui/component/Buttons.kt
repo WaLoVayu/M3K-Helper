@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +53,9 @@ import com.remtrik.m3khelper.util.mountWindows
 import com.remtrik.m3khelper.util.quickBoot
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.umountWindows
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun CommandButton(
@@ -63,9 +67,11 @@ fun CommandButton(
 ) {
     val showDialog = remember { mutableStateOf(false) }
     val showSpinner = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     ElevatedCard(
         onClick = { showDialog.value = true },
-        Modifier
+        modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
     ) {
@@ -86,14 +92,16 @@ fun CommandButton(
                     description = M3KApp.getString(question),
                     showDialog = showDialog.value,
                     onDismiss = { showDialog.value = false },
-                    onConfirm = ({
-                        Thread {
-                            showDialog.value = false
-                            showSpinner.value = true
-                            command()
-                            showSpinner.value = false
-                        }.start()
-                    })
+                    onConfirm = {
+                        scope.launch {
+                            withContext(Dispatchers.IO) {
+                                showDialog.value = false
+                                showSpinner.value = true
+                                command()
+                                showSpinner.value = false
+                            }
+                        }
+                    }
                 )
             }
         }
@@ -138,7 +146,7 @@ fun LinkButton(
 ) {
     ElevatedCard(
         onClick = { localUriHandler.openUri(link) },
-        Modifier
+        modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
     ) {
@@ -153,7 +161,7 @@ fun LinkButton(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    Modifier.size(40.sdp()),
+                    modifier = Modifier.size(40.sdp()),
                     tint = MaterialTheme.colorScheme.primary
                 )
             } else if (icon is Int) {
@@ -188,9 +196,11 @@ fun LinkButton(
 fun BackupButton() {
     val showBackupDialog = remember { mutableStateOf(false) }
     val showBackupSpinner = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     ElevatedCard(
         onClick = { showBackupDialog.value = true },
-        Modifier
+        modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
     ) {
@@ -225,20 +235,22 @@ fun BackupButton() {
                             lineHeight = LineHeight
                         )
                     },
-                    onDismissRequest = ({ showBackupDialog.value = false; }),
+                    onDismissRequest = { showBackupDialog.value = false; },
                     dismissButton = {
                         Row(
-                            Modifier.align(Alignment.CenterHorizontally),
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
                             horizontalArrangement = Arrangement.spacedBy(10.sdp())
                         ) {
                             AssistChip(
                                 onClick = {
-                                    Thread {
-                                        showBackupDialog.value = false
-                                        showBackupSpinner.value = true
-                                        dumpBoot(2)
-                                        showBackupSpinner.value = false
-                                    }.start()
+                                    scope.launch {
+                                        withContext(Dispatchers.IO) {
+                                            showBackupDialog.value = false
+                                            showBackupSpinner.value = true
+                                            dumpBoot(2)
+                                            showBackupSpinner.value = false
+                                        }
+                                    }
                                 },
                                 label = {
                                     Text(
@@ -255,12 +267,14 @@ fun BackupButton() {
                                 !Device.currentDeviceCard.noMount -> {
                                     AssistChip(
                                         onClick = {
-                                            Thread {
-                                                showBackupDialog.value = false
-                                                showBackupSpinner.value = true
-                                                dumpBoot(1)
-                                                showBackupSpinner.value = false
-                                            }.start()
+                                            scope.launch {
+                                                withContext(Dispatchers.IO) {
+                                                    showBackupDialog.value = false
+                                                    showBackupSpinner.value = true
+                                                    dumpBoot(1)
+                                                    showBackupSpinner.value = false
+                                                }
+                                            }
                                         },
                                         label = {
                                             Text(
@@ -276,7 +290,7 @@ fun BackupButton() {
                                 }
                             }
                             AssistChip(
-                                onClick = ({ showBackupDialog.value = false; }),
+                                onClick = { showBackupDialog.value = false; },
                                 label = {
                                     Text(
                                         modifier = Modifier.padding(
@@ -330,9 +344,11 @@ fun BackupButton() {
 fun MountButton() {
     val showMountDialog = remember { mutableStateOf(false) }
     var mount by remember { mutableStateOf(mountStatus()) }
+    val scope = rememberCoroutineScope()
+
     ElevatedCard(
         onClick = { showMountDialog.value = true },
-        Modifier
+        modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
     ) {
@@ -345,13 +361,15 @@ fun MountButton() {
                         description = M3KApp.getString(string.mnt_question),
                         showDialog = showMountDialog.value,
                         onDismiss = { showMountDialog.value = false },
-                        onConfirm = ({
-                            Thread {
-                                mountWindows()
-                                showMountDialog.value = false
-                                mount = mountStatus()
-                            }.start()
-                        })
+                        onConfirm = {
+                            scope.launch {
+                                withContext(Dispatchers.IO) {
+                                    mountWindows()
+                                    showMountDialog.value = false
+                                    mount = mountStatus()
+                                }
+                            }
+                        }
                     )
                 } else {
                     Dialog(
@@ -359,14 +377,16 @@ fun MountButton() {
                         null,
                         M3KApp.getString(string.umnt_question),
                         showMountDialog.value,
-                        onDismiss = ({ showMountDialog.value = false; }),
-                        onConfirm = ({
-                            Thread {
-                                umountWindows()
-                                showMountDialog.value = false
-                                mount = mountStatus()
-                            }.start()
-                        })
+                        onDismiss = { showMountDialog.value = false; },
+                        onConfirm = {
+                            scope.launch {
+                                withContext(Dispatchers.IO) {
+                                    umountWindows()
+                                    showMountDialog.value = false
+                                    mount = mountStatus()
+                                }
+                            }
+                        }
                     )
                 }
             }
@@ -418,9 +438,11 @@ fun MountButton() {
 fun QuickBootButton() {
     val showQuickBootDialog = remember { mutableStateOf(false) }
     val showQuickBootSpinner = remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     ElevatedCard(
         onClick = { showQuickBootDialog.value = true },
-        Modifier
+        modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
         enabled = Device.uefiCardsArray.isNotEmpty()
@@ -462,23 +484,26 @@ fun QuickBootButton() {
                             horizontalArrangement = Arrangement.spacedBy(10.sdp())
                         ) {
                             for (type: UEFICard in Device.uefiCardsArray) {
+                                println("${type.uefiType} ${type.uefiPath}")
                                 AssistChip(
                                     onClick = {
-                                        Thread {
-                                            showQuickBootDialog.value = false
-                                            showQuickBootSpinner.value = true
-                                            quickBoot(
-                                                Device.uefiCardsArray[
-                                                    when (type.uefiType) {
-                                                        120 -> 3
-                                                        90 -> 2
-                                                        60 -> 1
-                                                        else -> 0
-                                                    }
-                                                ].uefiPath
-                                            )
-                                            showQuickBootSpinner.value = false
-                                        }.start()
+                                        scope.launch {
+                                            withContext(Dispatchers.IO) {
+                                                showQuickBootDialog.value = false
+                                                showQuickBootSpinner.value = true
+                                                quickBoot(
+                                                    Device.uefiCardsArray[
+                                                        when (type.uefiType) {
+                                                            120 -> 3
+                                                            90 -> 2
+                                                            60 -> 1
+                                                            else -> 0
+                                                        }
+                                                    ].uefiPath
+                                                )
+                                                showQuickBootSpinner.value = false
+                                            }
+                                        }
                                     },
                                     label = {
                                         Text(
@@ -596,11 +621,15 @@ fun SwitchItem(
                     Icon(
                         icon,
                         title,
-                        Modifier.size(25.sdp()).align(Alignment.CenterHorizontally)
+                        Modifier
+                            .size(25.sdp())
+                            .align(Alignment.CenterHorizontally)
                     )
                 }
             }
-            Column(Modifier.weight(1f).fillMaxWidth()) {
+            Column(Modifier
+                .weight(1f)
+                .fillMaxWidth()) {
                 if (title != null) {
                     Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
                 }
@@ -640,10 +669,14 @@ fun ButtonItem(
         ) {
             if (icon != null) {
                 Column(Modifier.padding(end = 10.sdp())) {
-                    Icon(icon, title, Modifier.size(25.sdp()).align(Alignment.CenterHorizontally))
+                    Icon(icon, title, Modifier
+                        .size(25.sdp())
+                        .align(Alignment.CenterHorizontally))
                 }
             }
-            Column(Modifier.weight(1f).fillMaxWidth()) {
+            Column(Modifier
+                .weight(1f)
+                .fillMaxWidth()) {
                 if (title != null) {
                     Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
                 }

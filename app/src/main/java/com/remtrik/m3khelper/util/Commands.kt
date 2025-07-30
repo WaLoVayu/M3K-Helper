@@ -10,7 +10,9 @@ fun dumpBoot(where: Int) {
         1 -> {
             if (mountStatus()) {
                 mountWindows()
-                ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$sdcardpath/Windows/boot.img bs=32M")
+                if (!mountStatus()) {
+                    ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$sdcardpath/Windows/boot.img bs=32M")
+                }
                 umountWindows()
             } else ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$sdcardpath/Windows/boot.img bs=32M")
         }

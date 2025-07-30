@@ -13,75 +13,88 @@ import com.remtrik.m3khelper.util.mountWindows
 import com.remtrik.m3khelper.util.quickBoot
 import com.remtrik.m3khelper.util.umountWindows
 
-internal fun disableTile(qsTile: Tile, reason: Int) {
-    qsTile.state = STATE_UNAVAILABLE
-    qsTile.subtitle = M3KApp.getString(
-        reason
-    )
-    qsTile.updateTile()
+// might use in future
+internal fun getUefiPath(): String? {
+    return when {
+        Device.uefiCardsArray.any { it.uefiType == 120 } -> Device.uefiCardsArray[3].uefiPath
+        Device.uefiCardsArray.any { it.uefiType == 90 } -> Device.uefiCardsArray[2].uefiPath
+        Device.uefiCardsArray.any { it.uefiType == 60 } -> Device.uefiCardsArray[1].uefiPath
+        Device.uefiCardsArray.any { it.uefiType == 1 } -> Device.uefiCardsArray[0].uefiPath
+        else -> null
+    }
 }
 
-class MountTile : TileService() { // PoC
-
-    override fun onStartListening() {
-        super.onStartListening()
-        if (FirstBoot || Device.savedDeviceCard.noMount) {
-            disableTile(qsTile, R.string.qs_unsupported)
-        } else {
-            if (mountStatus()) {
-                qsTile.state = STATE_ACTIVE
-                qsTile.label = M3KApp.getString(
-                    R.string.mnt_question
-                )
-            } else {
-                qsTile.state = STATE_ACTIVE
-                qsTile.label = M3KApp.getString(
-                    R.string.umnt_question
-                )
-            }
+abstract class CommonTileService : TileService() {
+    protected fun disableTile(subtitleString: Int?) {
+        qsTile.apply {
+            state = STATE_UNAVAILABLE
+            subtitleString?.let { subtitle = M3KApp.getString(it) }
+            updateTile()
         }
     }
 
-    override fun onClick() {
-        super.onClick()
+    protected fun enableTile(labelString: Int? = null, subtitleString: Int? = null) {
+        qsTile.apply {
+            state = STATE_ACTIVE
+            labelString?.let { label = M3KApp.getString(it) }
+            subtitleString?.let { subtitle = M3KApp.getString(it) }
+        }
+    }
+}
+
+class MountTile : CommonTileService() { // more than just a PoC
+    private val supported: Boolean
+        get() = !FirstBoot && !Device.savedDeviceCard.noMount
+
+    override fun onStartListening() {
+        super.onStartListening()
+        if (!supported) {
+            disableTile(R.string.qs_unsupported)
+            return
+        }
+
         if (mountStatus()) {
-            mountWindows()
+            enableTile(R.string.mnt_question)
         } else {
-            umountWindows()
-        }
-    }
-
-}
-
-class QuickBootTile : TileService() { // PoC
-
-    override fun onStartListening() {
-        super.onStartListening()
-        if (FirstBoot || Device.savedDeviceCard.noFlash) {
-            disableTile(qsTile, R.string.qs_unsupported)
-        } else {
-            if (Device.uefiCardsArray.isEmpty()) {
-                disableTile(qsTile, R.string.uefi_not_found_title)
-            } else {
-                qsTile.state = STATE_ACTIVE; qsTile.subtitle = null
-            }
+            enableTile(R.string.umnt_question)
         }
     }
 
     override fun onClick() {
         super.onClick()
-        if (Device.uefiCardsArray.isNotEmpty()) {
-            if (Device.uefiCardsArray.find { it.uefiType == 120 } != null) {
-                quickBoot(Device.uefiCardsArray[3].uefiPath)
-            } else if (Device.uefiCardsArray.find { it.uefiType == 90 } != null) {
-                quickBoot(Device.uefiCardsArray[2].uefiPath)
-            } else if (Device.uefiCardsArray.find { it.uefiType == 60 } != null) {
-                quickBoot(Device.uefiCardsArray[1].uefiPath)
-            } else if (Device.uefiCardsArray.find { it.uefiType == 1 } != null) {
-                quickBoot(Device.uefiCardsArray[0].uefiPath)
+
+        if (mountStatus()) mountWindows() else umountWindows()
+
+        onStartListening()
+    }
+
+}
+
+class QuickBootTile : CommonTileService() { // more than just a PoC
+    private val supported: Boolean
+        get() = !FirstBoot && !Device.savedDeviceCard.noFlash
+
+    private val uefiPath: String?
+        get() = Device.uefiCardsArray.firstOrNull()?.uefiPath
+
+    override fun onStartListening() {
+        super.onStartListening()
+        when {
+            !supported -> disableTile(R.string.qs_unsupported)
+            uefiPath == null -> disableTile(R.string.uefi_not_found_title)
+            else -> enableTile()
+        }
+    }
+
+    override fun onClick() {
+        super.onClick()
+        when {
+            uefiPath == null -> {
+                disableTile(R.string.uefi_not_found_title)
+                return
             }
-        } else {
-            disableTile(qsTile, R.string.uefi_not_found_title)
+
+            else -> quickBoot(uefiPath!!)
         }
     }
 

@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,6 +63,9 @@ import com.remtrik.m3khelper.util.fastLoadSavedDevice
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.showAboutCard
 import com.remtrik.m3khelper.util.unknownCard
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,6 +73,8 @@ import com.remtrik.m3khelper.util.unknownCard
 @Composable
 fun SettingsScreen(navigator: DestinationsNavigator) {
     var expanded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -198,7 +204,11 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                                         }
                                         overridenDeviceName = it.deviceName
                                         expanded = !expanded
-                                        Thread { fastLoadSavedDevice() }.start()
+                                        scope.launch {
+                                            withContext(Dispatchers.IO) {
+                                                fastLoadSavedDevice()
+                                            }
+                                        }
                                     }
                                 )
                             }
