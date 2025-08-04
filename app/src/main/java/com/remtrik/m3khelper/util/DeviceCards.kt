@@ -126,7 +126,7 @@ val gramCard: DeviceCard =
     miatollCard.copy(deviceCodename = arrayOf("gram"), deviceName = "POCO M2 Pro")
 
 val alphaCard: DeviceCard = DeviceCard(
-    arrayOf("alpha"),
+    arrayOf("alpha", "alphalm"),
     "LG G8",
     drawable.alpha,
     "https://github.com/n00b69/woa-alphaplus",
@@ -156,7 +156,7 @@ val mh2lm5gCard: DeviceCard = DeviceCard(
 )
 
 val mh2Card: DeviceCard = mh2lm5gCard.copy(
-    deviceCodename = arrayOf("mh2"),
+    deviceCodename = arrayOf("mh2", "mh2lm"),
     deviceName = "LG G8X",
     deviceGuide = "https://github.com/n00b69/woa-mh2lm",
     deviceUEFI = "https://github.com/n00b69/woa-mh2lm/releases/tag/UEFI",
@@ -164,7 +164,7 @@ val mh2Card: DeviceCard = mh2lm5gCard.copy(
 )
 
 val betaCard: DeviceCard = DeviceCard(
-    arrayOf("beta"),
+    arrayOf("beta", "betalm"),
     "LG G8S",
     drawable.beta,
     "https://github.com/n00b69/woa-betalm",
@@ -179,7 +179,7 @@ val betaCard: DeviceCard = DeviceCard(
 )
 
 val flashCard: DeviceCard = mh2lm5gCard.copy(
-    deviceCodename = arrayOf("flash"),
+    deviceCodename = arrayOf("flash", "flashlm"),
     deviceName = "LG V50",
     deviceGuide = "https://github.com/n00b69/woa-flashlmdd",
     deviceImage = drawable.flashlm

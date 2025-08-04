@@ -39,7 +39,7 @@ data class DeviceData(
             ShellUtils.fastCmd("getprop ro.product.device"),
             ShellUtils.fastCmd("getprop ro.lineage.device")
         ),
-    val savedDeviceCard: DeviceCard =
+    var savedDeviceCard: DeviceCard =
         try {
             deviceCardsArray[prefs.getInt("saved_device_card", 0)]
         } catch (_: ArrayIndexOutOfBoundsException) {
@@ -98,9 +98,8 @@ fun vars() {
     }
     if (prefs.getBoolean("firstboot", true)) {
         deviceCardsArray.forEachIndexed { cardNum, card ->
-            if (card.deviceCodename.any { it in Device.deviceCodenames }) {
-                Device.currentDeviceCard = card; Device.currentDeviceCard.deviceCodename[0] =
-                    Device.deviceCodenames[0]
+            if (card.deviceCodename.any { Device.deviceCodenames.contains(it) }) {
+                Device.currentDeviceCard = card; Device.currentDeviceCard.deviceCodename[0]
                 prefs.edit {
                     putInt(
                         "saved_device_card",
@@ -112,6 +111,7 @@ fun vars() {
                     )
                     putBoolean("unknown", false)
                 }
+                Device.savedDeviceCard = card
                 isSpecial(card)
                 Warning.value = false
                 return@forEachIndexed
@@ -136,6 +136,7 @@ fun vars() {
 
 
     if (BuildConfig.DEBUG) {
+        println("M3K Helper - First Boot: $FirstBoot")
         println("M3K Helper - Boot is present: ${M3KApp.getString(BootIsPresent.value)}")
         println("M3K Helper - Windows is present: ${M3KApp.getString(WindowsIsPresent.value)}")
         println("M3K Helper - Panel Type: ${Device.panelType.value}")

@@ -54,6 +54,9 @@ Java_com_remtrik_m3khelper_util_VariablesKt_getPanelNative(
         return env->NewStringUTF("Unknown");
     }
 
+    panel.erase(0, panel.find("msm_drm"));
+    panel.erase(panel.find("android"), panel.length());
+
     std::transform(panel.begin(), panel.end(), panel.begin(), ::tolower);
 
     if (panel.find("samsung") != std::string::npos ||
