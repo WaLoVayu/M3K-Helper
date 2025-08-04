@@ -159,8 +159,8 @@ fun vars() {
     }
 }
 
-fun fastLoadSavedDevice(override: Boolean = true) {
-    Device.currentDeviceCard = if ((OverrideDevice && override) || override) {
+fun fastLoadSavedDevice(override: Boolean = OverrideDevice) {
+    Device.currentDeviceCard = if (override) {
         deviceCardsArray.find {
             it.deviceCodename.contains(
                 prefs.getString(

@@ -175,6 +175,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                             if (!(it.deviceCodename.contentEquals(beyond1Card.deviceCodename)
                                         || (it.deviceCodename.contentEquals(emu64xaCard.deviceCodename) && !BuildConfig.DEBUG)
                                         || it.deviceCodename.contentEquals(unknownCard.deviceCodename)
+                                        || it.deviceCodename.contentEquals(Device.savedDeviceCard.deviceCodename)
                                         )
                             ) {
                                 DropdownMenuItem(
@@ -201,7 +202,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                                                 overridenDeviceName = it.deviceName
                                                 expanded = !expanded
 
-                                                fastLoadSavedDevice()
+                                                fastLoadSavedDevice(true)
                                             }
                                         }
                                     }
