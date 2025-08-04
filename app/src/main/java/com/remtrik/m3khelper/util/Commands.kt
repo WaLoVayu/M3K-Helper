@@ -8,49 +8,49 @@ fun dumpBoot(where: Int) {
     val slot = ShellUtils.fastCmd("getprop ro.boot.slot_suffix")
     when (where) {
         1 -> {
-            if (mountStatus()) {
-                mountWindows()
-                if (!mountStatus()) {
-                    ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$sdcardpath/Windows/boot.img bs=32M")
-                }
-                umountWindows()
-            } else ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$sdcardpath/Windows/boot.img bs=32M")
+            withMountedWindows {
+                ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$SdcardPath/Windows/boot.img bs=32M")
+            }
         }
 
         2 -> {
-            ShellUtils.fastCmd("rm -rf $sdcardpath/m3khelper || true ")
-            ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$sdcardpath/boot.img")
+            ShellUtils.fastCmd("rm -rf $SdcardPath/m3khelper || true ")
+            ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$SdcardPath/boot.img")
         }
     }
     bootBackupStatus()
 }
 
-fun mountStatus(): Boolean {
+fun isMounted(): Boolean {
     return ShellUtils.fastCmd("mount | grep ${ShellUtils.fastCmd("readlink -fn /dev/block/bootdevice/by-name/win")}")
         .isEmpty()
 }
 
 fun mountWindows() {
-    ShellUtils.fastCmd("mkdir $sdcardpath/Windows || true")
+    ShellUtils.fastCmd("mkdir $SdcardPath/Windows || true")
     ShellUtils.fastCmd("su -mm -c mount.ntfs /dev/block/by-name/win ${CurrentDeviceCommands.mountPath}/Windows")
 }
 
 fun umountWindows() {
     ShellUtils.fastCmd("su -mm -c umount ${CurrentDeviceCommands.mountPath}/Windows")
-    ShellUtils.fastCmd("rmdir $sdcardpath/Windows")
+    ShellUtils.fastCmd("rmdir $SdcardPath/Windows")
+}
+
+fun withMountedWindows(block: () -> Unit) {
+    val wasMounted = isMounted()
+    try {
+        if (wasMounted) mountWindows()
+        block()
+        true
+    } finally {
+        if (wasMounted) umountWindows()
+    }
 }
 
 fun dumpModem() {
-    if (mountStatus()) {
-        mountWindows()
+    withMountedWindows {
         val path =
-            ShellUtils.fastCmd("find $sdcardpath/Windows/Windows/System32/DriverStore/FileRepository -name qcremotefs8150.inf_arm64_*")
-        ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/modemst1 of=$path/bootmodem_fs1 bs=8388608")
-        ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/modemst2 of=$path/bootmodem_fs2 bs=8388608")
-        umountWindows()
-    } else {
-        val path =
-            ShellUtils.fastCmd("find $sdcardpath/Windows/Windows/System32/DriverStore/FileRepository -name qcremotefs8150.inf_arm64_*")
+            ShellUtils.fastCmd("find $SdcardPath/Windows/Windows/System32/DriverStore/FileRepository -name qcremotefs8150.inf_arm64_*")
         ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/modemst1 of=$path/bootmodem_fs1 bs=8388608")
         ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/modemst2 of=$path/bootmodem_fs2 bs=8388608")
     }
@@ -64,35 +64,25 @@ fun flashUEFI(uefiPath: String) {
 fun checkSensors(): Boolean {
     return if (!Device.currentDeviceCard.sensors) true
     else {
-        if (mountStatus()) {
-            mountWindows()
-            val check =
-                ShellUtils.fastCmd("find $sdcardpath/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors/*")
+        var check = false
+        withMountedWindows {
+            check =
+                ShellUtils.fastCmd("find $SdcardPath/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors/*")
                     .isNotEmpty()
-            umountWindows()
-            check
-        } else {
-            val check =
-                ShellUtils.fastCmd("find $sdcardpath/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors/*")
-                    .isNotEmpty()
-            check
         }
+        check
     }
 }
 
 fun dumpSensors() {
-    if (mountStatus()) {
-        mountWindows()
-        ShellUtils.fastCmd("cp -r /vendor/persist/sensors/* $sdcardpath/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors")
-        umountWindows()
-    } else {
-        ShellUtils.fastCmd("cp -r /vendor/persist/sensors/* $sdcardpath/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors")
+    withMountedWindows {
+        ShellUtils.fastCmd("cp -r /vendor/persist/sensors/* $SdcardPath/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors")
     }
 }
 
 fun quickBoot(uefiPath: String) {
     if (!Device.currentDeviceCard.noMount) {
-        if (ShellUtils.fastCmd("find $sdcardpath/Windows/boot.img")
+        if (ShellUtils.fastCmd("find $SdcardPath/Windows/boot.img")
                 .isEmpty()
         ) {
             dumpBoot(1)
@@ -104,7 +94,7 @@ fun quickBoot(uefiPath: String) {
             dumpSensors()
         }
     }
-    if (ShellUtils.fastCmd("find $sdcardpath/boot.img")
+    if (ShellUtils.fastCmd("find $SdcardPath/boot.img")
             .isEmpty()
     ) {
         dumpBoot(2)
@@ -114,10 +104,12 @@ fun quickBoot(uefiPath: String) {
 }
 
 fun Context.restart() {
-    val packageManager = packageManager
-    val intent = packageManager.getLaunchIntentForPackage(packageName)!!
-    val componentName = intent.component!!
-    val restartIntent = Intent.makeRestartActivityTask(componentName)
-    startActivity(restartIntent)
-    Runtime.getRuntime().exit(0)
+    try {
+        packageManager.getLaunchIntentForPackage(packageName)?.let {
+            startService(Intent.makeRestartActivityTask(it.component))
+            Runtime.getRuntime().exit(0)
+        }
+    } catch (e: Exception) {
+        println("M3K Helper - $e")
+    }
 }

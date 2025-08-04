@@ -10,10 +10,12 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import com.remtrik.m3khelper.M3KApp
-import com.remtrik.m3khelper.util.prefs
+import com.remtrik.m3khelper.prefs
 
 private val DarkColorScheme = darkColorScheme(
     primary = m3k_theme_dark_primary,
@@ -35,22 +37,24 @@ private val LightColorScheme = lightColorScheme(
     onSecondaryContainer = m3k_theme_light_onSecondaryContainer
 )
 
+val themeReapply: MutableState<Boolean> = mutableStateOf(false)
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun M3KHelperTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val themeSettings = remember {
+    val themeSettings = remember(themeReapply.value) {
         ThemeSettings(
-            red = prefs.getFloat("theme_engine_red", 0f),
-            green = prefs.getFloat("theme_engine_green", 0f),
-            blue = prefs.getFloat("theme_engine_blue", 0f),
+            red = prefs.getFloat("theme_engine_color_R", 0f),
+            green = prefs.getFloat("theme_engine_color_G", 0f),
+            blue = prefs.getFloat("theme_engine_color_B", 0f),
             enableThemeEngine = prefs.getBoolean("enable_theme_engine", false),
-            enableMaterialU = prefs.getBoolean("enable_materialu", true)
+            enableMaterialU = prefs.getBoolean("enable_materialu", true),
+            style = PaletteStyle.valueOf(prefs.getString("paletteStyle", "TonalSpot").toString())
         )
     }
-
     val colorScheme = remember(darkTheme, themeSettings) {
         when {
             themeSettings.enableMaterialU
@@ -65,7 +69,8 @@ fun M3KHelperTheme(
                         green = themeSettings.green,
                         blue = themeSettings.blue
                     ),
-                    isDark = darkTheme
+                    isDark = darkTheme,
+                    style = themeSettings.style
                 )
 
             darkTheme && !themeSettings.enableThemeEngine && !themeSettings.enableMaterialU -> DarkColorScheme
@@ -86,5 +91,6 @@ private data class ThemeSettings(
     val green: Float,
     val blue: Float,
     val enableThemeEngine: Boolean,
-    val enableMaterialU: Boolean
+    val enableMaterialU: Boolean,
+    val style: PaletteStyle
 )

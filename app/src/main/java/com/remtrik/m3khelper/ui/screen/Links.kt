@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -15,21 +16,19 @@ import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.ui.component.LinkButton
+import com.remtrik.m3khelper.ui.component.TopAppBar
 import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.sdp
 
@@ -39,37 +38,26 @@ import com.remtrik.m3khelper.util.sdp
 @Composable
 fun LinksScreen(navigator: DestinationsNavigator) {
     val isLandscape = M3KApp.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = M3KApp.getString(R.string.links),
-                        fontSize = FontSize,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                /*actions = {
-                    IconButton(
-                        onClick = { navigator.navigate(SettingsScreenDestination) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = null
-                        )
-                    }
-                }*/
+                navigator = navigator,
+                text = R.string.links,
+                isNavigate = false,
+                isPopBack = false
             )
         })
     { innerPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(10.sdp()),
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(innerPadding)
                 .padding(horizontal = PaddingValue)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .fillMaxHeight(),
         ) {
             if (isLandscape) {
                 Row(
@@ -101,7 +89,7 @@ private fun FilesLinks() {
         && !(Device.currentDeviceCard.noDrivers || Device.currentDeviceCard.noUEFI)
     ) {
         LinkButton(
-            M3KApp.getString(
+            stringResource(
                 R.string.driversuefi,
                 Device.currentDeviceCard.deviceName
             ),
@@ -114,7 +102,7 @@ private fun FilesLinks() {
         when {
             !Device.currentDeviceCard.noDrivers -> {
                 LinkButton(
-                    M3KApp.getString(
+                    stringResource(
                         R.string.drivers,
                         Device.currentDeviceCard.deviceName
                     ),
@@ -128,7 +116,7 @@ private fun FilesLinks() {
         when {
             !Device.currentDeviceCard.noUEFI -> {
                 LinkButton(
-                    M3KApp.getString(
+                    stringResource(
                         R.string.uefi,
                         Device.currentDeviceCard.deviceName
                     ),
@@ -147,7 +135,7 @@ private fun SocialLinks() {
     when {
         !Device.currentDeviceCard.noGroup -> {
             LinkButton(
-                M3KApp.getString(R.string.group, Device.currentDeviceCard.deviceName),
+                stringResource(R.string.group, Device.currentDeviceCard.deviceName),
                 null,
                 Device.currentDeviceCard.deviceGroup,
                 Icons.AutoMirrored.Filled.Message,
@@ -158,7 +146,7 @@ private fun SocialLinks() {
     when {
         !Device.currentDeviceCard.noGuide -> {
             LinkButton(
-                M3KApp.getString(R.string.guide, Device.currentDeviceCard.deviceName),
+                stringResource(R.string.guide, Device.currentDeviceCard.deviceName),
                 null,
                 Device.currentDeviceCard.deviceGuide,
                 Icons.Filled.Book,

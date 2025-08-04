@@ -5,25 +5,20 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
@@ -35,9 +30,8 @@ import com.remtrik.m3khelper.ui.component.DeviceImage
 import com.remtrik.m3khelper.ui.component.InfoCard
 import com.remtrik.m3khelper.ui.component.MountButton
 import com.remtrik.m3khelper.ui.component.QuickBootButton
+import com.remtrik.m3khelper.ui.component.TopAppBar
 import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.FontSize
-import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.sdp
 
@@ -46,28 +40,18 @@ import com.remtrik.m3khelper.util.sdp
 @Destination<RootGraph>(start = true)
 @Composable
 fun HomeScreen(navigator: DestinationsNavigator) {
+    val isLandscape = M3KApp.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val scrollState = rememberScrollState()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = M3KApp.getString(R.string.app_name),
-                        fontSize = FontSize,
-                        lineHeight = LineHeight,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = { navigator.navigate(SettingsScreenDestination) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = null,
-                            modifier = Modifier.size(25.sdp())
-                        )
-                    }
-                },
+                navigator = navigator,
+                text = R.string.app_name,
+                isNavigate = true,
+                isPopBack = false,
+                destination = SettingsScreenDestination,
+                icon = Filled.Settings
             )
         }
     )
@@ -75,76 +59,49 @@ fun HomeScreen(navigator: DestinationsNavigator) {
         Column(
             verticalArrangement = Arrangement.spacedBy(10.sdp()),
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(innerPadding)
                 .padding(horizontal = PaddingValue)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .fillMaxHeight(),
         ) {
-            if (M3KApp.resources.configuration.orientation != Configuration.ORIENTATION_PORTRAIT) Landscape()
-            else Portrait()
-        }
-    }
-}
-
-@Composable
-private fun Landscape() {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(10.sdp()),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.sdp()),
-            modifier = Modifier.width(300.sdp())
-        ) {
-            InfoCard(
-                Modifier
-                    .height(210.sdp())
-                    .width(300.sdp())
-            )
-            DeviceImage(
-                Modifier
-                    .height(210.sdp())
-                    .width(300.sdp())
-            )
-        }
-        Column(
-            verticalArrangement = Arrangement.spacedBy(10.sdp()),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            when {
-                !Device.currentDeviceCard.noBoot -> {
-                    BackupButton()
+            if (isLandscape) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.sdp()),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.sdp()),
+                        modifier = Modifier.width(300.sdp())
+                    ) {
+                        DeviceInfo(
+                            Modifier
+                                .height(210.sdp())
+                                .width(300.sdp())
+                        )
+                    }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(10.sdp()),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Buttons()
+                    }
                 }
-            }
-            when {
-                !Device.currentDeviceCard.noMount -> {
-                    MountButton()
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.sdp())
+                ) {
+                    DeviceInfo(Modifier.height(416.sdp()))
                 }
-            }
-            when {
-                !Device.currentDeviceCard.noFlash -> {
-                    QuickBootButton()
-                }
+                Buttons()
             }
         }
     }
 }
 
 @Composable
-private fun Portrait() {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(10.sdp())
-    ) {
-        DeviceImage(
-            Modifier
-                .height(416.sdp())
-        )
-        InfoCard(
-            Modifier
-                .height(416.sdp())
-        )
-    }
+private fun Buttons() {
     when {
         !Device.currentDeviceCard.noBoot -> {
             BackupButton()
@@ -161,4 +118,10 @@ private fun Portrait() {
             QuickBootButton()
         }
     }
+}
+
+@Composable
+private fun DeviceInfo(modifier: Modifier) {
+    DeviceImage(modifier)
+    InfoCard(modifier)
 }

@@ -1,6 +1,5 @@
 package com.remtrik.m3khelper.qstiles
 
-import android.service.quicksettings.Tile
 import android.service.quicksettings.Tile.STATE_ACTIVE
 import android.service.quicksettings.Tile.STATE_UNAVAILABLE
 import android.service.quicksettings.TileService
@@ -8,7 +7,7 @@ import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FirstBoot
-import com.remtrik.m3khelper.util.mountStatus
+import com.remtrik.m3khelper.util.isMounted
 import com.remtrik.m3khelper.util.mountWindows
 import com.remtrik.m3khelper.util.quickBoot
 import com.remtrik.m3khelper.util.umountWindows
@@ -53,7 +52,7 @@ class MountTile : CommonTileService() { // more than just a PoC
             return
         }
 
-        if (mountStatus()) {
+        if (isMounted()) {
             enableTile(R.string.mnt_question)
         } else {
             enableTile(R.string.umnt_question)
@@ -63,7 +62,7 @@ class MountTile : CommonTileService() { // more than just a PoC
     override fun onClick() {
         super.onClick()
 
-        if (mountStatus()) mountWindows() else umountWindows()
+        if (isMounted()) mountWindows() else umountWindows()
 
         onStartListening()
     }

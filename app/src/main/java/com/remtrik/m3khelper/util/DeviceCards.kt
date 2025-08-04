@@ -105,7 +105,7 @@ val berylliumCard: DeviceCard = DeviceCard(
 )
 
 val miatollCard: DeviceCard = DeviceCard(
-    arrayOf("miatoll", "durandal", "curtana_india", "joyeuse"),
+    arrayOf("miatoll", "durandal", "curtana_india", "joyeuse", "miatoll_mainline"),
     "Redmi Note 9 Pro",
     drawable.miatoll,
     "https://github.com/woa-miatoll/Port-Windows-11-Redmi-Note-9-Pro",
@@ -158,7 +158,9 @@ val mh2lm5gCard: DeviceCard = DeviceCard(
 val mh2Card: DeviceCard = mh2lm5gCard.copy(
     deviceCodename = arrayOf("mh2"),
     deviceName = "LG G8X",
-    deviceGuide = "https://github.com/n00b69/woa-mh2lm"
+    deviceGuide = "https://github.com/n00b69/woa-mh2lm",
+    deviceUEFI = "https://github.com/n00b69/woa-mh2lm/releases/tag/UEFI",
+    deviceDrivers = "https://github.com/n00b69/woa-mh2lm5g/releases/tag/Drivers"
 )
 
 val betaCard: DeviceCard = DeviceCard(
@@ -304,6 +306,5 @@ val deviceCardsArray: Array<DeviceCard> =
 
 val specialDeviceCardsArray: Array<DeviceCard> =
     arrayOf(
-        nabuCard,
-        emu64xaCard
+        if (BuildConfig.DEBUG) emu64xaCard else nabuCard
     )

@@ -14,15 +14,12 @@ import com.kyant.m3color.scheme.SchemeNeutral
 import com.kyant.m3color.scheme.SchemeRainbow
 import com.kyant.m3color.scheme.SchemeTonalSpot
 import com.kyant.m3color.scheme.SchemeVibrant
-import com.remtrik.m3khelper.util.prefs
 
 @Stable
 fun dynamicColorScheme(
     keyColor: Color,
     isDark: Boolean,
-    style: PaletteStyle = PaletteStyle.valueOf(
-        prefs.getString("paletteStyle", "TonalSpot").toString()
-    ),
+    style: PaletteStyle,
     contrastLevel: Double = 0.0
 ): ColorScheme {
     val hct = Hct.fromInt(keyColor.toArgb())

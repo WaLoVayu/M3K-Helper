@@ -33,10 +33,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R.drawable.ic_backup
 import com.remtrik.m3khelper.R.drawable.ic_folder
 import com.remtrik.m3khelper.R.drawable.ic_folder_open
@@ -48,7 +48,7 @@ import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.UEFICard
 import com.remtrik.m3khelper.util.dumpBoot
-import com.remtrik.m3khelper.util.mountStatus
+import com.remtrik.m3khelper.util.isMounted
 import com.remtrik.m3khelper.util.mountWindows
 import com.remtrik.m3khelper.util.quickBoot
 import com.remtrik.m3khelper.util.sdp
@@ -67,6 +67,7 @@ fun CommandButton(
 ) {
     val showDialog = remember { mutableStateOf(false) }
     val showSpinner = remember { mutableStateOf(false) }
+
     val scope = rememberCoroutineScope()
 
     ElevatedCard(
@@ -89,7 +90,7 @@ fun CommandButton(
                 Dialog(
                     icon = painterResource(id = icon),
                     title = null,
-                    description = M3KApp.getString(question),
+                    description = stringResource(question),
                     showDialog = showDialog.value,
                     onDismiss = { showDialog.value = false },
                     onConfirm = {
@@ -121,13 +122,13 @@ fun CommandButton(
             )
             Column {
                 Text(
-                    M3KApp.getString(title),
+                    stringResource(title),
                     fontWeight = FontWeight.Bold,
                     fontSize = FontSize,
                     lineHeight = LineHeight,
                 )
                 Text(
-                    M3KApp.getString(subtitle),
+                    stringResource(subtitle),
                     lineHeight = LineHeight,
                     fontSize = FontSize
                 )
@@ -141,7 +142,7 @@ fun LinkButton(
     title: String,
     subtitle: String?,
     link: String,
-    icon: Any,
+    icon: Any?,
     localUriHandler: UriHandler
 ) {
     ElevatedCard(
@@ -157,21 +158,23 @@ fun LinkButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.sdp())
         ) {
-            if (icon is ImageVector) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(40.sdp()),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            } else if (icon is Int) {
-                Icon(
-                    modifier = Modifier
-                        .size(40.sdp()),
-                    painter = painterResource(id = icon),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
+            if (icon != null) {
+                if (icon is ImageVector) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(40.sdp()),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                } else if (icon is Int) {
+                    Icon(
+                        modifier = Modifier
+                            .size(40.sdp()),
+                        painter = painterResource(id = icon),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
             Column {
                 Text(
@@ -229,7 +232,7 @@ fun BackupButton() {
                     text = {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = M3KApp.getString(string.backup_boot_question),
+                            text = stringResource(string.backup_boot_question),
                             textAlign = TextAlign.Center,
                             fontSize = FontSize,
                             lineHeight = LineHeight
@@ -258,7 +261,7 @@ fun BackupButton() {
                                             top = 2.sdp(),
                                             bottom = 2.sdp()
                                         ),
-                                        text = M3KApp.getString(string.android),
+                                        text = stringResource(string.android),
                                         fontSize = FontSize
                                     )
                                 }
@@ -282,7 +285,7 @@ fun BackupButton() {
                                                     top = 2.sdp(),
                                                     bottom = 2.sdp()
                                                 ),
-                                                text = M3KApp.getString(string.windows),
+                                                text = stringResource(string.windows),
                                                 fontSize = FontSize
                                             )
                                         }
@@ -297,7 +300,7 @@ fun BackupButton() {
                                             top = 2.sdp(),
                                             bottom = 2.sdp()
                                         ),
-                                        text = M3KApp.getString(string.no),
+                                        text = stringResource(string.no),
                                         fontSize = FontSize
                                     )
                                 }
@@ -325,13 +328,13 @@ fun BackupButton() {
             )
             Column {
                 Text(
-                    M3KApp.getString(string.backup_boot_title),
+                    stringResource(string.backup_boot_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = FontSize,
                     lineHeight = LineHeight,
                 )
                 Text(
-                    M3KApp.getString(string.backup_boot_subtitle),
+                    stringResource(string.backup_boot_subtitle),
                     lineHeight = LineHeight,
                     fontSize = FontSize
                 )
@@ -343,7 +346,8 @@ fun BackupButton() {
 @Composable
 fun MountButton() {
     val showMountDialog = remember { mutableStateOf(false) }
-    var mount by remember { mutableStateOf(mountStatus()) }
+    var mount by remember { mutableStateOf(isMounted()) }
+
     val scope = rememberCoroutineScope()
 
     ElevatedCard(
@@ -358,7 +362,7 @@ fun MountButton() {
                     Dialog(
                         icon = painterResource(id = ic_folder_open),
                         title = null,
-                        description = M3KApp.getString(string.mnt_question),
+                        description = stringResource(string.mnt_question),
                         showDialog = showMountDialog.value,
                         onDismiss = { showMountDialog.value = false },
                         onConfirm = {
@@ -366,7 +370,7 @@ fun MountButton() {
                                 withContext(Dispatchers.IO) {
                                     mountWindows()
                                     showMountDialog.value = false
-                                    mount = mountStatus()
+                                    mount = isMounted()
                                 }
                             }
                         }
@@ -375,7 +379,7 @@ fun MountButton() {
                     Dialog(
                         painterResource(id = ic_folder),
                         null,
-                        M3KApp.getString(string.umnt_question),
+                        stringResource(string.umnt_question),
                         showMountDialog.value,
                         onDismiss = { showMountDialog.value = false; },
                         onConfirm = {
@@ -383,7 +387,7 @@ fun MountButton() {
                                 withContext(Dispatchers.IO) {
                                     umountWindows()
                                     showMountDialog.value = false
-                                    mount = mountStatus()
+                                    mount = isMounted()
                                 }
                             }
                         }
@@ -419,13 +423,13 @@ fun MountButton() {
                         string.umnt_title
                     }
                 Text(
-                    M3KApp.getString(mounted),
+                    stringResource(mounted),
                     fontWeight = FontWeight.Bold,
                     lineHeight = LineHeight,
                     fontSize = FontSize
                 )
                 Text(
-                    M3KApp.getString(string.mnt_subtitle),
+                    stringResource(string.mnt_subtitle),
                     lineHeight = LineHeight,
                     fontSize = FontSize
                 )
@@ -472,7 +476,7 @@ fun QuickBootButton() {
                     text = {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = M3KApp.getString(string.quickboot_question1),
+                            text = stringResource(string.quickboot_question1),
                             textAlign = TextAlign.Center,
                             fontSize = FontSize
                         )
@@ -511,7 +515,7 @@ fun QuickBootButton() {
                                                 top = 2.sdp(),
                                                 bottom = 2.sdp()
                                             ),
-                                            text = M3KApp.getString(
+                                            text = stringResource(
                                                 when (type.uefiType) {
                                                     120 -> string.quickboot_question120
                                                     90 -> string.quickboot_question90
@@ -532,7 +536,7 @@ fun QuickBootButton() {
                                             top = 2.sdp(),
                                             bottom = 2.sdp()
                                         ),
-                                        text = M3KApp.getString(string.no),
+                                        text = stringResource(string.no),
                                         fontSize = FontSize
                                     )
                                 }
@@ -572,13 +576,13 @@ fun QuickBootButton() {
                     subtitle = string.uefi_not_found_subtitle
                 }
                 Text(
-                    M3KApp.getString(title),
+                    stringResource(title),
                     fontWeight = FontWeight.Bold,
                     lineHeight = LineHeight,
                     fontSize = FontSize
                 )
                 Text(
-                    M3KApp.getString(subtitle),
+                    stringResource(subtitle),
                     lineHeight = LineHeight,
                     fontSize = FontSize
                 )
@@ -589,7 +593,7 @@ fun QuickBootButton() {
 
 @Composable
 fun SwitchItem(
-    icon: ImageVector? = null,
+    icon: Any,
     title: String?,
     summary: String? = null,
     checked: Boolean,
@@ -616,20 +620,32 @@ fun SwitchItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.sdp())
         ) {
-            if (icon != null) {
-                Column(Modifier.padding(end = 10.sdp())) {
+            Column(Modifier.padding(end = 10.sdp())) {
+                if (icon is ImageVector) {
                     Icon(
-                        icon,
-                        title,
-                        Modifier
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier
                             .size(25.sdp())
-                            .align(Alignment.CenterHorizontally)
+                            .align(Alignment.CenterHorizontally),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                } else if (icon is Int) {
+                    Icon(
+                        modifier = Modifier
+                            .size(25.sdp())
+                            .align(Alignment.CenterHorizontally),
+                        painter = painterResource(id = icon),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
-            Column(Modifier
-                .weight(1f)
-                .fillMaxWidth()) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
                 if (title != null) {
                     Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
                 }
@@ -651,7 +667,7 @@ fun SwitchItem(
 
 @Composable
 fun ButtonItem(
-    icon: ImageVector? = null,
+    icon: Any,
     title: String?,
     summary: String? = null,
     onClick: () -> Unit
@@ -667,16 +683,32 @@ fun ButtonItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.sdp())
         ) {
-            if (icon != null) {
-                Column(Modifier.padding(end = 10.sdp())) {
-                    Icon(icon, title, Modifier
-                        .size(25.sdp())
-                        .align(Alignment.CenterHorizontally))
+            Column(Modifier.padding(end = 10.sdp())) {
+                if (icon is ImageVector) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(25.sdp())
+                            .align(Alignment.CenterHorizontally),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                } else if (icon is Int) {
+                    Icon(
+                        modifier = Modifier
+                            .size(25.sdp())
+                            .align(Alignment.CenterHorizontally),
+                        painter = painterResource(id = icon),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
-            Column(Modifier
-                .weight(1f)
-                .fillMaxWidth()) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) {
                 if (title != null) {
                     Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
                 }

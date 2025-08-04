@@ -1,24 +1,21 @@
 package com.remtrik.m3khelper.ui.screen
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DevicesOther
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Style
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -26,11 +23,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,27 +32,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.core.content.edit
-import androidx.lifecycle.compose.dropUnlessResumed
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ThemeEngineScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.remtrik.m3khelper.BuildConfig
+import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.prefs
+import com.remtrik.m3khelper.ui.component.AboutCard
 import com.remtrik.m3khelper.ui.component.ButtonItem
 import com.remtrik.m3khelper.ui.component.SwitchItem
+import com.remtrik.m3khelper.ui.component.TopAppBar
+import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.beyond1Card
+import com.remtrik.m3khelper.util.collapseTransition
 import com.remtrik.m3khelper.util.deviceCardsArray
 import com.remtrik.m3khelper.util.emu64xaCard
+import com.remtrik.m3khelper.util.expandTransition
 import com.remtrik.m3khelper.util.fastLoadSavedDevice
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.showAboutCard
@@ -72,58 +70,51 @@ import kotlinx.coroutines.withContext
 @Destination<RootGraph>
 @Composable
 fun SettingsScreen(navigator: DestinationsNavigator) {
+    var checkUpdate by rememberSaveable {
+        mutableStateOf(
+            prefs.getBoolean("check_update", true)
+        )
+    }
+    var forceRotation by rememberSaveable {
+        mutableStateOf(
+            prefs.getBoolean("force_rotation", false)
+        )
+    }
+    var overrideDevice by rememberSaveable {
+        mutableStateOf(
+            prefs.getBoolean("override_device", false)
+        )
+    }
+    var overridenDeviceName by rememberSaveable {
+        mutableStateOf(
+            prefs.getString("overriden_device_name", "Poco X3 Pro")
+        )
+    }
+
     var expanded by remember { mutableStateOf(false) }
+
     val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                navigationIcon = {
-                    IconButton(
-                        onClick = dropUnlessResumed { navigator.popBackStack() },
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.sdp())
-                        )
-                    }
-                },
-                title = {
-                    Text(
-                        text = stringResource(R.string.settings),
-                        fontSize = FontSize,
-                        lineHeight = LineHeight,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                navigator = navigator,
+                text = R.string.settings,
+                isNavigate = false,
+                isPopBack = true
             )
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .verticalScroll(scrollState)
                 .padding(innerPadding)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .fillMaxHeight(),
         ) {
-            val context = LocalContext.current
-            val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-            var checkUpdate by rememberSaveable {
-                mutableStateOf(
-                    prefs.getBoolean("check_update", true)
-                )
-            }
-            var overrideDevice by rememberSaveable {
-                mutableStateOf(
-                    prefs.getBoolean("override_device", false)
-                )
-            }
-            var overridenDeviceName by rememberSaveable {
-                mutableStateOf(
-                    prefs.getString("overriden_device_name", "Poco X3 Pro")
-                )
-            }
             ButtonItem(
-                icon = Icons.Filled.Palette,
+                icon = Icons.Filled.Style,
                 title = stringResource(R.string.theme_engine),
                 onClick = { navigator.navigate(ThemeEngineScreenDestination) }
             )
@@ -133,8 +124,10 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 summary = stringResource(R.string.autoupdate_summary),
                 checked = checkUpdate
             ) {
-                prefs.edit { putBoolean("check_update", it) }
-                checkUpdate = it
+                scope.launch(Dispatchers.IO) {
+                    prefs.edit { putBoolean("check_update", it) }
+                    checkUpdate = it
+                }
             }
             SwitchItem(
                 icon = Icons.Filled.DevicesOther,
@@ -142,13 +135,16 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 summary = "Use this if your device is detected as wrong model",
                 checked = overrideDevice
             ) {
-                prefs.edit { putBoolean("override_device", it) }
-                overrideDevice = it
+                scope.launch(Dispatchers.IO) {
+                    prefs.edit { putBoolean("override_device", it) }
+                    overrideDevice = it
+                    fastLoadSavedDevice(it)
+                }
             }
             AnimatedVisibility(
                 visible = overrideDevice,
-                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-                exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+                enter = expandTransition,
+                exit = collapseTransition,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Card(
@@ -177,7 +173,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     ) {
                         deviceCardsArray.forEach {
                             if (!(it.deviceCodename.contentEquals(beyond1Card.deviceCodename)
-                                        || it.deviceCodename.contentEquals(emu64xaCard.deviceCodename)
+                                        || (it.deviceCodename.contentEquals(emu64xaCard.deviceCodename) && !BuildConfig.DEBUG)
                                         || it.deviceCodename.contentEquals(unknownCard.deviceCodename)
                                         )
                             ) {
@@ -190,22 +186,21 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                                         )
                                     },
                                     onClick = {
-                                        com.remtrik.m3khelper.util.prefs.edit {
-                                            putString(
-                                                "overriden_device_codename",
-                                                it.deviceCodename[0]
-                                            )
-                                        }
-                                        com.remtrik.m3khelper.util.prefs.edit {
-                                            putString(
-                                                "overriden_device_name",
-                                                it.deviceName
-                                            )
-                                        }
-                                        overridenDeviceName = it.deviceName
-                                        expanded = !expanded
                                         scope.launch {
                                             withContext(Dispatchers.IO) {
+                                                prefs.edit {
+                                                    putString(
+                                                        "overriden_device_codename",
+                                                        it.deviceCodename[0]
+                                                    )
+                                                    putString(
+                                                        "overriden_device_name",
+                                                        it.deviceName
+                                                    )
+                                                }
+                                                overridenDeviceName = it.deviceName
+                                                expanded = !expanded
+
                                                 fastLoadSavedDevice()
                                             }
                                         }
@@ -216,11 +211,37 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     }
                 }
             }
+            AnimatedVisibility(
+                visible = !Device.special.value,
+                enter = expandTransition,
+                exit = collapseTransition,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SwitchItem(
+                    icon = R.drawable.ic_rotation,
+                    title = stringResource(R.string.force_rotation),
+                    summary = stringResource(R.string.force_rotation_summary),
+                    checked = forceRotation
+                ) {
+                    scope.launch(Dispatchers.IO) {
+                        prefs.edit { putBoolean("force_rotation", it) }
+                        forceRotation = it
+                        if (it) M3KApp.resources.configuration.orientation =
+                            Configuration.ORIENTATION_UNDEFINED
+                        else Configuration.ORIENTATION_PORTRAIT
+                    }
+                }
+            }
             ButtonItem(
                 icon = Icons.Filled.Info,
                 title = stringResource(R.string.about),
                 onClick = { showAboutCard.value = true }
             )
+            when {
+                showAboutCard.value -> {
+                    AboutCard()
+                }
+            }
         }
     }
 }
