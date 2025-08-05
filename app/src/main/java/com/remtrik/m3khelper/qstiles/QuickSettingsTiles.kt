@@ -3,13 +3,13 @@ package com.remtrik.m3khelper.qstiles
 import android.service.quicksettings.Tile.STATE_ACTIVE
 import android.service.quicksettings.Tile.STATE_UNAVAILABLE
 import android.service.quicksettings.TileService
-import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FirstBoot
 import com.remtrik.m3khelper.util.isMounted
 import com.remtrik.m3khelper.util.mountWindows
 import com.remtrik.m3khelper.util.quickBoot
+import com.remtrik.m3khelper.util.string
 import com.remtrik.m3khelper.util.umountWindows
 
 // might use in future
@@ -27,7 +27,7 @@ abstract class CommonTileService : TileService() {
     protected fun disableTile(subtitleString: Int?) {
         qsTile.apply {
             state = STATE_UNAVAILABLE
-            subtitleString?.let { subtitle = M3KApp.getString(it) }
+            subtitleString?.let { subtitle = it.string() }
             updateTile()
         }
     }
@@ -35,8 +35,8 @@ abstract class CommonTileService : TileService() {
     protected fun enableTile(labelString: Int? = null, subtitleString: Int? = null) {
         qsTile.apply {
             state = STATE_ACTIVE
-            labelString?.let { label = M3KApp.getString(it) }
-            subtitleString?.let { subtitle = M3KApp.getString(it) }
+            labelString?.let { label = it.string() }
+            subtitleString?.let { subtitle = it.string() }
         }
     }
 }

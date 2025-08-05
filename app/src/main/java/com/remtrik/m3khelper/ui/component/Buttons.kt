@@ -52,6 +52,7 @@ import com.remtrik.m3khelper.util.isMounted
 import com.remtrik.m3khelper.util.mountWindows
 import com.remtrik.m3khelper.util.quickBoot
 import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.showBootBackupErorDialog
 import com.remtrik.m3khelper.util.umountWindows
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -250,7 +251,9 @@ fun BackupButton() {
                                         withContext(Dispatchers.IO) {
                                             showBackupDialog.value = false
                                             showBackupSpinner.value = true
-                                            dumpBoot(2)
+                                            if (!dumpBoot(2)) {
+                                                showBootBackupErorDialog.value = true
+                                            }
                                             showBackupSpinner.value = false
                                         }
                                     }
@@ -274,7 +277,9 @@ fun BackupButton() {
                                                 withContext(Dispatchers.IO) {
                                                     showBackupDialog.value = false
                                                     showBackupSpinner.value = true
-                                                    dumpBoot(1)
+                                                    if (!dumpBoot(1)) {
+                                                        showBootBackupErorDialog.value = true
+                                                    }
                                                     showBackupSpinner.value = false
                                                 }
                                             }
@@ -487,8 +492,7 @@ fun QuickBootButton() {
                             Modifier.align(Alignment.CenterHorizontally),
                             horizontalArrangement = Arrangement.spacedBy(10.sdp())
                         ) {
-                            for (type: UEFICard in Device.uefiCardsArray) {
-                                println("${type.uefiType} ${type.uefiPath}")
+                            Device.uefiCardsArray.forEach {
                                 AssistChip(
                                     onClick = {
                                         scope.launch {
@@ -496,14 +500,7 @@ fun QuickBootButton() {
                                                 showQuickBootDialog.value = false
                                                 showQuickBootSpinner.value = true
                                                 quickBoot(
-                                                    Device.uefiCardsArray[
-                                                        when (type.uefiType) {
-                                                            120 -> 3
-                                                            90 -> 2
-                                                            60 -> 1
-                                                            else -> 0
-                                                        }
-                                                    ].uefiPath
+                                                    it.uefiPath
                                                 )
                                                 showQuickBootSpinner.value = false
                                             }
@@ -516,7 +513,7 @@ fun QuickBootButton() {
                                                 bottom = 2.sdp()
                                             ),
                                             text = stringResource(
-                                                when (type.uefiType) {
+                                                when (it.uefiType) {
                                                     120 -> string.quickboot_question120
                                                     90 -> string.quickboot_question90
                                                     60 -> string.quickboot_question60

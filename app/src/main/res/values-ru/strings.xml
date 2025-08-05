@@ -63,6 +63,9 @@
 
     <string name="autoupdate">Проверять обновления</string>
     <string name="autoupdate_summary">Автоматически проверять на наличие обновлений</string>
+    <string name="download">Скачать</string>
     <string name="reload">Перезагрузить</string>
+    <string name="new_update">Доступно новое обновление!</string>
+    <string name="new_update_summary">Текущая версия: %s\\n Новая версия: %s</string>
 
 </resources>

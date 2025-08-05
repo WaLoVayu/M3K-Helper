@@ -7,14 +7,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.specialDeviceCardsArray
 import com.remtrik.m3khelper.util.sdp
 
 @Composable
 fun DeviceImage(modifier: Modifier) {
     Image(
         alignment = Alignment.TopStart,
-        modifier = if (specialDeviceCardsArray.contains(Device.currentDeviceCard)) {
+        modifier = if (Device.special.value) {
             modifier
         } else {
             Modifier

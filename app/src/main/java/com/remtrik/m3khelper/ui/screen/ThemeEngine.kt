@@ -204,11 +204,6 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                     ColorPicker()
                 }
             }
-            /*ButtonItem(
-                icon = Icons.Filled.Refresh,
-                title = stringResource(R.string.apply),
-                onClick = { M3KApp.restart() }
-            )*/
         }
     }
 }

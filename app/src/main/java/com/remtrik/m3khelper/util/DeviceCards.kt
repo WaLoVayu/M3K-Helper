@@ -2,7 +2,6 @@ package com.remtrik.m3khelper.util
 
 import android.os.Parcelable
 import com.remtrik.m3khelper.BuildConfig
-import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R.drawable
 import com.remtrik.m3khelper.R.string.unknown_device
 import kotlinx.parcelize.Parcelize
@@ -269,7 +268,7 @@ val emu64xaCard: DeviceCard = DeviceCard(
 
 val unknownCard: DeviceCard = DeviceCard(
     arrayOf("unknown"),
-    M3KApp.getString(unknown_device),
+    unknown_device.string(),
     drawable.ic_device_unknown,
     "",
     "",

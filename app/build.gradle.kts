@@ -20,8 +20,8 @@ android {
         applicationId = "com.remtrik.m3khelper"
         minSdk = 29
         targetSdk = 36
-        versionCode = 58
-        versionName = "4.4-HEHE"
+        versionCode = 60
+        versionName = "4.5-HEHE"
         compileSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -95,7 +95,7 @@ android {
     applicationVariants.all {
         outputs.forEach {
             val output = it as BaseVariantOutputImpl
-            output.outputFileName = "M3K_Helper_v${versionName}_${name}_${output.getFilter(com.android.build.OutputFile.ABI)}.apk"
+            output.outputFileName = "M3K_Helper_v${versionName}_${name}_${versionCode}-${output.getFilter(com.android.build.OutputFile.ABI)}.apk"
         }
         kotlin.sourceSets {
             getByName(name) {
@@ -134,10 +134,13 @@ dependencies {
 
     implementation(libs.com.github.topjohnwu.libsu.core)
     implementation(libs.com.github.topjohnwu.libsu.service)
+    implementation(libs.com.github.topjohnwu.libsu.nio)
 
     implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.material)
 
     implementation(libs.m3color)
+
+    implementation(libs.okhttp3)
 }

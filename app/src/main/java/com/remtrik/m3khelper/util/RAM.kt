@@ -2,15 +2,16 @@ package com.remtrik.m3khelper.util
 
 import android.app.ActivityManager
 import android.content.Context
+import com.remtrik.m3khelper.M3KApp
 
 private const val GB_16 = 12_000L
 private const val GB_12 = 8_000L
 private const val GB_8 = 6_000L
 private const val GB_6 = 4_000L
 
-fun getMemory(context: Context): String {
+fun getMemory(): String {
     val totalMem = runCatching {
-        val actManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val actManager = M3KApp.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         ActivityManager.MemoryInfo().run {
             actManager.getMemoryInfo(this)
             totalMem / (1024 * 1024)

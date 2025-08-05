@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.SecurityUpdate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
@@ -18,17 +20,130 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.util.FontSize
+import com.remtrik.m3khelper.util.LatestVersionInfo
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.Warning
 import com.remtrik.m3khelper.util.restart
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.ssp
+
+@Composable
+fun ErrorDialog(
+    title: String?,
+    description: String?,
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+) {
+    if (showDialog) {
+        AlertDialog(
+            icon = {
+                Icon(
+                    Icons.Filled.Error,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(40.sdp())
+                )
+            },
+            title = {
+                if (title != null) {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Center,
+                        fontSize = FontSize,
+                        lineHeight = LineHeight,
+                    )
+                }
+            },
+            text = {
+                if (description != null) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = description,
+                        textAlign = TextAlign.Center,
+                        lineHeight = LineHeight,
+                        fontSize = FontSize
+                    )
+                }
+            },
+            onDismissRequest = onDismiss,
+            dismissButton = {
+                AssistChip(
+                    onClick = onDismiss,
+                    label = {
+                        Text(
+                            modifier = Modifier.padding(top = 2.sdp(), bottom = 2.sdp()),
+                            text = LocalContext.current.getString(R.string.yes),
+                            fontSize = FontSize
+                        )
+                    }
+                )
+            },
+            confirmButton = {}
+        )
+    }
+}
+
+@Composable
+fun UpdateDialog(version: LatestVersionInfo) {
+    val localUriHandler = LocalUriHandler.current
+    AlertDialog(
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.SecurityUpdate,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(40.sdp())
+            )
+        },
+        title = {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.new_update),
+                textAlign = TextAlign.Center,
+                lineHeight = LineHeight,
+                fontSize = FontSize
+            )},
+        text = {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(
+                    R.string.new_update_summary,
+                    BuildConfig.VERSION_NAME,
+                    version.verisonName
+                ),
+                textAlign = TextAlign.Center,
+                lineHeight = LineHeight,
+                fontSize = FontSize
+            )
+        },
+        onDismissRequest = {},
+        dismissButton = {},
+        confirmButton = {
+            AssistChip(
+                onClick = {
+                    localUriHandler.openUri(version.downloadUrl)
+                },
+                label = {
+                    Text(
+                        modifier = Modifier.padding(
+                            top = 2.sdp(),
+                            bottom = 2.sdp()
+                        ),
+                        text = stringResource(R.string.download),
+                    )
+                }
+            )
+        }
+    )
+}
 
 @Composable
 fun Dialog(

@@ -2,23 +2,26 @@ package com.remtrik.m3khelper.util
 
 import android.content.Context
 import android.content.Intent
+import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 
-fun dumpBoot(where: Int) {
+fun dumpBoot(where: Int): Boolean {
     val slot = ShellUtils.fastCmd("getprop ro.boot.slot_suffix")
+    var status = true
     when (where) {
         1 -> {
             withMountedWindows {
-                ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$SdcardPath/Windows/boot.img bs=32M")
+                status = Shell.cmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$SdcardPath/Windows/boot.img bs=32M").exec().isSuccess
             }
         }
 
         2 -> {
             ShellUtils.fastCmd("rm -rf $SdcardPath/m3khelper || true ")
-            ShellUtils.fastCmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$SdcardPath/boot.img")
+            status = Shell.cmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$SdcardPath/boot.img").exec().isSuccess
         }
     }
     bootBackupStatus()
+    return status
 }
 
 fun isMounted(): Boolean {
@@ -56,9 +59,9 @@ fun dumpModem() {
     }
 }
 
-fun flashUEFI(uefiPath: String) {
+fun flashUEFI(uefiPath: String): Boolean {
     val slot = ShellUtils.fastCmd("getprop ro.boot.slot_suffix")
-    ShellUtils.fastCmd("dd if=$uefiPath of=/dev/block/bootdevice/by-name/boot$slot")
+    return Shell.cmd("dd if=$uefiPath of=/dev/block/bootdevice/by-name/boot$slot").exec().isSuccess
 }
 
 fun checkSensors(): Boolean {
@@ -85,7 +88,10 @@ fun quickBoot(uefiPath: String) {
         if (ShellUtils.fastCmd("find $SdcardPath/Windows/boot.img")
                 .isEmpty()
         ) {
-            dumpBoot(1)
+            if (!dumpBoot(1)) {
+                showBootBackupErorDialog.value = true
+                return
+            }
         }
         if (!Device.currentDeviceCard.noModem) {
             dumpModem()
@@ -99,8 +105,12 @@ fun quickBoot(uefiPath: String) {
     ) {
         dumpBoot(2)
     }
-    flashUEFI(uefiPath)
-    ShellUtils.fastCmd("svc power reboot")
+    if (flashUEFI(uefiPath)) {
+        ShellUtils.fastCmd("svc power reboot")
+    } else {
+        showUEFIFlashErorDialog.value = true
+        return
+    }
 }
 
 fun Context.restart() {

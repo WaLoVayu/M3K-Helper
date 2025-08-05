@@ -75,6 +75,12 @@
 
     <string name="device_unknown">YOUR DEVICE ISN\’T SUPPORTED!\n USING THIS APP WILL RESULT IN A BRICK</string>
     <string name="device_unknown_confirm">I\’m fine with that</string>
+
+    <string name="download">Download</string>
     <string name="reload">Reload app</string>
+
+    <string name="new_update">New Update found!</string>
+    <string name="new_update_summary">Current version: %s\nNew version: %s</string>
+
 
 </resources>

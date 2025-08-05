@@ -11,16 +11,15 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R.string
 import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.rememberDeviceStrings
-import com.remtrik.m3khelper.util.specialDeviceCardsArray
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.string
 
@@ -30,7 +29,7 @@ fun InfoCard(modifier: Modifier) {
 
     ElevatedCard(
         modifier =
-            if (specialDeviceCardsArray.contains(Device.currentDeviceCard) && M3KApp.resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            if (Device.special.value && LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE) {
                 modifier
             } else {
                 Modifier

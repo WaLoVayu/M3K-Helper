@@ -30,6 +30,7 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 
 com-github-topjohnwu-libsu-core = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu" }
 com-github-topjohnwu-libsu-service = { group = "com.github.topjohnwu.libsu", name = "service", version.ref = "libsu" }
+com-github-topjohnwu-libsu-nio = { group = "com.github.topjohnwu.libsu", name = "nio", version.ref = "libsu" }
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.10.2" }
 
@@ -39,3 +40,5 @@ compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations",
 material = { module = "com.google.android.material:material", version = "1.12.0" }
 
 m3color = { module = "com.github.Kyant0:m3color", version = "2025.4" }
+
+okhttp3 = { module = "com.squareup.okhttp3:okhttp", version = "5.1.0"}
