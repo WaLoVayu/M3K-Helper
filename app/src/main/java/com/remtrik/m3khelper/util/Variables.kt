@@ -100,7 +100,7 @@ fun vars() {
             }
         }
         fetchDeviceCard()
-        backgroundExecutor.execute { getPanel() }
+        backgroundExecutor.execute(::getPanel)
     } else {
         fastLoadSavedDevice()
     }
@@ -117,33 +117,29 @@ fun vars() {
 
 
     if (BuildConfig.DEBUG) {
-        backgroundExecutor.execute {
-            debugLog()
-        }
+        backgroundExecutor.execute(::debugLog)
     }
 }
 
 fun fetchDeviceCard() {
     deviceCardsArray.forEachIndexed { cardNum, card ->
         if (card.deviceCodename.any { Device.deviceCodenames.contains(it) }) {
-            Device.currentDeviceCard = card; Device.currentDeviceCard.deviceCodename[0]
-            prefs.edit {
-                putInt(
-                    "saved_device_card",
-                    cardNum
-                )
-                putBoolean(
-                    "firstboot",
-                    false
-                )
-                putBoolean("unknown", false)
-            }
-            Device.savedDeviceCard = card
-            isSpecial(card)
-            Warning.value = false
+            updateDeviceCard(cardNum, card)
             return
         }
     }
+}
+
+private fun updateDeviceCard(cardNum: Int, card: DeviceCard) {
+    Device.currentDeviceCard = card
+    prefs.edit {
+        putInt("saved_device_card", cardNum)
+        putBoolean("firstboot", false)
+        putBoolean("unknown", false)
+    }
+    Device.savedDeviceCard = card
+    isSpecial(card)
+    Warning.value = false
 }
 
 fun fastLoadSavedDevice(override: Boolean = Device.overrideDeviceCard.value) {
@@ -164,9 +160,8 @@ fun fastLoadSavedDevice(override: Boolean = Device.overrideDeviceCard.value) {
 }
 
 private fun getPanel() {
-    Device.panelType.value = getPanelNative()
-    if (Device.panelType.value == "Invalid") Device.panelType.value =
-        string.unknown_panel.string()
+    Device.panelType.value =
+        getPanelNative().takeUnless { it == "Invalid" } ?: string.unknown_panel.string()
     prefs.edit { putString("saved_device_panel", Device.panelType.value) }
 }
 
@@ -191,14 +186,18 @@ private fun dynamicVars() {
     if (Device.uefiCardsArray.isEmpty()) {
         val find = Shell.cmd("find /mnt/sdcard/UEFI/ -type f | grep .img").exec()
         if (find.isSuccess) {
-            for (uefi: String in arrayOf("60", "90", "120")) {
-                find.out.firstOrNull { it.contains("${uefi}hz") }?.let {
-                    Device.uefiCardsArray += UEFICard(it, uefi.toInt())
+            Device.uefiCardsArray = find.out
+                .filter { it.contains("hz") }
+                .mapNotNull { path ->
+                    when {
+                        path.contains("120hz") -> UEFICard(path, 120)
+                        path.contains("90hz") -> UEFICard(path, 90)
+                        path.contains("60hz") -> UEFICard(path, 60)
+                        else -> null
+                    }
                 }
-            }
-            if (Device.uefiCardsArray.isEmpty()) {
-                Device.uefiCardsArray += UEFICard(find.out[0], 1)
-            }
+                .ifEmpty { listOf(UEFICard(find.out.first(), 1)) }
+                .toTypedArray()
         }
     }
 }

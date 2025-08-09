@@ -54,7 +54,7 @@ import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.beyond1Card
 import com.remtrik.m3khelper.util.collapseTransition
 import com.remtrik.m3khelper.util.deviceCardsArray
-import com.remtrik.m3khelper.util.emu64xaCard
+import com.remtrik.m3khelper.util.debugCard
 import com.remtrik.m3khelper.util.expandTransition
 import com.remtrik.m3khelper.util.fastLoadSavedDevice
 import com.remtrik.m3khelper.util.sdp
@@ -175,7 +175,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                         deviceCardsArray
                             .filterNot {
                                 it == beyond1Card
-                                        || it == emu64xaCard
+                                        || it == debugCard
                                         || it == unknownCard
                                         || it == Device.savedDeviceCard
                             }

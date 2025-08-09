@@ -17,12 +17,17 @@ abstract class Commands {
         val slot = ShellUtils.fastCmd("getprop ro.boot.slot_suffix")
         when (where) {
             1 -> {
-                withMountedWindows(type)
-                {
-                    internalLastCommandResult =
-                        Shell.cmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$SdcardPath/Windows/boot.img bs=32M")
-                            .exec()
-                }
+                if (!withMountedWindows(type)
+                    {
+                        internalLastCommandResult =
+                            Shell.cmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=$SdcardPath/Windows/boot.img bs=32M")
+                                .exec()
+                    }
+                ) return CommandResult(
+                    false,
+                    MutableList(1) { R.string.mount_error_default.string() },
+                    MutableList(1) { R.string.mount_error_default.string() }
+                )
             }
 
             2 -> {
@@ -132,13 +137,13 @@ abstract class Commands {
         )
     }
 
-    fun shit(uefiPath: String): Shell.Result {
+    private fun uefitell(uefiPath: String): Shell.Result {
         val slot = ShellUtils.fastCmd("getprop ro.boot.slot_suffix")
         return Shell.cmd("dd if=$uefiPath of=/dev/block/bootdevice/by-name/boot$slot").exec()
     }
 
     fun flashUEFI(uefiPath: String): CommandResult {
-        internalLastCommandResult = shit(uefiPath)
+        internalLastCommandResult = uefitell(uefiPath)
         return CommandResult(
             internalLastCommandResult.isSuccess,
             internalLastCommandResult.out,
@@ -189,7 +194,7 @@ abstract class Commands {
         Shell.cmd("svc power reboot").exec()
     }
 
-    fun withMountedWindows(type: ErrorType, block: () -> Unit) {
+    fun withMountedWindows(type: ErrorType, block: () -> Unit): Boolean {
         val wasMounted = isMounted()
         try {
             if (wasMounted) commandResult = CommandHandler.mountWindows()
@@ -197,12 +202,12 @@ abstract class Commands {
                 try {
                     !internalCommandResult.isSuccess
                 } catch (_: UninitializedPropertyAccessException) {
-                    return
+                    return false
                 }
             ) {
                 handleErrorType(type, commandResult)
                 if (type != ErrorType.MOUNT_ERROR) {
-                    return
+                    return false
                 }
             }
             block()
@@ -213,11 +218,12 @@ abstract class Commands {
                 try {
                     !internalCommandResult.isSuccess
                 } catch (_: UninitializedPropertyAccessException) {
-                    return
+                    return false
                 }
             ) {
                 handleErrorType(type, commandResult)
             }
+            return true
         }
     }
 

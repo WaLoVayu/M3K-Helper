@@ -8,35 +8,50 @@
 using namespace std;
 
 //constexpr const char *UEFI_CMD = "find /mnt/sdcard/UEFI/ -type f -name *.img";
+namespace {
 
-string executeRootCommand(const char *cmd) {
-    int pipefd[2];
-    if (pipe(pipefd) == -1) {
-        return "";
-    }
+    enum BootImageStatus {
+        NONE = 0,
+        ONLY_ANDROID,
+        ONLY_WINDOWS,
+        BOTH
+    };
 
-    pid_t pid = fork();
-    if (pid == 0) {
-        dup2(pipefd[1], STDOUT_FILENO);
-        close(pipefd[0]);
+    string executeRootCommand(const char *cmd) {
+        int pipefd[2];
+        if (pipe(pipefd) == -1) {
+            return "";
+        }
+
+        pid_t pid = fork();
+        if (pid == -1) {
+            close(pipefd[0]);
+            close(pipefd[1]);
+            return "";
+        }
+
+        if (pid == 0) {
+            dup2(pipefd[1], STDOUT_FILENO);
+            close(pipefd[0]);
+            close(pipefd[1]);
+
+            execlp("su", "su", "-c", cmd, (char *) nullptr);
+            _exit(127);
+        }
+
         close(pipefd[1]);
 
-        execlp("su", "su", "-c", cmd, (char *) nullptr);
-        _exit(127);
+        string result;
+        char buffer[256];
+        ssize_t count;
+        while ((count = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
+            result.append(buffer, count);
+        }
+
+        close(pipefd[0]);
+        waitpid(pid, nullptr, 0);
+        return result;
     }
-
-    close(pipefd[1]);
-
-    string result;
-    char buffer[256];
-    ssize_t count;
-    while ((count = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
-        result.append(buffer, count);
-    }
-
-    close(pipefd[0]);
-    waitpid(pid, nullptr, 0);
-    return result;
 }
 
 extern "C" {
@@ -130,9 +145,9 @@ Java_com_remtrik_m3khelper_util_VariablesKt_checkBootImages(
         jstring path
 ) {
     if (!noMount && access("/sdcard/Windows/boot.img", F_OK) == 0) {
-        return access("/sdcard/boot.img", F_OK) == 0 ? 3 /* BOTH */ : 2 /* WINDOWS */;
+        return access("/sdcard/boot.img", F_OK) == 0 ? BOTH : ONLY_WINDOWS;
     }
-    return access("/sdcard/boot.img", F_OK) == 0 ? 1 /* ANDROID */ : 0 /* NONE */;
+    return access("/sdcard/boot.img", F_OK) == 0 ? ONLY_ANDROID : NONE;
 }
 
 }

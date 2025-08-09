@@ -10,7 +10,7 @@ private const val GB_8 = 6_000L
 private const val GB_6 = 4_000L
 
 fun getMemory(): String {
-    val totalMem = runCatching {
+    val totalMem: Long = runCatching {
         val actManager = M3KApp.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         ActivityManager.MemoryInfo().run {
             actManager.getMemoryInfo(this)

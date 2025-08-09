@@ -21,7 +21,57 @@ data class DeviceCard(
     val noGroup: Boolean, val noDrivers: Boolean,
     val noUEFI: Boolean, val unifiedDriversUEFI: Boolean,
     val noLinks: Boolean = false
-) : Parcelable
+) : Parcelable {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as DeviceCard
+
+        if (deviceImage != other.deviceImage) return false
+        if (noModem != other.noModem) return false
+        if (noFlash != other.noFlash) return false
+        if (noBoot != other.noBoot) return false
+        if (noMount != other.noMount) return false
+        if (sensors != other.sensors) return false
+        if (noGuide != other.noGuide) return false
+        if (noGroup != other.noGroup) return false
+        if (noDrivers != other.noDrivers) return false
+        if (noUEFI != other.noUEFI) return false
+        if (unifiedDriversUEFI != other.unifiedDriversUEFI) return false
+        if (noLinks != other.noLinks) return false
+        if (!deviceCodename.contentEquals(other.deviceCodename)) return false
+        if (deviceName != other.deviceName) return false
+        if (deviceGuide != other.deviceGuide) return false
+        if (deviceGroup != other.deviceGroup) return false
+        if (deviceDrivers != other.deviceDrivers) return false
+        if (deviceUEFI != other.deviceUEFI) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = deviceImage
+        result = 31 * result + noModem.hashCode()
+        result = 31 * result + noFlash.hashCode()
+        result = 31 * result + noBoot.hashCode()
+        result = 31 * result + noMount.hashCode()
+        result = 31 * result + sensors.hashCode()
+        result = 31 * result + noGuide.hashCode()
+        result = 31 * result + noGroup.hashCode()
+        result = 31 * result + noDrivers.hashCode()
+        result = 31 * result + noUEFI.hashCode()
+        result = 31 * result + unifiedDriversUEFI.hashCode()
+        result = 31 * result + noLinks.hashCode()
+        result = 31 * result + deviceCodename.contentHashCode()
+        result = 31 * result + deviceName.hashCode()
+        result = 31 * result + deviceGuide.hashCode()
+        result = 31 * result + deviceGroup.hashCode()
+        result = 31 * result + deviceDrivers.hashCode()
+        result = 31 * result + deviceUEFI.hashCode()
+        return result
+    }
+}
 
 val vayuCard: DeviceCard = DeviceCard(
     arrayOf("vayu", "bhima"),
@@ -251,7 +301,7 @@ val beyond1Card: DeviceCard = DeviceCard(
     noUEFI = true, unifiedDriversUEFI = false
 )
 
-val emu64xaCard: DeviceCard = DeviceCard(
+val debugCard: DeviceCard = DeviceCard(
     arrayOf("emu64xa"),
     "emu64xa",
     drawable.vayu,
@@ -300,10 +350,10 @@ val deviceCardsArray: Array<DeviceCard> =
         guacamoleCard,
         hotdogCard,
         a52sxqCard,
-        if (BuildConfig.DEBUG) emu64xaCard else beyond1Card
+        if (BuildConfig.DEBUG) debugCard else beyond1Card
     )
 
 val specialDeviceCardsArray: Array<DeviceCard> =
     arrayOf(
-        if (BuildConfig.DEBUG) emu64xaCard else nabuCard
+        if (BuildConfig.DEBUG) debugCard else nabuCard
     )
