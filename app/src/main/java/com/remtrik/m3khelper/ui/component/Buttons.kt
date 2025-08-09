@@ -42,18 +42,17 @@ import com.remtrik.m3khelper.R.drawable.ic_folder
 import com.remtrik.m3khelper.R.drawable.ic_folder_open
 import com.remtrik.m3khelper.R.drawable.ic_windows
 import com.remtrik.m3khelper.R.string
+import com.remtrik.m3khelper.util.CommandHandler
 import com.remtrik.m3khelper.util.Device
+import com.remtrik.m3khelper.util.ErrorType
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
 import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.UEFICard
-import com.remtrik.m3khelper.util.dumpBoot
-import com.remtrik.m3khelper.util.isMounted
-import com.remtrik.m3khelper.util.mountWindows
-import com.remtrik.m3khelper.util.quickBoot
+import com.remtrik.m3khelper.util.commandError
+import com.remtrik.m3khelper.util.commandResult
 import com.remtrik.m3khelper.util.sdp
-import com.remtrik.m3khelper.util.showBootBackupErorDialog
-import com.remtrik.m3khelper.util.umountWindows
+import com.remtrik.m3khelper.util.showBootBackupErrorDialog
+import com.remtrik.m3khelper.util.showMountErrorDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -159,7 +158,7 @@ fun LinkButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.sdp())
         ) {
-            if (icon != null) {
+            icon?.let {
                 if (icon is ImageVector) {
                     Icon(
                         imageVector = icon,
@@ -198,27 +197,27 @@ fun LinkButton(
 
 @Composable
 fun BackupButton() {
-    val showBackupDialog = remember { mutableStateOf(false) }
-    val showBackupSpinner = remember { mutableStateOf(false) }
+    val showDialog = remember { mutableStateOf(false) }
+    val showSpinner = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     ElevatedCard(
-        onClick = { showBackupDialog.value = true },
+        onClick = { showDialog.value = true },
         modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
     ) {
         when {
-            showBackupSpinner.value -> {
+            showSpinner.value -> {
                 StatusDialog(
                     icon = painterResource(id = ic_backup),
                     title = string.please_wait,
-                    showDialog = showBackupSpinner.value,
+                    showDialog = showSpinner.value,
                 )
             }
         }
         when {
-            showBackupDialog.value -> {
+            showDialog.value -> {
                 AlertDialog(
                     icon = {
                         Icon(
@@ -239,7 +238,7 @@ fun BackupButton() {
                             lineHeight = LineHeight
                         )
                     },
-                    onDismissRequest = { showBackupDialog.value = false; },
+                    onDismissRequest = { showDialog.value = false; },
                     dismissButton = {
                         Row(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -249,12 +248,18 @@ fun BackupButton() {
                                 onClick = {
                                     scope.launch {
                                         withContext(Dispatchers.IO) {
-                                            showBackupDialog.value = false
-                                            showBackupSpinner.value = true
-                                            if (!dumpBoot(2)) {
-                                                showBootBackupErorDialog.value = true
+                                            showDialog.value = false
+                                            showSpinner.value = true
+                                            commandResult =
+                                                CommandHandler.dumpBoot(
+                                                    ErrorType.QUICKBOOT_ERROR,
+                                                    2
+                                                )
+                                            if (!commandResult.isSuccess) {
+                                                commandError.value = commandResult.output[0]
+                                                showBootBackupErrorDialog.value = true
                                             }
-                                            showBackupSpinner.value = false
+                                            showSpinner.value = false
                                         }
                                     }
                                 },
@@ -275,12 +280,18 @@ fun BackupButton() {
                                         onClick = {
                                             scope.launch {
                                                 withContext(Dispatchers.IO) {
-                                                    showBackupDialog.value = false
-                                                    showBackupSpinner.value = true
-                                                    if (!dumpBoot(1)) {
-                                                        showBootBackupErorDialog.value = true
+                                                    showDialog.value = false
+                                                    showSpinner.value = true
+                                                    commandResult =
+                                                        CommandHandler.dumpBoot(
+                                                            ErrorType.BOOTBACKUP_ERROR,
+                                                            1
+                                                        )
+                                                    if (!commandResult.isSuccess) {
+                                                        commandError.value = commandResult.output[0]
+                                                        showBootBackupErrorDialog.value = true
                                                     }
-                                                    showBackupSpinner.value = false
+                                                    showSpinner.value = false
                                                 }
                                             }
                                         },
@@ -298,7 +309,7 @@ fun BackupButton() {
                                 }
                             }
                             AssistChip(
-                                onClick = { showBackupDialog.value = false; },
+                                onClick = { showDialog.value = false; },
                                 label = {
                                     Text(
                                         modifier = Modifier.padding(
@@ -350,49 +361,57 @@ fun BackupButton() {
 
 @Composable
 fun MountButton() {
-    val showMountDialog = remember { mutableStateOf(false) }
-    var mount by remember { mutableStateOf(isMounted()) }
+    val showDialog = remember { mutableStateOf(false) }
+    var isMounted by remember(CommandHandler.isMounted()) { mutableStateOf(CommandHandler.isMounted()) }
 
     val scope = rememberCoroutineScope()
 
     ElevatedCard(
-        onClick = { showMountDialog.value = true },
+        onClick = { showDialog.value = true },
         modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
     ) {
         when {
-            showMountDialog.value -> {
-                if (mount) {
+            showDialog.value -> {
+                if (isMounted) {
                     Dialog(
-                        icon = painterResource(id = ic_folder_open),
-                        title = null,
-                        description = stringResource(string.mnt_question),
-                        showDialog = showMountDialog.value,
-                        onDismiss = { showMountDialog.value = false },
+                        painterResource(id = ic_folder),
+                        null,
+                        stringResource(string.umnt_question),
+                        showDialog.value,
+                        onDismiss = { showDialog.value = false; },
                         onConfirm = {
                             scope.launch {
                                 withContext(Dispatchers.IO) {
-                                    mountWindows()
-                                    showMountDialog.value = false
-                                    mount = isMounted()
+                                    commandResult = CommandHandler.umountWindows()
+                                    if (!commandResult.isSuccess) {
+                                        commandError.value = commandResult.output[0]
+                                        showMountErrorDialog.value = true
+                                    }
+                                    showDialog.value = false
+                                    isMounted = CommandHandler.isMounted()
                                 }
                             }
                         }
                     )
                 } else {
                     Dialog(
-                        painterResource(id = ic_folder),
-                        null,
-                        stringResource(string.umnt_question),
-                        showMountDialog.value,
-                        onDismiss = { showMountDialog.value = false; },
+                        icon = painterResource(id = ic_folder_open),
+                        title = null,
+                        description = stringResource(string.mnt_question),
+                        showDialog = showDialog.value,
+                        onDismiss = { showDialog.value = false },
                         onConfirm = {
                             scope.launch {
                                 withContext(Dispatchers.IO) {
-                                    umountWindows()
-                                    showMountDialog.value = false
-                                    mount = isMounted()
+                                    commandResult = CommandHandler.mountWindows()
+                                    if (!commandResult.isSuccess) {
+                                        commandError.value = commandResult.output[0]
+                                        showMountErrorDialog.value = true
+                                    }
+                                    showDialog.value = false
+                                    isMounted = CommandHandler.isMounted()
                                 }
                             }
                         }
@@ -411,10 +430,10 @@ fun MountButton() {
                 modifier = Modifier
                     .size(40.sdp()),
                 painter = painterResource(
-                    id = if (mount) {
-                        ic_folder_open
-                    } else {
+                    id = if (isMounted) {
                         ic_folder
+                    } else {
+                        ic_folder_open
                     }
                 ),
                 contentDescription = null,
@@ -422,10 +441,10 @@ fun MountButton() {
             )
             Column {
                 val mounted: Int =
-                    if (mount) {
-                        string.mnt_title
-                    } else {
+                    if (isMounted) {
                         string.umnt_title
+                    } else {
+                        string.mnt_title
                     }
                 Text(
                     stringResource(mounted),
@@ -445,28 +464,29 @@ fun MountButton() {
 
 @Composable
 fun QuickBootButton() {
-    val showQuickBootDialog = remember { mutableStateOf(false) }
-    val showQuickBootSpinner = remember { mutableStateOf(false) }
+    val showDialog = remember { mutableStateOf(false) }
+    val showSpinner = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val hasUefi = Device.uefiCardsArray.isNotEmpty()
 
     ElevatedCard(
-        onClick = { showQuickBootDialog.value = true },
+        onClick = { showDialog.value = true },
         modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
-        enabled = Device.uefiCardsArray.isNotEmpty()
+        enabled = hasUefi
     ) {
         when {
-            showQuickBootSpinner.value -> {
+            showSpinner.value -> {
                 StatusDialog(
                     icon = painterResource(id = ic_windows),
                     title = string.please_wait,
-                    showDialog = showQuickBootSpinner.value,
+                    showDialog = showSpinner.value,
                 )
             }
         }
         when {
-            showQuickBootDialog.value -> {
+            showDialog.value -> {
                 AlertDialog(
                     icon = {
                         Icon(
@@ -486,7 +506,7 @@ fun QuickBootButton() {
                             fontSize = FontSize
                         )
                     },
-                    onDismissRequest = ({ showQuickBootDialog.value = false; }),
+                    onDismissRequest = ({ showDialog.value = false; }),
                     dismissButton = {
                         Row(
                             Modifier.align(Alignment.CenterHorizontally),
@@ -497,12 +517,12 @@ fun QuickBootButton() {
                                     onClick = {
                                         scope.launch {
                                             withContext(Dispatchers.IO) {
-                                                showQuickBootDialog.value = false
-                                                showQuickBootSpinner.value = true
-                                                quickBoot(
+                                                showDialog.value = false
+                                                showSpinner.value = true
+                                                CommandHandler.quickBoot(
                                                     it.uefiPath
                                                 )
-                                                showQuickBootSpinner.value = false
+                                                showSpinner.value = false
                                             }
                                         }
                                     },
@@ -526,7 +546,7 @@ fun QuickBootButton() {
                                 )
                             }
                             AssistChip(
-                                onClick = ({ showQuickBootDialog.value = false; }),
+                                onClick = ({ showDialog.value = false; }),
                                 label = {
                                     Text(
                                         modifier = Modifier.padding(
@@ -562,7 +582,7 @@ fun QuickBootButton() {
             Column {
                 val title: Int
                 val subtitle: Int
-                if (Device.uefiCardsArray.isNotEmpty()) {
+                if (hasUefi) {
                     title = string.quickboot_title
                     subtitle = when (Device.currentDeviceCard.noModem) {
                         true -> string.quickboot_subtitle_nomodem
@@ -643,10 +663,10 @@ fun SwitchItem(
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                if (title != null) {
+                title?.let {
                     Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
                 }
-                if (summary != null) {
+                summary?.let {
                     Text(text = summary, fontSize = FontSize, lineHeight = LineHeight)
                 }
             }
@@ -706,10 +726,10 @@ fun ButtonItem(
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                if (title != null) {
+                title?.let {
                     Text(text = title, fontSize = FontSize, lineHeight = LineHeight)
                 }
-                if (summary != null) {
+                summary?.let {
                     Text(text = summary, fontSize = FontSize, lineHeight = LineHeight)
                 }
             }

@@ -1,27 +1,15 @@
 package com.remtrik.m3khelper.qstiles
 
+import android.Manifest
 import android.service.quicksettings.Tile.STATE_ACTIVE
 import android.service.quicksettings.Tile.STATE_UNAVAILABLE
 import android.service.quicksettings.TileService
+import androidx.annotation.RequiresPermission
 import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.util.CommandHandler
 import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.FirstBoot
-import com.remtrik.m3khelper.util.isMounted
-import com.remtrik.m3khelper.util.mountWindows
-import com.remtrik.m3khelper.util.quickBoot
 import com.remtrik.m3khelper.util.string
-import com.remtrik.m3khelper.util.umountWindows
-
-// might use in future
-internal fun getUefiPath(): String? {
-    return when {
-        Device.uefiCardsArray.any { it.uefiType == 120 } -> Device.uefiCardsArray[3].uefiPath
-        Device.uefiCardsArray.any { it.uefiType == 90 } -> Device.uefiCardsArray[2].uefiPath
-        Device.uefiCardsArray.any { it.uefiType == 60 } -> Device.uefiCardsArray[1].uefiPath
-        Device.uefiCardsArray.any { it.uefiType == 1 } -> Device.uefiCardsArray[0].uefiPath
-        else -> null
-    }
-}
 
 abstract class CommonTileService : TileService() {
     protected fun disableTile(subtitleString: Int?) {
@@ -52,7 +40,7 @@ class MountTile : CommonTileService() { // more than just a PoC
             return
         }
 
-        if (isMounted()) {
+        if (CommandHandler.isMounted()) {
             enableTile(R.string.mnt_question)
         } else {
             enableTile(R.string.umnt_question)
@@ -62,8 +50,7 @@ class MountTile : CommonTileService() { // more than just a PoC
     override fun onClick() {
         super.onClick()
 
-        if (isMounted()) mountWindows() else umountWindows()
-
+        if (CommandHandler.isMounted()) CommandHandler.mountWindows() else CommandHandler.umountWindows()
         onStartListening()
     }
 
@@ -85,6 +72,7 @@ class QuickBootTile : CommonTileService() { // more than just a PoC
         }
     }
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onClick() {
         super.onClick()
         when {
@@ -93,7 +81,7 @@ class QuickBootTile : CommonTileService() { // more than just a PoC
                 return
             }
 
-            else -> quickBoot(uefiPath!!)
+            else -> CommandHandler.quickBoot(uefiPath!!)
         }
     }
 

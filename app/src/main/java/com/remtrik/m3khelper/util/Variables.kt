@@ -6,10 +6,8 @@ import android.os.Environment
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -22,14 +20,10 @@ import com.remtrik.m3khelper.R.string
 import com.remtrik.m3khelper.prefs
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import okhttp3.Request
-import org.json.JSONObject
 import java.util.concurrent.Executors
 
-private external fun findUEFIImages(baseCmd: String): IntArray
+//private external fun findUEFIImages(baseCmd: String): IntArray
 private external fun checkBootImages(noMount: Boolean, path: String): Int
 private external fun getPanelNative(): String
 
@@ -79,9 +73,13 @@ private var BootIsPresent: MutableState<Int> = mutableIntStateOf(string.no)
 private var WindowsIsPresent: MutableState<Int> = mutableIntStateOf(string.no)
 val Warning: MutableState<Boolean> = mutableStateOf(true)
 var showAboutCard: MutableState<Boolean> = mutableStateOf(false)
-var showUEFIFlashErorDialog: MutableState<Boolean> = mutableStateOf(false)
-var showBootBackupErorDialog: MutableState<Boolean> = mutableStateOf(false)
+var commandError: MutableState<String> = mutableStateOf("")
+var showBootBackupErrorDialog: MutableState<Boolean> = mutableStateOf(false)
+var showMountErrorDialog: MutableState<Boolean> = mutableStateOf(false)
+var showQuickBootErrorDialog: MutableState<Boolean> = mutableStateOf(false)
 
+lateinit var commandResult: CommandResult
+val CommandHandler: Commands = object : Commands() {}
 
 
 // ui defaults
@@ -95,32 +93,13 @@ val FirstBoot: Boolean = prefs.getBoolean("firstboot", true)
 @SuppressLint("RestrictedApi")
 fun vars() {
     if (prefs.getString("version", "3.4") != BuildConfig.VERSION_NAME) {
-        prefs.edit {
-            putBoolean("firstboot", true)
-            putString("version", BuildConfig.VERSION_NAME)
-        }
-    }
-    if (prefs.getBoolean("firstboot", true)) {
-        deviceCardsArray.forEachIndexed { cardNum, card ->
-            if (card.deviceCodename.any { Device.deviceCodenames.contains(it) }) {
-                Device.currentDeviceCard = card; Device.currentDeviceCard.deviceCodename[0]
-                prefs.edit {
-                    putInt(
-                        "saved_device_card",
-                        cardNum
-                    )
-                    putBoolean(
-                        "firstboot",
-                        false
-                    )
-                    putBoolean("unknown", false)
-                }
-                Device.savedDeviceCard = card
-                isSpecial(card)
-                Warning.value = false
-                return@forEachIndexed
+        backgroundExecutor.execute {
+            prefs.edit {
+                putBoolean("firstboot", true)
+                putString("version", BuildConfig.VERSION_NAME)
             }
         }
+        fetchDeviceCard()
         backgroundExecutor.execute { getPanel() }
     } else {
         fastLoadSavedDevice()
@@ -133,14 +112,37 @@ fun vars() {
         else -> Environment.getExternalStorageDirectory().path
     }
 
-    withMountedWindows {
-        dynamicVars()
-        bootBackupStatus()
-    }
+    dynamicVars()
+    bootBackupStatus()
 
 
     if (BuildConfig.DEBUG) {
-        debugLog()
+        backgroundExecutor.execute {
+            debugLog()
+        }
+    }
+}
+
+fun fetchDeviceCard() {
+    deviceCardsArray.forEachIndexed { cardNum, card ->
+        if (card.deviceCodename.any { Device.deviceCodenames.contains(it) }) {
+            Device.currentDeviceCard = card; Device.currentDeviceCard.deviceCodename[0]
+            prefs.edit {
+                putInt(
+                    "saved_device_card",
+                    cardNum
+                )
+                putBoolean(
+                    "firstboot",
+                    false
+                )
+                putBoolean("unknown", false)
+            }
+            Device.savedDeviceCard = card
+            isSpecial(card)
+            Warning.value = false
+            return
+        }
     }
 }
 
@@ -178,23 +180,24 @@ fun bootBackupStatus() {
 }
 
 private fun dynamicVars() {
-    WindowsIsPresent.value = when {
-        ShellUtils.fastCmd("find $SdcardPath/Windows/explorer.exe")
-            .isNotEmpty() -> string.yes
+    CommandHandler.withMountedWindows(ErrorType.MOUNT_ERROR) {
+        WindowsIsPresent.value = when {
+            ShellUtils.fastCmd("find $SdcardPath/Windows/explorer.exe")
+                .isNotEmpty() -> string.yes
 
-        else -> string.no
+            else -> string.no
+        }
     }
-    // TODO: Move to c++ implementation
     if (Device.uefiCardsArray.isEmpty()) {
-        val find = Shell.cmd("find /mnt/sdcard/UEFI/ -type f | grep .img").exec().out
-        if (find.isNotEmpty()) {
+        val find = Shell.cmd("find /mnt/sdcard/UEFI/ -type f | grep .img").exec()
+        if (find.isSuccess) {
             for (uefi: String in arrayOf("60", "90", "120")) {
-                find.firstOrNull { it.contains("${uefi}hz") }?.let {
+                find.out.firstOrNull { it.contains("${uefi}hz") }?.let {
                     Device.uefiCardsArray += UEFICard(it, uefi.toInt())
                 }
             }
             if (Device.uefiCardsArray.isEmpty()) {
-                Device.uefiCardsArray += UEFICard(find[0], 1)
+                Device.uefiCardsArray += UEFICard(find.out[0], 1)
             }
         }
     }
@@ -254,7 +257,9 @@ private fun debugLog() {
     println("M3K Helper - Boot is present: ${BootIsPresent.value.string()}")
     println("M3K Helper - Windows is present: ${WindowsIsPresent.value.string()}")
     println("M3K Helper - Panel Type: ${Device.panelType.value}")
-    Device.deviceCodenames.forEach { println("M3K Helper - Device codename: $it") }
+    Device.deviceCodenames
+        .filterNot { it.isEmpty() }
+        .forEach { println("M3K Helper - Device codename: $it") }
     println("M3K Helper - Current device: ${Device.currentDeviceCard.deviceName}")
     println("M3K Helper - Saved device: ${Device.savedDeviceCard.deviceName}")
     println(

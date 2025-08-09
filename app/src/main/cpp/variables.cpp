@@ -5,13 +5,11 @@
 #include <android/log.h>
 #include <sys/wait.h>
 
-#define TAG "variables"
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+using namespace std;
 
-constexpr const char *UEFI_CMD = "find /mnt/sdcard/UEFI/ -type f -name *.img";
-constexpr int UEFI_TYPES[] = {60, 90, 120};
+//constexpr const char *UEFI_CMD = "find /mnt/sdcard/UEFI/ -type f -name *.img";
 
-std::string executeRootCommand(const char *cmd) {
+string executeRootCommand(const char *cmd) {
     int pipefd[2];
     if (pipe(pipefd) == -1) {
         return "";
@@ -29,7 +27,7 @@ std::string executeRootCommand(const char *cmd) {
 
     close(pipefd[1]);
 
-    std::string result;
+    string result;
     char buffer[256];
     ssize_t count;
     while ((count = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
@@ -47,60 +45,65 @@ JNIEXPORT jstring
 JNICALL
 Java_com_remtrik_m3khelper_util_VariablesKt_getPanelNative(
         JNIEnv *env,
-        jobject jclass
+        jclass
 ) {
-    std::string panel = executeRootCommand("cat /proc/cmdline");
+    string panel = executeRootCommand("cat /proc/cmdline");
     if (panel.empty()) {
         return env->NewStringUTF("Unknown");
     }
 
-    panel.erase(0, panel.find("msm_drm"));
-    panel.erase(panel.find("android"), panel.length());
+    try {
+        panel.erase(0, panel.find("msm_drm"));
+        panel.erase(panel.find("android"), panel.length());
+    } catch (const out_of_range &) {
+        return env->NewStringUTF("Unknown");
+    }
 
-    std::transform(panel.begin(), panel.end(), panel.begin(), ::tolower);
+    transform(panel.begin(), panel.end(), panel.begin(), ::tolower);
 
-    if (panel.find("samsung") != std::string::npos ||
-        panel.find("ea8076") != std::string::npos ||
-        panel.find("s6e3fc3") != std::string::npos ||
-        panel.find("ams646yd01") != std::string::npos) {
+    if (panel.find("samsung") != string::npos ||
+        panel.find("ea8076") != string::npos ||
+        panel.find("s6e3fc3") != string::npos ||
+        panel.find("ams646yd01") != string::npos) {
         return env->NewStringUTF("Samsung");
-    } else if (panel.find("j20s_42") != std::string::npos ||
-               panel.find("k82_42") != std::string::npos ||
-               panel.find("huaxing") != std::string::npos) {
+    } else if (panel.find("j20s_42") != string::npos ||
+               panel.find("k82_42") != string::npos ||
+               panel.find("huaxing") != string::npos) {
         return env->NewStringUTF("Huaxing");
-    } else if (panel.find("j20s_36") != std::string::npos ||
-               panel.find("tianma") != std::string::npos ||
-               panel.find("k82_36") != std::string::npos) {
+    } else if (panel.find("j20s_36") != string::npos ||
+               panel.find("tianma") != string::npos ||
+               panel.find("k82_36") != string::npos) {
         return env->NewStringUTF("Tianma");
-    } else if (panel.find("ebbg") != std::string::npos) {
+    } else if (panel.find("ebbg") != string::npos) {
         return env->NewStringUTF("EBBG");
     }
 
     return env->NewStringUTF("Invalid");
 }
 
+/*
 JNIEXPORT jintArray
 JNICALL
 Java_com_remtrik_m3khelper_util_VariablesKt_findUEFIImages(
         JNIEnv *env,
-        jobject jclass,
+        jclass,
         jstring baseCmd
 ) {
-    std::string result = executeRootCommand(UEFI_CMD);
-    std::vector<int> foundTypes;
+    string result = executeRootCommand(UEFI_CMD);
+    vector<int> foundTypes;
 
     size_t pos = 0;
     if (!result.empty()) {
-        while ((pos = result.find(".img", pos)) != std::string::npos) {
+        while ((pos = result.find(".img", pos)) != string::npos) {
             size_t start = result.rfind('/', pos);
-            if (start == std::string::npos) start = 0;
-            std::string filename = result.substr(start, pos - start);
+            if (start == string::npos) start = 0;
+            string filename = result.substr(start, pos - start);
 
-            if (filename.find("-120hz") != std::string::npos) {
+            if (filename.find("-120hz") != string::npos) {
                 foundTypes.push_back(120);
-            } else if (filename.find("-90hz") != std::string::npos) {
+            } else if (filename.find("-90hz") != string::npos) {
                 foundTypes.push_back(90);
-            } else if (filename.find("-60hz") != std::string::npos) {
+            } else if (filename.find("-60hz") != string::npos) {
                 foundTypes.push_back(60);
             }
 
@@ -116,17 +119,17 @@ Java_com_remtrik_m3khelper_util_VariablesKt_findUEFIImages(
     env->SetIntArrayRegion(array, 0, foundTypes.size(), foundTypes.data());
     return array;
 }
+*/
 
 JNIEXPORT jint
 JNICALL
 Java_com_remtrik_m3khelper_util_VariablesKt_checkBootImages(
         JNIEnv *env,
-        jobject jclass,
+        jclass,
         jboolean noMount,
         jstring path
 ) {
-
-    if (!noMount && access("sdcard/Windows/boot.img", F_OK) == 0) {
+    if (!noMount && access("/sdcard/Windows/boot.img", F_OK) == 0) {
         return access("/sdcard/boot.img", F_OK) == 0 ? 3 /* BOTH */ : 2 /* WINDOWS */;
     }
     return access("/sdcard/boot.img", F_OK) == 0 ? 1 /* ANDROID */ : 0 /* NONE */;

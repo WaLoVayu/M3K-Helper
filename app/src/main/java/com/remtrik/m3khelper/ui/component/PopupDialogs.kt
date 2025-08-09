@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.SecurityUpdate
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
@@ -53,7 +53,7 @@ fun ErrorDialog(
                 )
             },
             title = {
-                if (title != null) {
+                title?.let {
                     Text(
                         text = title,
                         textAlign = TextAlign.Center,
@@ -63,7 +63,7 @@ fun ErrorDialog(
                 }
             },
             text = {
-                if (description != null) {
+                description?.let {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = description,
@@ -110,14 +110,15 @@ fun UpdateDialog(version: LatestVersionInfo) {
                 textAlign = TextAlign.Center,
                 lineHeight = LineHeight,
                 fontSize = FontSize
-            )},
+            )
+        },
         text = {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(
                     R.string.new_update_summary,
                     BuildConfig.VERSION_NAME,
-                    version.verisonName
+                    version.versionName
                 ),
                 textAlign = TextAlign.Center,
                 lineHeight = LineHeight,
@@ -165,7 +166,7 @@ fun Dialog(
                 )
             },
             title = {
-                if (title != null) {
+                title?.let {
                     Text(
                         text = title,
                         textAlign = TextAlign.Center,
@@ -175,7 +176,7 @@ fun Dialog(
                 }
             },
             text = {
-                if (description != null) {
+                description?.let {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = description,

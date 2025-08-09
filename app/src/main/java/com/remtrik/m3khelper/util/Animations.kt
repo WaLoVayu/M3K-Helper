@@ -11,9 +11,15 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.ui.Alignment
 
-val expandTransition: EnterTransition = fadeIn() + expandVertically(expandFrom = Alignment.Top)
-val collapseTransition: ExitTransition = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-val fadeEnterTransition: EnterTransition = fadeIn(tween(340))
-val fadeExitTransition: ExitTransition = fadeOut(tween(340))
-val slideEnterTransition: EnterTransition = slideInHorizontally(initialOffsetX = { it })
-val slideExitTransition: ExitTransition = slideOutHorizontally(targetOffsetX = { -it / 4 }) + fadeOut()
+val expandTransition: EnterTransition =
+    fadeIn() + expandVertically(expandFrom = Alignment.Top)
+val collapseTransition: ExitTransition =
+    shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+val fadeEnterTransition: EnterTransition =
+    fadeIn(tween(340))
+val fadeExitTransition: ExitTransition =
+    fadeOut(tween(340))
+val slideEnterTransition: EnterTransition =
+    slideInHorizontally(initialOffsetX = { it })
+val slideExitTransition: ExitTransition =
+    slideOutHorizontally(targetOffsetX = { -it / 4 }) + fadeOut()

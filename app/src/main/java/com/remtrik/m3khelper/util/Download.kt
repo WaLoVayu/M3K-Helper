@@ -16,14 +16,14 @@ fun checkNewVersion(): LatestVersionInfo {
                 if (!response.isSuccessful) {
                     return defaultValue
                 }
-                val body = response.body?.string() ?: return defaultValue
+                val body = response.body.string()
                 val json = JSONObject(body)
                 val changelog = json.optString("body")
 
                 val assets = json.getJSONArray("assets")
                 for (i in 0 until assets.length()) {
                     val asset = assets.getJSONObject(i)
-                    var name = asset.getString("name")
+                    val name = asset.getString("name")
                     if (!name.endsWith(".apk")) {
                         continue
                     }
@@ -33,7 +33,6 @@ fun checkNewVersion(): LatestVersionInfo {
                     val versionCode = matchResult.groupValues[2].toInt()
                     val downloadUrl = asset.getString("browser_download_url")
 
-                    println("${regex.find(name)}")
                     return LatestVersionInfo(
                         versionCode,
                         versionName,
@@ -48,8 +47,8 @@ fun checkNewVersion(): LatestVersionInfo {
 }
 
 data class LatestVersionInfo(
-    val versionCode : Int = 0,
-    val verisonName: String = "",
-    val downloadUrl : String = "",
-    val changelog : String = ""
+    val versionCode: Int = 0,
+    val versionName: String = "",
+    val downloadUrl: String = "",
+    val changelog: String = ""
 )

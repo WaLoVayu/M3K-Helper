@@ -26,13 +26,13 @@ import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.window.Dialog
 import com.remtrik.m3khelper.BuildConfig
+import com.remtrik.m3khelper.R.drawable.ic_windows
 import com.remtrik.m3khelper.R.string.app_name
 import com.remtrik.m3khelper.R.string.source
-import com.remtrik.m3khelper.R.drawable.ic_windows
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LineHeight
-import com.remtrik.m3khelper.util.showAboutCard
 import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.showAboutCard
 
 @Composable
 fun AboutCard() {

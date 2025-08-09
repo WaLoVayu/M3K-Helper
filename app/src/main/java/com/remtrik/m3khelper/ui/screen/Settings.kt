@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -41,7 +40,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ThemeEngineScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.prefs
@@ -132,8 +130,8 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
             }
             SwitchItem(
                 icon = Icons.Filled.DevicesOther,
-                title = "Override device",
-                summary = "Use this if your device is detected as wrong model",
+                title = stringResource(R.string.override_device),
+                summary = stringResource(R.string.override_device_summary),
                 checked = overrideDevice
             ) {
                 scope.launch(Dispatchers.IO) {
@@ -160,7 +158,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                             horizontalArrangement = Arrangement.spacedBy(5.sdp())
                         ) {
                             Text(
-                                text = "device: $overridenDeviceName",
+                                text = stringResource(R.string.device, overridenDeviceName!!),
                                 modifier = Modifier.fillMaxWidth(),
                                 fontSize = FontSize,
                                 lineHeight = LineHeight
@@ -170,15 +168,18 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.padding(PaddingValue).width(250.sdp())
+                        modifier = Modifier
+                            .padding(PaddingValue)
+                            .width(250.sdp())
                     ) {
-                        deviceCardsArray.forEach {
-                            if (!(it.deviceCodename.contentEquals(beyond1Card.deviceCodename)
-                                        || (it.deviceCodename.contentEquals(emu64xaCard.deviceCodename) && !BuildConfig.DEBUG)
-                                        || it.deviceCodename.contentEquals(unknownCard.deviceCodename)
-                                        || it.deviceCodename.contentEquals(Device.savedDeviceCard.deviceCodename)
-                                        )
-                            ) {
+                        deviceCardsArray
+                            .filterNot {
+                                it == beyond1Card
+                                        || it == emu64xaCard
+                                        || it == unknownCard
+                                        || it == Device.savedDeviceCard
+                            }
+                            .forEach {
                                 DropdownMenuItem(
                                     text = {
                                         Text(
@@ -209,7 +210,6 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                                     }
                                 )
                             }
-                        }
                     }
                 }
             }

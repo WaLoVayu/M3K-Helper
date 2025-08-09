@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -49,8 +50,6 @@ import com.remtrik.m3khelper.ui.component.UnknownDevice
 import com.remtrik.m3khelper.ui.component.UpdateDialog
 import com.remtrik.m3khelper.ui.theme.M3KHelperTheme
 import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.fadeEnterTransition
-import com.remtrik.m3khelper.util.fadeExitTransition
 import com.remtrik.m3khelper.util.FontSize
 import com.remtrik.m3khelper.util.LatestVersionInfo
 import com.remtrik.m3khelper.util.LineHeight
@@ -59,15 +58,16 @@ import com.remtrik.m3khelper.util.Warning
 import com.remtrik.m3khelper.util.checkNewVersion
 import com.remtrik.m3khelper.util.collapseTransition
 import com.remtrik.m3khelper.util.expandTransition
-import com.remtrik.m3khelper.util.vars
+import com.remtrik.m3khelper.util.fadeEnterTransition
+import com.remtrik.m3khelper.util.fadeExitTransition
 import com.remtrik.m3khelper.util.sdp
 import com.remtrik.m3khelper.util.slideEnterTransition
 import com.remtrik.m3khelper.util.slideExitTransition
 import com.remtrik.m3khelper.util.ssp
+import com.remtrik.m3khelper.util.vars
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlin.collections.toSet
 
 
 class MainActivity : ComponentActivity() {
@@ -119,8 +119,10 @@ internal fun M3KRootContent() {
 
     val latestVersionInfo = LatestVersionInfo()
     val newVersion by produceState(initialValue = latestVersionInfo) {
-        value = withContext(Dispatchers.IO) {
-            checkNewVersion()
+        if (mutableStateOf(prefs.getBoolean("check_update", true)).value) {
+            value = withContext(Dispatchers.IO) {
+                checkNewVersion()
+            }
         }
     }
 

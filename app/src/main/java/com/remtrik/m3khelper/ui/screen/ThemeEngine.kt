@@ -138,7 +138,9 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                 visible = enableThemeEngine,
                 enter = expandTransition,
                 exit = collapseTransition,
-                modifier = Modifier.padding(PaddingValue).fillMaxWidth()
+                modifier = Modifier
+                    .padding(PaddingValue)
+                    .fillMaxWidth()
             ) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = Color.Transparent),
@@ -146,7 +148,9 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                 ) {
                     IconButton(
                         onClick = { expanded = !expanded },
-                        modifier = Modifier.fillMaxWidth().size(25.sdp())
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .size(25.sdp())
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -176,30 +180,32 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
                         onDismissRequest = { expanded = false },
                         modifier = Modifier.padding(PaddingValue)
                     ) {
-                        PaletteStyle.entries.forEach {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = it.name,
-                                        fontSize = FontSize,
-                                        lineHeight = LineHeight
-                                    )
-                                },
-                                onClick = {
-                                    scope.launch {
-                                        withContext(Dispatchers.IO) {
-                                            prefs.edit {
-                                                putString(
-                                                    "paletteStyle",
-                                                    it.name
-                                                )
-                                            }; paletteStyle = it.name; expanded =
-                                            !expanded; themeReapply.value = !themeReapply.value
+                        PaletteStyle.entries
+                            .filterNot { it.name == paletteStyle }
+                            .forEach {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = it.name,
+                                            fontSize = FontSize,
+                                            lineHeight = LineHeight
+                                        )
+                                    },
+                                    onClick = {
+                                        scope.launch {
+                                            withContext(Dispatchers.IO) {
+                                                prefs.edit {
+                                                    putString(
+                                                        "paletteStyle",
+                                                        it.name
+                                                    )
+                                                }; paletteStyle = it.name; expanded =
+                                                !expanded; themeReapply.value = !themeReapply.value
+                                            }
                                         }
                                     }
-                                }
-                            )
-                        }
+                                )
+                            }
                     }
                     ColorPicker()
                 }

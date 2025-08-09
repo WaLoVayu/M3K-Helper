@@ -17,11 +17,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
@@ -36,9 +35,11 @@ import com.remtrik.m3khelper.ui.component.QuickBootButton
 import com.remtrik.m3khelper.ui.component.TopAppBar
 import com.remtrik.m3khelper.util.Device
 import com.remtrik.m3khelper.util.PaddingValue
+import com.remtrik.m3khelper.util.commandError
 import com.remtrik.m3khelper.util.sdp
-import com.remtrik.m3khelper.util.showBootBackupErorDialog
-import com.remtrik.m3khelper.util.showUEFIFlashErorDialog
+import com.remtrik.m3khelper.util.showBootBackupErrorDialog
+import com.remtrik.m3khelper.util.showMountErrorDialog
+import com.remtrik.m3khelper.util.showQuickBootErrorDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState")
@@ -135,22 +136,32 @@ private fun DeviceInfo(modifier: Modifier) {
 @Composable
 private fun ErrorDialogs() {
     when {
-        showUEFIFlashErorDialog.value -> {
+        showBootBackupErrorDialog.value -> {
             ErrorDialog(
-                title = "woops",
-                description = "failed to flash uefi",
-                showDialog = showUEFIFlashErorDialog.value,
-                onDismiss = { showUEFIFlashErorDialog.value = false }
+                title = stringResource(R.string.backupboot_error),
+                description = stringResource(R.string.error_reason, commandError.value),
+                showDialog = showBootBackupErrorDialog.value,
+                onDismiss = { showBootBackupErrorDialog.value = false }
             )
         }
     }
     when {
-        showBootBackupErorDialog.value -> {
+        showMountErrorDialog.value -> {
             ErrorDialog(
-                title = "woops",
-                description = "failed to backup boot",
-                showDialog = showBootBackupErorDialog.value,
-                onDismiss = { showBootBackupErorDialog.value = false }
+                title = "Failed to mount\\umount Windows",
+                description = stringResource(R.string.error_reason, commandError.value),
+                showDialog = showMountErrorDialog.value,
+                onDismiss = { showMountErrorDialog.value = false }
+            )
+        }
+    }
+    when {
+        showQuickBootErrorDialog.value -> {
+            ErrorDialog(
+                title = "Failed to QuickBoot to Windows",
+                description = stringResource(R.string.error_reason, commandError.value),
+                showDialog = showQuickBootErrorDialog.value,
+                onDismiss = { showQuickBootErrorDialog.value = false }
             )
         }
     }
