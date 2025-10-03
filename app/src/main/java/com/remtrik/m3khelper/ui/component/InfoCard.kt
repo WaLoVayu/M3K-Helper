@@ -15,13 +15,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.remtrik.m3khelper.R.string
-import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.FontSize
-import com.remtrik.m3khelper.util.LineHeight
-import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.rememberDeviceStrings
-import com.remtrik.m3khelper.util.sdp
-import com.remtrik.m3khelper.util.string
+import com.remtrik.m3khelper.util.funcs.string
+import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.util.variables.FontSize
+import com.remtrik.m3khelper.util.variables.LineHeight
+import com.remtrik.m3khelper.util.variables.PaddingValue
+import com.remtrik.m3khelper.util.variables.rememberDeviceStrings
+import com.remtrik.m3khelper.util.variables.sdp
 
 @Composable
 fun InfoCard(modifier: Modifier) {

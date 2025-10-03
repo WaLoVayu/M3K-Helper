@@ -29,10 +29,10 @@ import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.R.drawable.ic_windows
 import com.remtrik.m3khelper.R.string.app_name
 import com.remtrik.m3khelper.R.string.source
-import com.remtrik.m3khelper.util.FontSize
-import com.remtrik.m3khelper.util.LineHeight
-import com.remtrik.m3khelper.util.sdp
-import com.remtrik.m3khelper.util.showAboutCard
+import com.remtrik.m3khelper.util.variables.FontSize
+import com.remtrik.m3khelper.util.variables.LineHeight
+import com.remtrik.m3khelper.util.variables.sdp
+import com.remtrik.m3khelper.util.variables.showAboutCard
 
 @Composable
 fun AboutCard() {
@@ -70,7 +70,7 @@ fun AboutCard() {
                         Spacer(Modifier.height(10.sdp()))
 
                         Text(
-                            text = AnnotatedString.Companion.fromHtml(
+                            text = AnnotatedString.fromHtml(
                                 htmlString = stringResource(id = source) + " " + "<b><a href=\"https://github.com/WaLoVayu/M3K-Helper\">GitHub</a></b>",
                                 linkStyles = TextLinkStyles(
                                     style = SpanStyle(textDecoration = TextDecoration.Underline)

@@ -16,17 +16,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
-import com.remtrik.m3khelper.util.FontSize
-import com.remtrik.m3khelper.util.LineHeight
-import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.variables.FontSize
+import com.remtrik.m3khelper.util.variables.LineHeight
+import com.remtrik.m3khelper.util.variables.sdp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBar(
     navigator: DestinationsNavigator,
     text: Int,
-    isNavigate: Boolean,
-    isPopBack: Boolean,
+    isNavigate: Boolean?,
+    isPopBack: Boolean?,
     destination: DirectionDestinationSpec? = null,
     icon: ImageVector? = null
 ) {
@@ -40,7 +40,7 @@ fun TopAppBar(
             )
         },
         navigationIcon = {
-            if (isPopBack) {
+            isPopBack?.let {
                 IconButton(
                     onClick = dropUnlessResumed { navigator.popBackStack() },
                 ) {
@@ -53,7 +53,7 @@ fun TopAppBar(
             }
         },
         actions = {
-            if (isNavigate) {
+            isNavigate?.let {
                 IconButton(
                     onClick = { navigator.navigate(destination!!) }
                 ) {

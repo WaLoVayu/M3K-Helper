@@ -20,8 +20,8 @@ android {
         applicationId = "com.remtrik.m3khelper"
         minSdk = 29
         targetSdk = 36
-        versionCode = 62
-        versionName = "4.6.1-NBOG"
+        versionCode = 63
+        versionName = "5.0.0-HAFR"
         compileSdk = 36
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -95,7 +95,10 @@ android {
     applicationVariants.all {
         outputs.forEach {
             val output = it as BaseVariantOutputImpl
-            output.outputFileName = "M3K_Helper_v${versionName}_${versionCode}-${name}-${output.getFilter(com.android.build.OutputFile.ABI)}.apk"        }
+            output.outputFileName =
+
+                "M3K_Helper_v${versionName}_${versionCode}-${name}-${output.getFilter(com.android.build.OutputFile.ABI)}.apk"
+        }
         kotlin.sourceSets {
             getByName(name) {
                 kotlin.srcDir("build/generated/ksp/$name/kotlin")

@@ -58,7 +58,7 @@ extern "C" {
 
 JNIEXPORT jstring
 JNICALL
-Java_com_remtrik_m3khelper_util_VariablesKt_getPanelNative(
+Java_com_remtrik_m3khelper_util_variables_VariablesKt_getPanelNative(
         JNIEnv *env,
         jclass
 ) {
@@ -99,7 +99,7 @@ Java_com_remtrik_m3khelper_util_VariablesKt_getPanelNative(
 /*
 JNIEXPORT jintArray
 JNICALL
-Java_com_remtrik_m3khelper_util_VariablesKt_findUEFIImages(
+Java_com_remtrik_m3khelper_util_variables_VariablesKt_findUEFIImages(
         JNIEnv *env,
         jclass,
         jstring baseCmd
@@ -138,7 +138,7 @@ Java_com_remtrik_m3khelper_util_VariablesKt_findUEFIImages(
 
 JNIEXPORT jint
 JNICALL
-Java_com_remtrik_m3khelper_util_VariablesKt_checkBootImages(
+Java_com_remtrik_m3khelper_util_variables_VariablesKt_checkBootImages(
         JNIEnv *env,
         jclass,
         jboolean noMount,

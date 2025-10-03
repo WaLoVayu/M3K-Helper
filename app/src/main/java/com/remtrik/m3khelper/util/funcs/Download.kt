@@ -1,10 +1,10 @@
-package com.remtrik.m3khelper.util
+package com.remtrik.m3khelper.util.funcs
 
 import com.remtrik.m3khelper.M3KApp
 import okhttp3.Request
 import org.json.JSONObject
 
-// sorry i took that from kernel su
+// sorry I took that from kernel su
 data class LatestVersionInfo(
     val versionCode: Int = 0,
     val versionName: String = "",

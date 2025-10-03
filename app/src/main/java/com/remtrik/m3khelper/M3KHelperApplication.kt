@@ -1,7 +1,6 @@
 package com.remtrik.m3khelper
 
 import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
 import com.topjohnwu.superuser.Shell
 import okhttp3.Cache
@@ -26,7 +25,7 @@ class M3KHelperApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         M3KApp = this
-        prefs = this.getSharedPreferences("settings", Context.MODE_PRIVATE)
+        prefs = this.getSharedPreferences("settings", MODE_PRIVATE)
 
         Shell.setDefaultBuilder(
             Shell.Builder.create().setFlags(Shell.FLAG_REDIRECT_STDERR).setTimeout(10)

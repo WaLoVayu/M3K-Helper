@@ -6,10 +6,10 @@ import android.service.quicksettings.Tile.STATE_UNAVAILABLE
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresPermission
 import com.remtrik.m3khelper.R
-import com.remtrik.m3khelper.util.CommandHandler
-import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.FirstBoot
-import com.remtrik.m3khelper.util.string
+import com.remtrik.m3khelper.util.funcs.string
+import com.remtrik.m3khelper.util.variables.CommandHandler
+import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.util.variables.FirstBoot
 
 abstract class CommonTileService : TileService() {
     protected fun disableTile(subtitleString: Int?) {

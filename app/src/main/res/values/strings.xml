@@ -28,7 +28,7 @@
     <string name="uefi_not_found_subtitle">Download UEFI for your device and place it under /sdcard/UEFI folder</string>
 
     <string name="no_root">Please grant M3K Helper Root-access to use it!</string>
-    <string name="qs_unsupported">Device isn\’t supported</string>
+    <string name="qs_unsupported">Device isn’t supported</string>
 
     <string name="unknown_device">Unknown device</string>
     <string name="model">Model: %s (%s)</string>
@@ -69,7 +69,7 @@
     <string name="device">Device: %s</string>
 
     <string name="force_rotation">Force rotation</string>
-    <string name="force_rotation_summary">Enables rotation even if your device isn\’t a pad</string>
+    <string name="force_rotation_summary">Enables rotation even if your device isn’t a pad</string>
 
     <string name="enable_materialu">Enable system color scheme</string>
     <string name="enable_materialu_summary">Use system colors</string>

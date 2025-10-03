@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.R.drawable
 import com.remtrik.m3khelper.R.string.unknown_device
+import com.remtrik.m3khelper.util.funcs.string
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

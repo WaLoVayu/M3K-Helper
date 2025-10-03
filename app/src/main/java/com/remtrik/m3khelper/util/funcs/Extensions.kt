@@ -1,4 +1,4 @@
-package com.remtrik.m3khelper.util
+package com.remtrik.m3khelper.util.funcs
 
 import com.remtrik.m3khelper.M3KApp
 

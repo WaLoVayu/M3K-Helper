@@ -1,4 +1,4 @@
-package com.remtrik.m3khelper.util
+package com.remtrik.m3khelper.util.variables
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

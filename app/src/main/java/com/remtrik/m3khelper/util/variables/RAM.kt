@@ -1,8 +1,9 @@
-package com.remtrik.m3khelper.util
+package com.remtrik.m3khelper.util.variables
 
 import android.app.ActivityManager
 import android.content.Context
 import com.remtrik.m3khelper.M3KApp
+import java.io.File
 
 private const val GB_16 = 12_000L
 private const val GB_12 = 8_000L
@@ -31,7 +32,7 @@ fun getMemory(): String {
 
 private fun readTotalMemFromProc(): Long {
     return runCatching {
-        java.io.File("/proc/meminfo").useLines { lines ->
+        File("/proc/meminfo").useLines { lines ->
             lines.firstOrNull { it.startsWith("MemTotal:") }
                 ?.substringAfter("MemTotal:")
                 ?.substringBefore("kB")

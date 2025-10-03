@@ -33,13 +33,13 @@ import com.remtrik.m3khelper.ui.component.InfoCard
 import com.remtrik.m3khelper.ui.component.MountButton
 import com.remtrik.m3khelper.ui.component.QuickBootButton
 import com.remtrik.m3khelper.ui.component.TopAppBar
-import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.commandError
-import com.remtrik.m3khelper.util.sdp
-import com.remtrik.m3khelper.util.showBootBackupErrorDialog
-import com.remtrik.m3khelper.util.showMountErrorDialog
-import com.remtrik.m3khelper.util.showQuickBootErrorDialog
+import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.util.variables.PaddingValue
+import com.remtrik.m3khelper.util.variables.commandError
+import com.remtrik.m3khelper.util.variables.sdp
+import com.remtrik.m3khelper.util.variables.showBootBackupErrorDialog
+import com.remtrik.m3khelper.util.variables.showMountErrorDialog
+import com.remtrik.m3khelper.util.variables.showQuickBootErrorDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState")

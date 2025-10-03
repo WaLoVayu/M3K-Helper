@@ -27,13 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R
-import com.remtrik.m3khelper.util.FontSize
-import com.remtrik.m3khelper.util.LatestVersionInfo
-import com.remtrik.m3khelper.util.LineHeight
-import com.remtrik.m3khelper.util.Warning
-import com.remtrik.m3khelper.util.restart
-import com.remtrik.m3khelper.util.sdp
-import com.remtrik.m3khelper.util.ssp
+import com.remtrik.m3khelper.util.funcs.LatestVersionInfo
+import com.remtrik.m3khelper.util.funcs.restart
+import com.remtrik.m3khelper.util.variables.FontSize
+import com.remtrik.m3khelper.util.variables.LineHeight
+import com.remtrik.m3khelper.util.variables.Warning
+import com.remtrik.m3khelper.util.variables.sdp
+import com.remtrik.m3khelper.util.variables.ssp
 
 @Composable
 fun ErrorDialog(

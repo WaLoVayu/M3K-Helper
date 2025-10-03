@@ -47,12 +47,12 @@ import com.remtrik.m3khelper.ui.component.SwitchItem
 import com.remtrik.m3khelper.ui.component.TopAppBar
 import com.remtrik.m3khelper.ui.theme.PaletteStyle
 import com.remtrik.m3khelper.ui.theme.themeReapply
-import com.remtrik.m3khelper.util.FontSize
-import com.remtrik.m3khelper.util.LineHeight
-import com.remtrik.m3khelper.util.PaddingValue
 import com.remtrik.m3khelper.util.collapseTransition
 import com.remtrik.m3khelper.util.expandTransition
-import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.variables.FontSize
+import com.remtrik.m3khelper.util.variables.LineHeight
+import com.remtrik.m3khelper.util.variables.PaddingValue
+import com.remtrik.m3khelper.util.variables.sdp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

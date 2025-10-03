@@ -30,10 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.edit
 import com.remtrik.m3khelper.prefs
 import com.remtrik.m3khelper.ui.theme.themeReapply
-import com.remtrik.m3khelper.util.FontSize
-import com.remtrik.m3khelper.util.LineHeight
-import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.variables.FontSize
+import com.remtrik.m3khelper.util.variables.LineHeight
+import com.remtrik.m3khelper.util.variables.PaddingValue
+import com.remtrik.m3khelper.util.variables.sdp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

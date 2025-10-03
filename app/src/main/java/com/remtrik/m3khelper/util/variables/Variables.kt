@@ -1,4 +1,4 @@
-package com.remtrik.m3khelper.util
+package com.remtrik.m3khelper.util.variables
 
 import android.annotation.SuppressLint
 import android.os.Build
@@ -18,6 +18,14 @@ import com.remtrik.m3khelper.BuildConfig
 import com.remtrik.m3khelper.M3KApp
 import com.remtrik.m3khelper.R.string
 import com.remtrik.m3khelper.prefs
+import com.remtrik.m3khelper.util.DeviceCard
+import com.remtrik.m3khelper.util.deviceCardsArray
+import com.remtrik.m3khelper.util.funcs.CommandResult
+import com.remtrik.m3khelper.util.funcs.Commands
+import com.remtrik.m3khelper.util.funcs.ErrorType
+import com.remtrik.m3khelper.util.funcs.string
+import com.remtrik.m3khelper.util.specialDeviceCardsArray
+import com.remtrik.m3khelper.util.unknownCard
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import kotlinx.parcelize.Parcelize
@@ -40,8 +48,8 @@ data class DeviceCommands(
 
 data class DeviceData(
     var currentDeviceCard: DeviceCard = unknownCard,
-    val deviceCodenames: Array<String> =
-        arrayOf(
+    val deviceCodenames: List<String> =
+        listOf(
             Build.DEVICE,
             ShellUtils.fastCmd("getprop ro.product.device"),
             ShellUtils.fastCmd("getprop ro.lineage.device")
@@ -56,7 +64,7 @@ data class DeviceData(
     var panelType: MutableState<String> = mutableStateOf(
         prefs.getString("saved_device_panel", string.unknown_panel.string()).toString()
     ),
-    var uefiCardsArray: Array<UEFICard> = emptyArray<UEFICard>(),
+    var uefiCardsArray: List<UEFICard> = emptyList(),
     var special: MutableState<Boolean> = mutableStateOf(false),
 
     )
@@ -98,11 +106,11 @@ fun vars() {
                 putBoolean("firstboot", true)
                 putString("version", BuildConfig.VERSION_NAME)
             }
+            getPanel()
         }
         fetchDeviceCard()
-        backgroundExecutor.execute(::getPanel)
     } else {
-        fastLoadSavedDevice()
+        backgroundExecutor.execute { fastLoadSavedDevice() }
     }
 
     // TODO: Examine the OS behavior with different paths
@@ -151,7 +159,7 @@ fun fastLoadSavedDevice(override: Boolean = Device.overrideDeviceCard.value) {
                     "vayu"
                 ).toString()
             )
-        }!!
+        } ?: Device.savedDeviceCard
     } else {
         Device.savedDeviceCard
     }
@@ -166,11 +174,13 @@ private fun getPanel() {
 }
 
 fun bootBackupStatus() {
-    BootIsPresent.value = when (checkBootImages(Device.currentDeviceCard.noMount, SdcardPath)) {
-        3 -> string.backup_both
-        2 -> string.backup_windows
-        1 -> string.backup_android
-        else -> string.no
+    backgroundExecutor.execute {
+        BootIsPresent.value = when (checkBootImages(Device.currentDeviceCard.noMount, SdcardPath)) {
+            3 -> string.backup_both
+            2 -> string.backup_windows
+            1 -> string.backup_android
+            else -> string.no
+        }
     }
 }
 
@@ -185,19 +195,20 @@ private fun dynamicVars() {
     }
     if (Device.uefiCardsArray.isEmpty()) {
         val find = Shell.cmd("find /mnt/sdcard/UEFI/ -type f | grep .img").exec()
-        if (find.isSuccess) {
-            Device.uefiCardsArray = find.out
-                .filter { it.contains("hz") }
-                .mapNotNull { path ->
-                    when {
-                        path.contains("120hz") -> UEFICard(path, 120)
-                        path.contains("90hz") -> UEFICard(path, 90)
-                        path.contains("60hz") -> UEFICard(path, 60)
-                        else -> null
+        if (find.isSuccess && Device.uefiCardsArray.isEmpty()) {
+            backgroundExecutor.execute {
+                Device.uefiCardsArray = find.out
+                    .filter { it.contains("hz") }
+                    .mapNotNull { path ->
+                        when {
+                            path.contains("120hz") -> UEFICard(path, 120)
+                            path.contains("90hz") -> UEFICard(path, 90)
+                            path.contains("60hz") -> UEFICard(path, 60)
+                            else -> null
+                        }
                     }
-                }
-                .ifEmpty { listOf(UEFICard(find.out.first(), 1)) }
-                .toTypedArray()
+                    .ifEmpty { listOf(UEFICard(find.out.first(), 1)) }
+            }
         }
     }
 }

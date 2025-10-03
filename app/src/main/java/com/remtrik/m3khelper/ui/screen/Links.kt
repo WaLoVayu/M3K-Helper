@@ -28,9 +28,9 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.ui.component.LinkButton
 import com.remtrik.m3khelper.ui.component.TopAppBar
-import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.PaddingValue
-import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.util.variables.PaddingValue
+import com.remtrik.m3khelper.util.variables.sdp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

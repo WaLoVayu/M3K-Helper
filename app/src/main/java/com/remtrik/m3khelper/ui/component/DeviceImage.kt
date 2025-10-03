@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import com.remtrik.m3khelper.util.Device
-import com.remtrik.m3khelper.util.sdp
+import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.util.variables.sdp
 
 @Composable
 fun DeviceImage(modifier: Modifier) {
