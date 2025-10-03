@@ -41,6 +41,7 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.ramcosta.composedestinations.generated.destinations.LinksScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.utils.isRouteOnBackStackAsState
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.remtrik.m3khelper.BuildConfig
@@ -55,8 +56,9 @@ import com.remtrik.m3khelper.util.fadeEnterTransition
 import com.remtrik.m3khelper.util.fadeExitTransition
 import com.remtrik.m3khelper.util.funcs.LatestVersionInfo
 import com.remtrik.m3khelper.util.funcs.checkNewVersion
-import com.remtrik.m3khelper.util.slideEnterTransition
-import com.remtrik.m3khelper.util.slideExitTransition
+import com.remtrik.m3khelper.util.slideFromRightEnterTransition
+import com.remtrik.m3khelper.util.slideToLeftExitTransition
+import com.remtrik.m3khelper.util.slideToRightExitTransition
 import com.remtrik.m3khelper.util.variables.Device
 import com.remtrik.m3khelper.util.variables.FontSize
 import com.remtrik.m3khelper.util.variables.LineHeight
@@ -82,9 +84,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             requestedOrientation =
-                if (shouldForceRotation()) {
-                    SCREEN_ORIENTATION_FULL_USER
-                } else SCREEN_ORIENTATION_USER_PORTRAIT
+                if (shouldForceRotation()) SCREEN_ORIENTATION_FULL_USER
+                else SCREEN_ORIENTATION_USER_PORTRAIT
 
             M3KHelperTheme {
                 vars()
@@ -194,7 +195,7 @@ internal fun M3KRootContent() {
                             AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
                         {
                             if (targetState.destination.route !in bottomBarRoutes) {
-                                slideEnterTransition
+                                slideFromRightEnterTransition
                             } else {
                                 fadeEnterTransition
                             }
@@ -203,7 +204,8 @@ internal fun M3KRootContent() {
                             AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
                         {
                             if (targetState.destination.route !in bottomBarRoutes) {
-                                slideExitTransition
+                                if (targetState.destination.route == "settings_screen") slideToLeftExitTransition
+                                else slideToRightExitTransition
                             } else {
                                 fadeExitTransition
                             }

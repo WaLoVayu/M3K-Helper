@@ -45,113 +45,139 @@ fun LinksScreen(navigator: DestinationsNavigator) {
             TopAppBar(
                 navigator = navigator,
                 text = R.string.links,
-                isNavigate = false,
-                isPopBack = false
             )
         })
     { innerPadding ->
-        Column(
-            verticalArrangement = Arrangement.spacedBy(10.sdp()),
-            modifier = Modifier
-                .verticalScroll(scrollState)
-                .padding(innerPadding)
-                .padding(horizontal = PaddingValue)
-                .fillMaxWidth()
-                .fillMaxHeight(),
-        ) {
-            if (isLandscape) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.sdp()),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(10.sdp()),
-                        modifier = Modifier.width(500.sdp())
-                    ) { FilesLinks() }
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(10.sdp()),
-                        modifier = Modifier.width(500.sdp())
-                    ) { SocialLinks() }
-                }
-            } else {
-                FilesLinks()
-                SocialLinks()
-            }
+        LinksContent(
+            isLandscape = isLandscape,
+            scrollState = scrollState,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
+}
+
+@Composable
+private fun LinksContent(
+    isLandscape: Boolean,
+    scrollState: androidx.compose.foundation.ScrollState,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(10.sdp()),
+        modifier = modifier
+            .verticalScroll(scrollState)
+            .padding(horizontal = PaddingValue)
+            .fillMaxWidth()
+            .fillMaxHeight(),
+    ) {
+        if (isLandscape) {
+            LandscapeLinksLayout()
+        } else {
+            PortraitLinksLayout()
         }
     }
 }
 
 @Composable
-private fun FilesLinks() {
-    if (Device.currentDeviceCard.unifiedDriversUEFI
-        && !(Device.currentDeviceCard.noDrivers || Device.currentDeviceCard.noUEFI)
+private fun LandscapeLinksLayout() {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.sdp()),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        LinkButton(
-            stringResource(
-                R.string.driversuefi,
-                Device.currentDeviceCard.deviceName
-            ),
-            null,
-            Device.currentDeviceCard.deviceDrivers,
-            R.drawable.ic_drivers,
-            LocalUriHandler.current
-        )
-    } else {
-        when {
-            !Device.currentDeviceCard.noDrivers -> {
-                LinkButton(
-                    stringResource(
-                        R.string.drivers,
-                        Device.currentDeviceCard.deviceName
-                    ),
-                    null,
-                    Device.currentDeviceCard.deviceDrivers,
-                    R.drawable.ic_drivers,
-                    LocalUriHandler.current
-                )
-            }
+        LinksColumn(
+            modifier = Modifier.width(500.sdp())
+        ) {
+            FilesLinks()
         }
-        when {
-            !Device.currentDeviceCard.noUEFI -> {
-                LinkButton(
-                    stringResource(
-                        R.string.uefi,
-                        Device.currentDeviceCard.deviceName
-                    ),
-                    null,
-                    Device.currentDeviceCard.deviceUEFI,
-                    R.drawable.ic_uefi,
-                    LocalUriHandler.current
-                )
-            }
+        LinksColumn(
+            modifier = Modifier.width(500.sdp())
+        ) {
+            SocialLinks()
+        }
+    }
+}
+
+@Composable
+private fun PortraitLinksLayout() {
+    FilesLinks()
+    SocialLinks()
+}
+
+@Composable
+private fun LinksColumn(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.sdp()),
+        modifier = modifier
+    ) {
+        content()
+    }
+}
+
+@Composable
+private fun FilesLinks() {
+    val deviceCard = Device.currentDeviceCard
+    val uriHandler = LocalUriHandler.current
+
+    when {
+        deviceCard.unifiedDriversUEFI &&
+                !(deviceCard.noDrivers || deviceCard.noUEFI) -> {
+            LinkButton(
+                title = stringResource(R.string.driversuefi, deviceCard.deviceName),
+                subtitle = null,
+                link = deviceCard.deviceDrivers,
+                icon = R.drawable.ic_drivers,
+                localUriHandler = uriHandler
+            )
+        }
+
+        !deviceCard.noDrivers && !deviceCard.unifiedDriversUEFI -> {
+            LinkButton(
+                title = stringResource(R.string.drivers, deviceCard.deviceName),
+                subtitle = null,
+                link = deviceCard.deviceDrivers,
+                icon = R.drawable.ic_drivers,
+                localUriHandler = uriHandler
+            )
+        }
+
+        !deviceCard.noUEFI && !deviceCard.unifiedDriversUEFI -> {
+            LinkButton(
+                title = stringResource(R.string.uefi, deviceCard.deviceName),
+                subtitle = null,
+                link = deviceCard.deviceUEFI,
+                icon = R.drawable.ic_uefi,
+                localUriHandler = uriHandler
+            )
         }
     }
 }
 
 @Composable
 private fun SocialLinks() {
-    when {
-        !Device.currentDeviceCard.noGroup -> {
-            LinkButton(
-                stringResource(R.string.group, Device.currentDeviceCard.deviceName),
-                null,
-                Device.currentDeviceCard.deviceGroup,
-                Icons.AutoMirrored.Filled.Message,
-                LocalUriHandler.current
-            )
-        }
+    val deviceCard = Device.currentDeviceCard
+    val uriHandler = LocalUriHandler.current
+
+    if (!deviceCard.noGroup) {
+        LinkButton(
+            title = stringResource(R.string.group, deviceCard.deviceName),
+            subtitle = null,
+            link = deviceCard.deviceGroup,
+            icon = Icons.AutoMirrored.Filled.Message,
+            localUriHandler = uriHandler
+        )
     }
-    when {
-        !Device.currentDeviceCard.noGuide -> {
-            LinkButton(
-                stringResource(R.string.guide, Device.currentDeviceCard.deviceName),
-                null,
-                Device.currentDeviceCard.deviceGuide,
-                Icons.Filled.Book,
-                LocalUriHandler.current
-            )
-        }
+
+    if (!deviceCard.noGuide) {
+        LinkButton(
+            title = stringResource(R.string.guide, deviceCard.deviceName),
+            subtitle = null,
+            link = deviceCard.deviceGuide,
+            icon = Icons.Filled.Book,
+            localUriHandler = uriHandler
+        )
     }
 }

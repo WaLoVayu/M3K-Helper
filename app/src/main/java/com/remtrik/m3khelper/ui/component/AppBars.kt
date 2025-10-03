@@ -25,8 +25,8 @@ import com.remtrik.m3khelper.util.variables.sdp
 fun TopAppBar(
     navigator: DestinationsNavigator,
     text: Int,
-    isNavigate: Boolean?,
-    isPopBack: Boolean?,
+    isNavigate: Boolean? = null,
+    isPopBack: Boolean? = null,
     destination: DirectionDestinationSpec? = null,
     icon: ImageVector? = null
 ) {

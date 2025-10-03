@@ -96,7 +96,6 @@ android {
         outputs.forEach {
             val output = it as BaseVariantOutputImpl
             output.outputFileName =
-
                 "M3K_Helper_v${versionName}_${versionCode}-${name}-${output.getFilter(com.android.build.OutputFile.ABI)}.apk"
         }
         kotlin.sourceSets {
@@ -113,6 +112,9 @@ android {
 
     androidResources {
         generateLocaleConfig = true
+    }
+    kotlinOptions {
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
 
 }

@@ -87,7 +87,6 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
             TopAppBar(
                 navigator = navigator,
                 text = R.string.theme_engine,
-                isNavigate = false,
                 isPopBack = true
             )
         }

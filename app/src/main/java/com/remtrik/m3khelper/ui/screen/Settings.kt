@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -90,7 +89,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
         )
     }
 
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -100,7 +99,6 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
             TopAppBar(
                 navigator = navigator,
                 text = R.string.settings,
-                isNavigate = false,
                 isPopBack = true
             )
         }
@@ -158,7 +156,10 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                             horizontalArrangement = Arrangement.spacedBy(5.sdp())
                         ) {
                             Text(
-                                text = stringResource(R.string.device, overridenDeviceName!!),
+                                text = stringResource(
+                                    R.string.device,
+                                    overridenDeviceName ?: "Unknown"
+                                ),
                                 modifier = Modifier.fillMaxWidth(),
                                 fontSize = FontSize,
                                 lineHeight = LineHeight
@@ -174,10 +175,12 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     ) {
                         deviceCardsArray
                             .filterNot {
-                                it == beyond1Card
-                                        || it == debugCard
-                                        || it == unknownCard
-                                        || it == Device.savedDeviceCard
+                                it in listOf(
+                                    beyond1Card,
+                                    debugCard,
+                                    unknownCard,
+                                    Device.savedDeviceCard
+                                )
                             }
                             .forEach {
                                 DropdownMenuItem(

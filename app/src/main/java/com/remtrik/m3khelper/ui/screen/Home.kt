@@ -55,7 +55,6 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 navigator = navigator,
                 text = R.string.app_name,
                 isNavigate = true,
-                isPopBack = false,
                 destination = SettingsScreenDestination,
                 icon = Filled.Settings
             )
@@ -109,21 +108,18 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 
 @Composable
 private fun Buttons() {
-    when {
-        !Device.currentDeviceCard.noBoot -> {
-            BackupButton()
-        }
+    val deviceCard = Device.currentDeviceCard
+
+    if (!deviceCard.noBoot) {
+        BackupButton()
     }
 
-    when {
-        !Device.currentDeviceCard.noMount -> {
-            MountButton()
-        }
+    if (!deviceCard.noMount) {
+        MountButton()
     }
-    when {
-        !Device.currentDeviceCard.noFlash -> {
-            QuickBootButton()
-        }
+
+    if (!deviceCard.noFlash) {
+        QuickBootButton()
     }
 }
 
@@ -135,34 +131,38 @@ private fun DeviceInfo(modifier: Modifier) {
 
 @Composable
 private fun ErrorDialogs() {
-    when {
-        showBootBackupErrorDialog.value -> {
+    val errorDialogs = listOf(
+        ErrorDialogConfig(
+            showDialog = showBootBackupErrorDialog.value,
+            title = stringResource(R.string.backupboot_error),
+            onDismiss = { showBootBackupErrorDialog.value = false }
+        ),
+        ErrorDialogConfig(
+            showDialog = showMountErrorDialog.value,
+            title = "Failed to mount\\umount Windows",
+            onDismiss = { showMountErrorDialog.value = false }
+        ),
+        ErrorDialogConfig(
+            showDialog = showQuickBootErrorDialog.value,
+            title = "Failed to QuickBoot to Windows",
+            onDismiss = { showQuickBootErrorDialog.value = false }
+        )
+    )
+
+    errorDialogs.forEach { config ->
+        if (config.showDialog) {
             ErrorDialog(
-                title = stringResource(R.string.backupboot_error),
+                title = config.title,
                 description = stringResource(R.string.error_reason, commandError.value),
-                showDialog = showBootBackupErrorDialog.value,
-                onDismiss = { showBootBackupErrorDialog.value = false }
-            )
-        }
-    }
-    when {
-        showMountErrorDialog.value -> {
-            ErrorDialog(
-                title = "Failed to mount\\umount Windows",
-                description = stringResource(R.string.error_reason, commandError.value),
-                showDialog = showMountErrorDialog.value,
-                onDismiss = { showMountErrorDialog.value = false }
-            )
-        }
-    }
-    when {
-        showQuickBootErrorDialog.value -> {
-            ErrorDialog(
-                title = "Failed to QuickBoot to Windows",
-                description = stringResource(R.string.error_reason, commandError.value),
-                showDialog = showQuickBootErrorDialog.value,
-                onDismiss = { showQuickBootErrorDialog.value = false }
+                showDialog = config.showDialog,
+                onDismiss = config.onDismiss
             )
         }
     }
 }
+
+private data class ErrorDialogConfig(
+    val showDialog: Boolean,
+    val title: String,
+    val onDismiss: () -> Unit
+)

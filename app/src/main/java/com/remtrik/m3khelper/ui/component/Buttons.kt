@@ -57,85 +57,87 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@Composable
-fun CommandButton(
-    title: Int,
-    subtitle: Int,
-    question: Int,
-    command: () -> Unit,
-    icon: Int
-) {
-    val showDialog = remember { mutableStateOf(false) }
-    val showSpinner = remember { mutableStateOf(false) }
-
-    val scope = rememberCoroutineScope()
-
-    ElevatedCard(
-        onClick = { showDialog.value = true },
-        modifier = Modifier
-            .height(105.sdp())
-            .fillMaxWidth(),
-    ) {
-        when {
-            showSpinner.value -> {
-                StatusDialog(
-                    icon = painterResource(id = icon),
-                    title = string.please_wait,
-                    showDialog = showSpinner.value,
-                )
-            }
-        }
-        when {
-            showDialog.value -> {
-                Dialog(
-                    icon = painterResource(id = icon),
-                    title = null,
-                    description = stringResource(question),
-                    showDialog = showDialog.value,
-                    onDismiss = { showDialog.value = false },
-                    onConfirm = {
-                        scope.launch {
-                            withContext(Dispatchers.IO) {
-                                showDialog.value = false
-                                showSpinner.value = true
-                                command()
-                                showSpinner.value = false
-                            }
-                        }
-                    }
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(PaddingValue),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(5.sdp())
-        ) {
-            Icon(
-                modifier = Modifier
-                    .size(40.sdp()),
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Column {
-                Text(
-                    stringResource(title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = FontSize,
-                    lineHeight = LineHeight,
-                )
-                Text(
-                    stringResource(subtitle),
-                    lineHeight = LineHeight,
-                    fontSize = FontSize
-                )
-            }
-        }
-    }
-}
+// --Commented out by Inspection START (10/3/2025 9:21 PM):
+//@Composable
+//fun CommandButton(
+//    title: Int,
+//    subtitle: Int,
+//    question: Int,
+//    command: () -> Unit,
+//    icon: Int
+//) {
+//    val showDialog = remember { mutableStateOf(false) }
+//    val showSpinner = remember { mutableStateOf(false) }
+//
+//    val scope = rememberCoroutineScope()
+//
+//    ElevatedCard(
+//        onClick = { showDialog.value = true },
+//        modifier = Modifier
+//            .height(105.sdp())
+//            .fillMaxWidth(),
+//    ) {
+//        when {
+//            showSpinner.value -> {
+//                StatusDialog(
+//                    icon = painterResource(id = icon),
+//                    title = string.please_wait,
+//                    showDialog = showSpinner.value,
+//                )
+//            }
+//        }
+//        when {
+//            showDialog.value -> {
+//                Dialog(
+//                    icon = painterResource(id = icon),
+//                    title = null,
+//                    description = stringResource(question),
+//                    showDialog = showDialog.value,
+//                    onDismiss = { showDialog.value = false },
+//                    onConfirm = {
+//                        scope.launch {
+//                            withContext(Dispatchers.IO) {
+//                                showDialog.value = false
+//                                showSpinner.value = true
+//                                command()
+//                                showSpinner.value = false
+//                            }
+//                        }
+//                    }
+//                )
+//            }
+//        }
+//        Row(
+//            modifier = Modifier
+//                .fillMaxHeight()
+//                .padding(PaddingValue),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.spacedBy(5.sdp())
+//        ) {
+//            Icon(
+//                modifier = Modifier
+//                    .size(40.sdp()),
+//                painter = painterResource(id = icon),
+//                contentDescription = null,
+//                tint = MaterialTheme.colorScheme.primary
+//            )
+//            Column {
+//                Text(
+//                    stringResource(title),
+//                    fontWeight = FontWeight.Bold,
+//                    fontSize = FontSize,
+//                    lineHeight = LineHeight,
+//                )
+//                Text(
+//                    stringResource(subtitle),
+//                    lineHeight = LineHeight,
+//                    fontSize = FontSize
+//                )
+//            }
+//        }
+//    }
+//}
+// --Commented out by Inspection STOP (10/3/2025 9:21 PM)
 
 @Composable
 fun LinkButton(
