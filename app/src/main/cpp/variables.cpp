@@ -71,7 +71,7 @@ Java_com_remtrik_m3khelper_util_variables_VariablesKt_getPanelNative(
         panel.erase(0, panel.find("msm_drm"));
         panel.erase(panel.find("android"), panel.length());
     } catch (const out_of_range &) {
-        return env->NewStringUTF("Unknown");
+        return env->NewStringUTF("Software");
     }
 
     transform(panel.begin(), panel.end(), panel.begin(), ::tolower);

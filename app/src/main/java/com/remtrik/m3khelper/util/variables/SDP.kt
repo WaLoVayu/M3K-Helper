@@ -8,7 +8,11 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Assigns values to the variables above
+private data class WidthRatioConfig(
+    val widthThreshold: Int,
+    val divisor: Double
+)
+
 @Composable
 private fun rememberApproximatedWidth(): Int {
     val config = LocalConfiguration.current
@@ -16,34 +20,44 @@ private fun rememberApproximatedWidth(): Int {
     return remember(smallestWidth) { approximateWidth(smallestWidth) }
 }
 
-// Will return the smallestWidth approximated to nearest 30 to improve performance
 private fun approximateWidth(value: Int): Int {
     return (value + 15) / 30 * 30
 }
 
 @Composable
 fun Int.sdp(): Dp {
-    val approxWidth = rememberApproximatedWidth()
-    val ratio = remember(approxWidth) {
-        when {
-            approxWidth <= 400 -> approxWidth / 440.0
-            approxWidth <= 550 -> approxWidth / 450.0
-            else -> approxWidth / 650.0
-        }
-    }
+    val ratio = rememberWidthRatio(sdpRatioConfigs)
     return (this * ratio).dp
 }
 
 @Composable
 fun Int.ssp(): TextUnit {
-    val approxWidth = rememberApproximatedWidth()
-    val ratio = remember(approxWidth) {
-        when {
-            approxWidth <= 400 -> approxWidth / 500.0
-            approxWidth <= 450 -> approxWidth / 450.0
-            approxWidth <= 550 -> approxWidth / 500.0
-            else -> approxWidth / 650.0
-        }
-    }
+    val ratio = rememberWidthRatio(sspRatioConfigs)
     return (this * ratio).sp
 }
+
+@Composable
+private fun rememberWidthRatio(configs: List<WidthRatioConfig>): Double {
+    val approxWidth = rememberApproximatedWidth()
+    return remember(approxWidth) {
+        calculateRatio(approxWidth, configs)
+    }
+}
+
+private fun calculateRatio(width: Int, configs: List<WidthRatioConfig>): Double {
+    val matchingConfig = configs.find { width <= it.widthThreshold }
+    return width / (matchingConfig?.divisor ?: configs.last().divisor)
+}
+
+private val sdpRatioConfigs = listOf(
+    WidthRatioConfig(widthThreshold = 400, divisor = 440.0),
+    WidthRatioConfig(widthThreshold = 550, divisor = 450.0),
+    WidthRatioConfig(widthThreshold = Int.MAX_VALUE, divisor = 650.0)
+)
+
+private val sspRatioConfigs = listOf(
+    WidthRatioConfig(widthThreshold = 400, divisor = 500.0),
+    WidthRatioConfig(widthThreshold = 450, divisor = 450.0),
+    WidthRatioConfig(widthThreshold = 550, divisor = 500.0),
+    WidthRatioConfig(widthThreshold = Int.MAX_VALUE, divisor = 650.0)
+)

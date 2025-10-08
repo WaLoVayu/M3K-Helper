@@ -32,8 +32,8 @@ import com.remtrik.m3khelper.ui.component.ErrorDialog
 import com.remtrik.m3khelper.ui.component.InfoCard
 import com.remtrik.m3khelper.ui.component.MountButton
 import com.remtrik.m3khelper.ui.component.QuickBootButton
-import com.remtrik.m3khelper.ui.component.TopAppBar
-import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.ui.component.CommonTopAppBar
+import com.remtrik.m3khelper.util.variables.device
 import com.remtrik.m3khelper.util.variables.PaddingValue
 import com.remtrik.m3khelper.util.variables.commandError
 import com.remtrik.m3khelper.util.variables.sdp
@@ -51,27 +51,25 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CommonTopAppBar(
                 navigator = navigator,
                 text = R.string.app_name,
-                isNavigate = true,
-                isPopBack = false,
+                isNavigate = if (isLandscape) null else true,
                 destination = SettingsScreenDestination,
-                icon = Filled.Settings
+                icon = Filled.Settings,
             )
-        }
-    )
-    { innerPadding ->
+        },
+    ) { innerPadding ->
+        ErrorDialogs()
         Column(
             verticalArrangement = Arrangement.spacedBy(10.sdp()),
             modifier = Modifier
                 .verticalScroll(scrollState)
-                .padding(innerPadding)
+                .padding(top = innerPadding.calculateTopPadding())
                 .padding(horizontal = PaddingValue)
                 .fillMaxWidth()
                 .fillMaxHeight(),
         ) {
-            ErrorDialogs()
             if (isLandscape) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.sdp()),
@@ -109,21 +107,18 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 
 @Composable
 private fun Buttons() {
-    when {
-        !Device.currentDeviceCard.noBoot -> {
-            BackupButton()
-        }
+    val deviceCard = device.currentDeviceCard
+
+    if (!deviceCard.noBoot) {
+        BackupButton()
     }
 
-    when {
-        !Device.currentDeviceCard.noMount -> {
-            MountButton()
-        }
+    if (!deviceCard.noMount) {
+        MountButton()
     }
-    when {
-        !Device.currentDeviceCard.noFlash -> {
-            QuickBootButton()
-        }
+
+    if (!deviceCard.noFlash) {
+        QuickBootButton()
     }
 }
 
@@ -135,34 +130,38 @@ private fun DeviceInfo(modifier: Modifier) {
 
 @Composable
 private fun ErrorDialogs() {
-    when {
-        showBootBackupErrorDialog.value -> {
+    val errorDialogs = listOf(
+        ErrorDialogConfig(
+            showDialog = showBootBackupErrorDialog.value,
+            title = stringResource(R.string.backupboot_error),
+            onDismiss = { showBootBackupErrorDialog.value = false }
+        ),
+        ErrorDialogConfig(
+            showDialog = showMountErrorDialog.value,
+            title = "Failed to mount\\umount Windows",
+            onDismiss = { showMountErrorDialog.value = false }
+        ),
+        ErrorDialogConfig(
+            showDialog = showQuickBootErrorDialog.value,
+            title = "Failed to QuickBoot to Windows",
+            onDismiss = { showQuickBootErrorDialog.value = false }
+        )
+    )
+
+    errorDialogs.forEach { config ->
+        if (config.showDialog) {
             ErrorDialog(
-                title = stringResource(R.string.backupboot_error),
+                title = config.title,
                 description = stringResource(R.string.error_reason, commandError.value),
-                showDialog = showBootBackupErrorDialog.value,
-                onDismiss = { showBootBackupErrorDialog.value = false }
-            )
-        }
-    }
-    when {
-        showMountErrorDialog.value -> {
-            ErrorDialog(
-                title = "Failed to mount\\umount Windows",
-                description = stringResource(R.string.error_reason, commandError.value),
-                showDialog = showMountErrorDialog.value,
-                onDismiss = { showMountErrorDialog.value = false }
-            )
-        }
-    }
-    when {
-        showQuickBootErrorDialog.value -> {
-            ErrorDialog(
-                title = "Failed to QuickBoot to Windows",
-                description = stringResource(R.string.error_reason, commandError.value),
-                showDialog = showQuickBootErrorDialog.value,
-                onDismiss = { showQuickBootErrorDialog.value = false }
+                showDialog = config.showDialog,
+                onDismiss = config.onDismiss
             )
         }
     }
 }
+
+private data class ErrorDialogConfig(
+    val showDialog: Boolean,
+    val title: String,
+    val onDismiss: () -> Unit
+)

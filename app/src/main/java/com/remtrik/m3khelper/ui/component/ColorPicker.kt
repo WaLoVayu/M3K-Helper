@@ -57,46 +57,15 @@ fun ColorPicker() {
         )
     }
 
-    val color by remember {
+    val color by remember(red.floatValue, green.floatValue, blue.floatValue) {
         derivedStateOf {
             Color(red.floatValue, green.floatValue, blue.floatValue, 1f)
         }
     }
 
     Column {
-        Row {
-            ColorPreview(color)
-        }
-
-        Column(
-            modifier = Modifier.padding(PaddingValue),
-            verticalArrangement = Arrangement.spacedBy(10.sdp())
-        ) {
-            ColorSlider(
-                "R",
-                red,
-                {
-                    red.floatValue = it
-                },
-                Color.Red
-            )
-            ColorSlider(
-                "G",
-                green,
-                {
-                    green.floatValue = it
-                },
-                Color.Green
-            )
-            ColorSlider(
-                "B",
-                blue,
-                {
-                    blue.floatValue = it
-                },
-                Color.Blue
-            )
-        }
+        ColorPreview(color)
+        ColorSliders(red, green, blue)
     }
 }
 
@@ -114,6 +83,43 @@ private fun ColorPreview(color: Color) {
                 shape = MaterialTheme.shapes.large
             )
     )
+}
+
+@Composable
+private fun ColorSliders(
+    red: MutableState<Float>,
+    green: MutableState<Float>,
+    blue: MutableState<Float>
+) {
+    Column(
+        modifier = Modifier.padding(PaddingValue),
+        verticalArrangement = Arrangement.spacedBy(10.sdp())
+    ) {
+        ColorSlider(
+            "R",
+            red,
+            {
+                red.value = it
+            },
+            Color.Red
+        )
+        ColorSlider(
+            "G",
+            green,
+            {
+                green.value = it
+            },
+            Color.Green
+        )
+        ColorSlider(
+            "B",
+            blue,
+            {
+                blue.value = it
+            },
+            Color.Blue
+        )
+    }
 }
 
 @Composable

@@ -6,10 +6,11 @@ import android.service.quicksettings.Tile.STATE_UNAVAILABLE
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresPermission
 import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.util.funcs.MountStatus
 import com.remtrik.m3khelper.util.funcs.string
-import com.remtrik.m3khelper.util.variables.CommandHandler
-import com.remtrik.m3khelper.util.variables.Device
-import com.remtrik.m3khelper.util.variables.FirstBoot
+import com.remtrik.m3khelper.util.variables.commandHandler
+import com.remtrik.m3khelper.util.variables.device
+import com.remtrik.m3khelper.util.variables.firstBoot
 
 abstract class CommonTileService : TileService() {
     protected fun disableTile(subtitleString: Int?) {
@@ -31,7 +32,7 @@ abstract class CommonTileService : TileService() {
 
 class MountTile : CommonTileService() { // more than just a PoC
     private val supported: Boolean
-        get() = !FirstBoot && !Device.savedDeviceCard.noMount
+        get() = !firstBoot && !device.savedDeviceCard.noMount
 
     override fun onStartListening() {
         super.onStartListening()
@@ -40,7 +41,7 @@ class MountTile : CommonTileService() { // more than just a PoC
             return
         }
 
-        if (CommandHandler.isMounted()) {
+        if (commandHandler.isMounted() == MountStatus.NOT_MOUNTED) {
             enableTile(R.string.mnt_question)
         } else {
             enableTile(R.string.umnt_question)
@@ -50,7 +51,7 @@ class MountTile : CommonTileService() { // more than just a PoC
     override fun onClick() {
         super.onClick()
 
-        if (CommandHandler.isMounted()) CommandHandler.mountWindows() else CommandHandler.umountWindows()
+        if (commandHandler.isMounted() == MountStatus.NOT_MOUNTED) commandHandler.mountWindows() else commandHandler.umountWindows()
         onStartListening()
     }
 
@@ -58,10 +59,10 @@ class MountTile : CommonTileService() { // more than just a PoC
 
 class QuickBootTile : CommonTileService() { // more than just a PoC
     private val supported: Boolean
-        get() = !FirstBoot && !Device.savedDeviceCard.noFlash
+        get() = !firstBoot && !device.savedDeviceCard.noFlash
 
     private val uefiPath: String?
-        get() = Device.uefiCardsArray.firstOrNull()?.uefiPath
+        get() = device.uefiCardsArray.firstOrNull()?.uefiPath
 
     override fun onStartListening() {
         super.onStartListening()
@@ -81,7 +82,7 @@ class QuickBootTile : CommonTileService() { // more than just a PoC
                 return
             }
 
-            else -> CommandHandler.quickBoot(uefiPath!!)
+            else -> commandHandler.quickBoot(uefiPath!!)
         }
     }
 

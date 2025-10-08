@@ -13,9 +13,9 @@ data class DeviceCard(
     val deviceName: String,
     val deviceImage: Int,
     val deviceGuide: String,
-    val deviceGroup: String,
-    val deviceDrivers: String,
-    val deviceUEFI: String,
+    val groupLink: String,
+    val driversLink: String,
+    val uefiLink: String,
     val noModem: Boolean, val noFlash: Boolean,
     val noBoot: Boolean, val noMount: Boolean,
     val sensors: Boolean, val noGuide: Boolean,
@@ -44,9 +44,9 @@ data class DeviceCard(
         if (!deviceCodename.contentEquals(other.deviceCodename)) return false
         if (deviceName != other.deviceName) return false
         if (deviceGuide != other.deviceGuide) return false
-        if (deviceGroup != other.deviceGroup) return false
-        if (deviceDrivers != other.deviceDrivers) return false
-        if (deviceUEFI != other.deviceUEFI) return false
+        if (groupLink != other.groupLink) return false
+        if (driversLink != other.driversLink) return false
+        if (uefiLink != other.uefiLink) return false
 
         return true
     }
@@ -67,9 +67,9 @@ data class DeviceCard(
         result = 31 * result + deviceCodename.contentHashCode()
         result = 31 * result + deviceName.hashCode()
         result = 31 * result + deviceGuide.hashCode()
-        result = 31 * result + deviceGroup.hashCode()
-        result = 31 * result + deviceDrivers.hashCode()
-        result = 31 * result + deviceUEFI.hashCode()
+        result = 31 * result + groupLink.hashCode()
+        result = 31 * result + driversLink.hashCode()
+        result = 31 * result + uefiLink.hashCode()
         return result
     }
 }
@@ -209,8 +209,8 @@ val mh2Card: DeviceCard = mh2lm5gCard.copy(
     deviceCodename = arrayOf("mh2", "mh2lm"),
     deviceName = "LG G8X",
     deviceGuide = "https://github.com/n00b69/woa-mh2lm",
-    deviceUEFI = "https://github.com/n00b69/woa-mh2lm/releases/tag/UEFI",
-    deviceDrivers = "https://github.com/n00b69/woa-mh2lm5g/releases/tag/Drivers"
+    uefiLink = "https://github.com/n00b69/woa-mh2lm/releases/tag/UEFI",
+    driversLink = "https://github.com/n00b69/woa-mh2lm5g/releases/tag/Drivers"
 )
 
 val betaCard: DeviceCard = DeviceCard(

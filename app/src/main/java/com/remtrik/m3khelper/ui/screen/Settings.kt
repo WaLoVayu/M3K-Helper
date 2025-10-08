@@ -28,12 +28,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.edit
 import com.ramcosta.composedestinations.annotation.Destination
@@ -46,14 +46,14 @@ import com.remtrik.m3khelper.prefs
 import com.remtrik.m3khelper.ui.component.AboutCard
 import com.remtrik.m3khelper.ui.component.ButtonItem
 import com.remtrik.m3khelper.ui.component.SwitchItem
-import com.remtrik.m3khelper.ui.component.TopAppBar
+import com.remtrik.m3khelper.ui.component.CommonTopAppBar
 import com.remtrik.m3khelper.util.beyond1Card
 import com.remtrik.m3khelper.util.collapseTransition
 import com.remtrik.m3khelper.util.debugCard
 import com.remtrik.m3khelper.util.deviceCardsArray
 import com.remtrik.m3khelper.util.expandTransition
 import com.remtrik.m3khelper.util.unknownCard
-import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.util.variables.device
 import com.remtrik.m3khelper.util.variables.FontSize
 import com.remtrik.m3khelper.util.variables.LineHeight
 import com.remtrik.m3khelper.util.variables.PaddingValue
@@ -62,7 +62,6 @@ import com.remtrik.m3khelper.util.variables.sdp
 import com.remtrik.m3khelper.util.variables.showAboutCard
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,27 +89,29 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
         )
     }
 
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CommonTopAppBar(
                 navigator = navigator,
                 text = R.string.settings,
-                isNavigate = false,
-                isPopBack = true
+                isPopBack = if (isLandscape) null else true,
             )
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .verticalScroll(scrollState)
-                .padding(innerPadding)
+                .padding(top = innerPadding.calculateTopPadding())
+                .padding(horizontal = PaddingValue)
                 .fillMaxWidth()
-                .fillMaxHeight(),
+                .fillMaxHeight()
         ) {
             ButtonItem(
                 icon = Icons.Filled.Style,
@@ -158,7 +159,10 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                             horizontalArrangement = Arrangement.spacedBy(5.sdp())
                         ) {
                             Text(
-                                text = stringResource(R.string.device, overridenDeviceName!!),
+                                text = stringResource(
+                                    R.string.device,
+                                    overridenDeviceName ?: "Unknown"
+                                ),
                                 modifier = Modifier.fillMaxWidth(),
                                 fontSize = FontSize,
                                 lineHeight = LineHeight
@@ -174,10 +178,13 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     ) {
                         deviceCardsArray
                             .filterNot {
-                                it == beyond1Card
-                                        || it == debugCard
-                                        || it == unknownCard
-                                        || it == Device.savedDeviceCard
+                                it in listOf(
+                                    beyond1Card,
+                                    debugCard,
+                                    unknownCard,
+                                    device.savedDeviceCard,
+                                    device.currentDeviceCard
+                                )
                             }
                             .forEach {
                                 DropdownMenuItem(
@@ -189,23 +196,21 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                                         )
                                     },
                                     onClick = {
-                                        scope.launch {
-                                            withContext(Dispatchers.IO) {
-                                                prefs.edit {
-                                                    putString(
-                                                        "overriden_device_codename",
-                                                        it.deviceCodename[0]
-                                                    )
-                                                    putString(
-                                                        "overriden_device_name",
-                                                        it.deviceName
-                                                    )
-                                                }
-                                                overridenDeviceName = it.deviceName
-                                                expanded = !expanded
-
-                                                fastLoadSavedDevice(true)
+                                        kotlinx.coroutines.runBlocking(Dispatchers.IO) {
+                                            prefs.edit {
+                                                putString(
+                                                    "overriden_device_codename",
+                                                    it.deviceCodename[0]
+                                                )
+                                                putString(
+                                                    "overriden_device_name",
+                                                    it.deviceName
+                                                )
                                             }
+                                            overridenDeviceName = it.deviceName
+                                            expanded = !expanded
+
+                                            fastLoadSavedDevice(true)
                                         }
                                     }
                                 )
@@ -214,7 +219,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 }
             }
             AnimatedVisibility(
-                visible = !Device.special.value,
+                visible = !device.special.value,
                 enter = expandTransition,
                 exit = collapseTransition,
                 modifier = Modifier.fillMaxWidth()
@@ -225,7 +230,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     summary = stringResource(R.string.force_rotation_summary),
                     checked = forceRotation
                 ) {
-                    scope.launch(Dispatchers.IO) {
+                    kotlinx.coroutines.runBlocking(Dispatchers.IO) {
                         prefs.edit { putBoolean("force_rotation", it) }
                         forceRotation = it
                         if (it) M3KApp.resources.configuration.orientation =

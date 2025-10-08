@@ -53,6 +53,7 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
             isDebuggable = false
             isJniDebuggable = false
+            vcsInfo.include = false
         }
     }
     buildFeatures {
@@ -61,8 +62,9 @@ android {
     }
 
     kotlin {
+        jvmToolchain(21)
         compilerOptions {
-            jvmTarget = JvmTarget.fromTarget("21")
+            optIn.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
         }
     }
 
@@ -96,7 +98,6 @@ android {
         outputs.forEach {
             val output = it as BaseVariantOutputImpl
             output.outputFileName =
-
                 "M3K_Helper_v${versionName}_${versionCode}-${name}-${output.getFilter(com.android.build.OutputFile.ABI)}.apk"
         }
         kotlin.sourceSets {
@@ -114,7 +115,10 @@ android {
     androidResources {
         generateLocaleConfig = true
     }
+}
 
+ksp {
+    arg("compose-destinations.defaultTransitions", "none")
 }
 
 dependencies {

@@ -11,15 +11,31 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.ui.Alignment
 
-val expandTransition: EnterTransition =
-    fadeIn() + expandVertically(expandFrom = Alignment.Top)
-val collapseTransition: ExitTransition =
-    shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-val fadeEnterTransition: EnterTransition =
-    fadeIn(tween(340))
-val fadeExitTransition: ExitTransition =
-    fadeOut(tween(340))
-val slideEnterTransition: EnterTransition =
-    slideInHorizontally(initialOffsetX = { it })
-val slideExitTransition: ExitTransition =
-    slideOutHorizontally(targetOffsetX = { -it / 4 }) + fadeOut()
+private object AnimationConfig {
+    const val FADE_DURATION = 340
+    const val SLIDE_DIVIDER = 4
+}
+
+val expandTransition: EnterTransition
+    get() = fadeIn() + expandVertically(expandFrom = Alignment.Top)
+
+val collapseTransition: ExitTransition
+    get() = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+
+val fadeEnterTransition: EnterTransition
+    get() = fadeIn(tween(AnimationConfig.FADE_DURATION))
+
+val fadeExitTransition: ExitTransition
+    get() = fadeOut(tween(AnimationConfig.FADE_DURATION))
+
+val slideFromRightEnterTransition: EnterTransition
+    get() = slideInHorizontally(initialOffsetX = { it })
+
+val slideFromLeftEnterTransition: EnterTransition
+    get() = slideInHorizontally(initialOffsetX = { -it / AnimationConfig.SLIDE_DIVIDER })
+
+val slideToRightExitTransition: ExitTransition
+    get() = slideOutHorizontally(targetOffsetX = { -it / AnimationConfig.SLIDE_DIVIDER })
+
+val slideToLeftExitTransition: ExitTransition
+    get() = slideOutHorizontally(targetOffsetX = { it })

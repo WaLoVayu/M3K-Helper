@@ -43,8 +43,9 @@ import com.remtrik.m3khelper.R.drawable.ic_folder_open
 import com.remtrik.m3khelper.R.drawable.ic_windows
 import com.remtrik.m3khelper.R.string
 import com.remtrik.m3khelper.util.funcs.ErrorType
-import com.remtrik.m3khelper.util.variables.CommandHandler
-import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.util.funcs.MountStatus
+import com.remtrik.m3khelper.util.variables.commandHandler
+import com.remtrik.m3khelper.util.variables.device
 import com.remtrik.m3khelper.util.variables.FontSize
 import com.remtrik.m3khelper.util.variables.LineHeight
 import com.remtrik.m3khelper.util.variables.PaddingValue
@@ -57,85 +58,87 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@Composable
-fun CommandButton(
-    title: Int,
-    subtitle: Int,
-    question: Int,
-    command: () -> Unit,
-    icon: Int
-) {
-    val showDialog = remember { mutableStateOf(false) }
-    val showSpinner = remember { mutableStateOf(false) }
-
-    val scope = rememberCoroutineScope()
-
-    ElevatedCard(
-        onClick = { showDialog.value = true },
-        modifier = Modifier
-            .height(105.sdp())
-            .fillMaxWidth(),
-    ) {
-        when {
-            showSpinner.value -> {
-                StatusDialog(
-                    icon = painterResource(id = icon),
-                    title = string.please_wait,
-                    showDialog = showSpinner.value,
-                )
-            }
-        }
-        when {
-            showDialog.value -> {
-                Dialog(
-                    icon = painterResource(id = icon),
-                    title = null,
-                    description = stringResource(question),
-                    showDialog = showDialog.value,
-                    onDismiss = { showDialog.value = false },
-                    onConfirm = {
-                        scope.launch {
-                            withContext(Dispatchers.IO) {
-                                showDialog.value = false
-                                showSpinner.value = true
-                                command()
-                                showSpinner.value = false
-                            }
-                        }
-                    }
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(PaddingValue),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(5.sdp())
-        ) {
-            Icon(
-                modifier = Modifier
-                    .size(40.sdp()),
-                painter = painterResource(id = icon),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Column {
-                Text(
-                    stringResource(title),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = FontSize,
-                    lineHeight = LineHeight,
-                )
-                Text(
-                    stringResource(subtitle),
-                    lineHeight = LineHeight,
-                    fontSize = FontSize
-                )
-            }
-        }
-    }
-}
+// --Commented out by Inspection START (10/3/2025 9:21 PM):
+//@Composable
+//fun CommandButton(
+//    title: Int,
+//    subtitle: Int,
+//    question: Int,
+//    command: () -> Unit,
+//    icon: Int
+//) {
+//    val showDialog = remember { mutableStateOf(false) }
+//    val showSpinner = remember { mutableStateOf(false) }
+//
+//    val scope = rememberCoroutineScope()
+//
+//    ElevatedCard(
+//        onClick = { showDialog.value = true },
+//        modifier = Modifier
+//            .height(105.sdp())
+//            .fillMaxWidth(),
+//    ) {
+//        when {
+//            showSpinner.value -> {
+//                StatusDialog(
+//                    icon = painterResource(id = icon),
+//                    title = string.please_wait,
+//                    showDialog = showSpinner.value,
+//                )
+//            }
+//        }
+//        when {
+//            showDialog.value -> {
+//                Dialog(
+//                    icon = painterResource(id = icon),
+//                    title = null,
+//                    description = stringResource(question),
+//                    showDialog = showDialog.value,
+//                    onDismiss = { showDialog.value = false },
+//                    onConfirm = {
+//                        scope.launch {
+//                            withContext(Dispatchers.IO) {
+//                                showDialog.value = false
+//                                showSpinner.value = true
+//                                command()
+//                                showSpinner.value = false
+//                            }
+//                        }
+//                    }
+//                )
+//            }
+//        }
+//        Row(
+//            modifier = Modifier
+//                .fillMaxHeight()
+//                .padding(PaddingValue),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.spacedBy(5.sdp())
+//        ) {
+//            Icon(
+//                modifier = Modifier
+//                    .size(40.sdp()),
+//                painter = painterResource(id = icon),
+//                contentDescription = null,
+//                tint = MaterialTheme.colorScheme.primary
+//            )
+//            Column {
+//                Text(
+//                    stringResource(title),
+//                    fontWeight = FontWeight.Bold,
+//                    fontSize = FontSize,
+//                    lineHeight = LineHeight,
+//                )
+//                Text(
+//                    stringResource(subtitle),
+//                    lineHeight = LineHeight,
+//                    fontSize = FontSize
+//                )
+//            }
+//        }
+//    }
+//}
+// --Commented out by Inspection STOP (10/3/2025 9:21 PM)
 
 @Composable
 fun LinkButton(
@@ -143,10 +146,10 @@ fun LinkButton(
     subtitle: String?,
     link: String,
     icon: Any?,
-    localUriHandler: UriHandler
+    uriHandler: UriHandler
 ) {
     ElevatedCard(
-        onClick = { localUriHandler.openUri(link) },
+        onClick = { uriHandler.openUri(link) },
         modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
@@ -251,7 +254,7 @@ fun BackupButton() {
                                             showDialog.value = false
                                             showSpinner.value = true
                                             commandResult =
-                                                CommandHandler.dumpBoot(
+                                                commandHandler.dumpBoot(
                                                     ErrorType.QUICKBOOT_ERROR,
                                                     2
                                                 )
@@ -275,7 +278,7 @@ fun BackupButton() {
                                 }
                             )
                             when {
-                                !Device.currentDeviceCard.noMount -> {
+                                !device.currentDeviceCard.noMount -> {
                                     AssistChip(
                                         onClick = {
                                             scope.launch {
@@ -283,7 +286,7 @@ fun BackupButton() {
                                                     showDialog.value = false
                                                     showSpinner.value = true
                                                     commandResult =
-                                                        CommandHandler.dumpBoot(
+                                                        commandHandler.dumpBoot(
                                                             ErrorType.BOOTBACKUP_ERROR,
                                                             1
                                                         )
@@ -362,7 +365,7 @@ fun BackupButton() {
 @Composable
 fun MountButton() {
     val showDialog = remember { mutableStateOf(false) }
-    var isMounted by remember(CommandHandler.isMounted()) { mutableStateOf(CommandHandler.isMounted()) }
+    var isMounted by remember(commandHandler.isMounted()) { mutableStateOf(commandHandler.isMounted()) }
 
     val scope = rememberCoroutineScope()
 
@@ -374,7 +377,7 @@ fun MountButton() {
     ) {
         when {
             showDialog.value -> {
-                if (isMounted) {
+                if (isMounted == MountStatus.MOUNTED) {
                     Dialog(
                         painterResource(id = ic_folder),
                         null,
@@ -384,13 +387,13 @@ fun MountButton() {
                         onConfirm = {
                             scope.launch {
                                 withContext(Dispatchers.IO) {
-                                    commandResult = CommandHandler.umountWindows()
+                                    commandResult = commandHandler.umountWindows()
                                     if (!commandResult.isSuccess) {
                                         commandError.value = commandResult.output[0]
                                         showMountErrorDialog.value = true
                                     }
                                     showDialog.value = false
-                                    isMounted = CommandHandler.isMounted()
+                                    isMounted = commandHandler.isMounted()
                                 }
                             }
                         }
@@ -405,13 +408,13 @@ fun MountButton() {
                         onConfirm = {
                             scope.launch {
                                 withContext(Dispatchers.IO) {
-                                    commandResult = CommandHandler.mountWindows()
+                                    commandResult = commandHandler.mountWindows()
                                     if (!commandResult.isSuccess) {
                                         commandError.value = commandResult.output[0]
                                         showMountErrorDialog.value = true
                                     }
                                     showDialog.value = false
-                                    isMounted = CommandHandler.isMounted()
+                                    isMounted = commandHandler.isMounted()
                                 }
                             }
                         }
@@ -430,7 +433,7 @@ fun MountButton() {
                 modifier = Modifier
                     .size(40.sdp()),
                 painter = painterResource(
-                    id = if (isMounted) {
+                    id = if (isMounted == MountStatus.MOUNTED) {
                         ic_folder
                     } else {
                         ic_folder_open
@@ -441,7 +444,7 @@ fun MountButton() {
             )
             Column {
                 val mounted: Int =
-                    if (isMounted) {
+                    if (isMounted == MountStatus.MOUNTED) {
                         string.umnt_title
                     } else {
                         string.mnt_title
@@ -467,7 +470,7 @@ fun QuickBootButton() {
     val showDialog = remember { mutableStateOf(false) }
     val showSpinner = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val hasUefi = Device.uefiCardsArray.isNotEmpty()
+    val hasUefi = device.uefiCardsArray.isNotEmpty()
 
     ElevatedCard(
         onClick = { showDialog.value = true },
@@ -512,14 +515,14 @@ fun QuickBootButton() {
                             Modifier.align(Alignment.CenterHorizontally),
                             horizontalArrangement = Arrangement.spacedBy(10.sdp())
                         ) {
-                            Device.uefiCardsArray.forEach {
+                            device.uefiCardsArray.forEach {
                                 AssistChip(
                                     onClick = {
                                         scope.launch {
                                             withContext(Dispatchers.IO) {
                                                 showDialog.value = false
                                                 showSpinner.value = true
-                                                CommandHandler.quickBoot(
+                                                commandHandler.quickBoot(
                                                     it.uefiPath
                                                 )
                                                 showSpinner.value = false
@@ -584,7 +587,7 @@ fun QuickBootButton() {
                 val subtitle: Int
                 if (hasUefi) {
                     title = string.quickboot_title
-                    subtitle = when (Device.currentDeviceCard.noModem) {
+                    subtitle = when (device.currentDeviceCard.noModem) {
                         true -> string.quickboot_subtitle_nomodem
                         else -> string.quickboot_subtitle
                     }

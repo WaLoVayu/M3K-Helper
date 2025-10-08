@@ -3,9 +3,9 @@ package com.remtrik.m3khelper.util.funcs
 import android.content.Context
 import android.content.Intent
 import com.remtrik.m3khelper.R
-import com.remtrik.m3khelper.util.variables.CommandHandler
-import com.remtrik.m3khelper.util.variables.Device
-import com.remtrik.m3khelper.util.variables.SdcardPath
+import com.remtrik.m3khelper.util.variables.commandHandler
+import com.remtrik.m3khelper.util.variables.device
+import com.remtrik.m3khelper.util.variables.SDCARD_PATH
 import com.remtrik.m3khelper.util.variables.bootBackupStatus
 import com.remtrik.m3khelper.util.variables.commandError
 import com.remtrik.m3khelper.util.variables.commandResult
@@ -15,8 +15,9 @@ import com.remtrik.m3khelper.util.variables.showQuickBootErrorDialog
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 
-private val BlockWindowsPath =
+internal val BlockWindowsPath by lazy {
     ShellUtils.fastCmd("readlink -fn /dev/block/bootdevice/by-name/win")
+}
 
 abstract class Commands {
     lateinit var internalLastCommandResult: Shell.Result
@@ -29,7 +30,7 @@ abstract class Commands {
                 if (!withMountedWindows(type)
                     {
                         internalLastCommandResult =
-                            Shell.cmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=${SdcardPath}/Windows/boot.img bs=32M")
+                            Shell.cmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=${SDCARD_PATH}/Windows/boot.img bs=32M")
                                 .exec()
                     }
                 ) return CommandResult(
@@ -40,9 +41,9 @@ abstract class Commands {
             }
 
             2 -> {
-                ShellUtils.fastCmd("rm -rf ${SdcardPath}/m3khelper || true ")
+                ShellUtils.fastCmd("rm -rf ${SDCARD_PATH}/m3khelper || true ")
                 internalLastCommandResult =
-                    Shell.cmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=${SdcardPath}/boot.img")
+                    Shell.cmd("dd if=/dev/block/bootdevice/by-name/boot$slot of=${SDCARD_PATH}/boot.img")
                         .exec()
             }
         }
@@ -71,9 +72,9 @@ abstract class Commands {
     }
 
     fun mountWindows(): CommandResult {
-        Shell.cmd("mkdir ${SdcardPath}/Windows").exec()
+        Shell.cmd("mkdir ${SDCARD_PATH}/Windows").exec()
         internalCommandResult =
-            Shell.cmd("su -mm -c mount.ntfs /dev/block/by-name/win ${SdcardPath}/Windows")
+            Shell.cmd("su -mm -c mount.ntfs /dev/block/by-name/win ${SDCARD_PATH}/Windows")
                 .exec()
         return CommandResult(
             internalCommandResult.isSuccess,
@@ -84,9 +85,9 @@ abstract class Commands {
 
     fun umountWindows(): CommandResult {
         internalCommandResult =
-            Shell.cmd("su -mm -c umount ${SdcardPath}/Windows")
+            Shell.cmd("su -mm -c umount ${SDCARD_PATH}/Windows")
                 .exec()
-        Shell.cmd("rmdir ${SdcardPath}/Windows").exec()
+        Shell.cmd("rmdir ${SDCARD_PATH}/Windows").exec()
         return CommandResult(
             internalCommandResult.isSuccess,
             internalCommandResult.out,
@@ -94,19 +95,19 @@ abstract class Commands {
         )
     }
 
-    fun isMounted(): Boolean {
-        val tmp = Shell.cmd("mount | grep $BlockWindowsPath").exec()
-        return tmp.isSuccess && tmp.out[0].contains("Windows")
+    fun isMounted(): MountStatus {
+        val result = Shell.cmd("mount | grep $BlockWindowsPath").exec()
+        return if (result.isSuccess && result.out[0].contains("Windows")) MountStatus.MOUNTED else MountStatus.NOT_MOUNTED
     }
 
     private fun checkSensors(type: ErrorType): Boolean {
-        return if (!Device.currentDeviceCard.sensors) true
+        return if (!device.currentDeviceCard.sensors) true
         else {
             var check = false
             withMountedWindows(type)
             {
                 check =
-                    ShellUtils.fastCmd("find ${SdcardPath}/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors/*")
+                    ShellUtils.fastCmd("find ${SDCARD_PATH}/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors/*")
                         .isNotEmpty()
             }
             check
@@ -117,7 +118,7 @@ abstract class Commands {
         withMountedWindows(type)
         {
             internalLastCommandResult =
-                Shell.cmd("cp -r /vendor/persist/sensors/* ${SdcardPath}/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors")
+                Shell.cmd("cp -r /vendor/persist/sensors/* ${SDCARD_PATH}/Windows/Windows/System32/Drivers/DriverData/QUALCOMM/fastRPC/persist/sensors")
                     .exec()
         }
         return CommandResult(
@@ -131,7 +132,7 @@ abstract class Commands {
         withMountedWindows(type)
         {
             val path =
-                ShellUtils.fastCmd("find ${SdcardPath}/Windows/Windows/System32/DriverStore/FileRepository -name qcremotefs8150.inf_arm64_*")
+                ShellUtils.fastCmd("find ${SDCARD_PATH}/Windows/Windows/System32/DriverStore/FileRepository -name qcremotefs8150.inf_arm64_*")
             internalLastCommandResult =
                 Shell.cmd("dd if=/dev/block/bootdevice/by-name/modemst1 of=$path/bootmodem_fs1 bs=8388608")
                     .exec()
@@ -147,8 +148,7 @@ abstract class Commands {
     }
 
     private fun uefitell(uefiPath: String): Shell.Result {
-        val slot = ShellUtils.fastCmd("getprop ro.boot.slot_suffix")
-        return Shell.cmd("dd if=$uefiPath of=/dev/block/bootdevice/by-name/boot$slot").exec()
+        return Shell.cmd("dd if=$uefiPath of=/dev/block/bootdevice/by-name/boot${device.slot}").exec()
     }
 
     fun flashUEFI(uefiPath: String): CommandResult {
@@ -161,8 +161,8 @@ abstract class Commands {
     }
 
     fun quickBoot(uefiPath: String) {
-        if (!Device.currentDeviceCard.noMount) {
-            if (ShellUtils.fastCmd("find ${SdcardPath}/Windows/boot.img")
+        if (!device.currentDeviceCard.noMount) {
+            if (ShellUtils.fastCmd("find ${SDCARD_PATH}/Windows/boot.img")
                     .isEmpty()
             ) {
                 commandResult = dumpBoot(ErrorType.QUICKBOOT_ERROR, 1)
@@ -171,14 +171,14 @@ abstract class Commands {
                     return
                 }
             }
-            if (!Device.currentDeviceCard.noModem) {
+            if (!device.currentDeviceCard.noModem) {
                 commandResult = dumpModem(ErrorType.QUICKBOOT_ERROR)
                 if (!commandResult.isSuccess) {
                     handleErrorType(ErrorType.QUICKBOOT_ERROR, commandResult)
                     return
                 }
             }
-            if (Device.currentDeviceCard.sensors && !checkSensors(ErrorType.QUICKBOOT_ERROR)) {
+            if (device.currentDeviceCard.sensors && !checkSensors(ErrorType.QUICKBOOT_ERROR)) {
                 commandResult = dumpSensors(ErrorType.QUICKBOOT_ERROR)
                 if (!commandResult.isSuccess) {
                     handleErrorType(ErrorType.QUICKBOOT_ERROR, commandResult)
@@ -186,7 +186,7 @@ abstract class Commands {
                 }
             }
         }
-        if (ShellUtils.fastCmd("find ${SdcardPath}/boot.img")
+        if (ShellUtils.fastCmd("find ${SDCARD_PATH}/boot.img")
                 .isEmpty()
         ) {
             commandResult = dumpBoot(ErrorType.QUICKBOOT_ERROR, 2)
@@ -206,7 +206,7 @@ abstract class Commands {
     fun withMountedWindows(type: ErrorType, block: () -> Unit): Boolean {
         val wasMounted = isMounted()
         try {
-            if (wasMounted) commandResult = CommandHandler.mountWindows()
+            if (wasMounted == MountStatus.NOT_MOUNTED && !device.currentDeviceCard.noMount) commandResult = commandHandler.mountWindows()
             if (
                 try {
                     !internalCommandResult.isSuccess
@@ -221,7 +221,7 @@ abstract class Commands {
             }
             block()
         } finally {
-            if (wasMounted) commandResult = CommandHandler.umountWindows()
+            if (wasMounted == MountStatus.NOT_MOUNTED && !device.currentDeviceCard.noMount) commandResult = commandHandler.umountWindows()
             if (
                 try {
                     !internalCommandResult.isSuccess
@@ -246,12 +246,12 @@ abstract class Commands {
 }
 
 fun Context.restart() {
-    try {
+    runCatching {
         packageManager.getLaunchIntentForPackage(packageName)?.let {
             startService(Intent.makeRestartActivityTask(it.component))
             Runtime.getRuntime().exit(0)
         }
-    } catch (e: Exception) {
+    }.onFailure { e ->
         println("M3K Helper - $e")
     }
 }
@@ -266,4 +266,9 @@ enum class ErrorType {
     MOUNT_ERROR,
     BOOTBACKUP_ERROR,
     QUICKBOOT_ERROR
+}
+
+enum class MountStatus {
+    NOT_MOUNTED,
+    MOUNTED,
 }

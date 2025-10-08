@@ -31,7 +31,7 @@ import com.remtrik.m3khelper.util.funcs.LatestVersionInfo
 import com.remtrik.m3khelper.util.funcs.restart
 import com.remtrik.m3khelper.util.variables.FontSize
 import com.remtrik.m3khelper.util.variables.LineHeight
-import com.remtrik.m3khelper.util.variables.Warning
+import com.remtrik.m3khelper.util.variables.showWarningCard
 import com.remtrik.m3khelper.util.variables.sdp
 import com.remtrik.m3khelper.util.variables.ssp
 
@@ -324,12 +324,12 @@ fun UnknownDevice() {
                 fontSize = 25.ssp()
             )
         },
-        onDismissRequest = { Warning.value = false },
+        onDismissRequest = { showWarningCard.value = false },
         dismissButton = {},
         confirmButton = {
             AssistChip(
                 onClick = {
-                    Warning.value = false
+                    showWarningCard.value = false
                 },
                 label = {
                     Text(

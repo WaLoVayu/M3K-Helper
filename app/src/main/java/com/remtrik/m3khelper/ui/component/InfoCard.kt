@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.remtrik.m3khelper.R.string
 import com.remtrik.m3khelper.util.funcs.string
-import com.remtrik.m3khelper.util.variables.Device
+import com.remtrik.m3khelper.util.variables.device
 import com.remtrik.m3khelper.util.variables.FontSize
 import com.remtrik.m3khelper.util.variables.LineHeight
 import com.remtrik.m3khelper.util.variables.PaddingValue
@@ -26,10 +26,11 @@ import com.remtrik.m3khelper.util.variables.sdp
 @Composable
 fun InfoCard(modifier: Modifier) {
     val deviceStrings = rememberDeviceStrings()
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     ElevatedCard(
         modifier =
-            if (Device.special.value && LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            if (device.special.value && !isLandscape) {
                 modifier
             } else {
                 Modifier
