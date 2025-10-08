@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,7 +45,7 @@ import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.prefs
 import com.remtrik.m3khelper.ui.component.ColorPicker
 import com.remtrik.m3khelper.ui.component.SwitchItem
-import com.remtrik.m3khelper.ui.component.TopAppBar
+import com.remtrik.m3khelper.ui.component.CommonTopAppBar
 import com.remtrik.m3khelper.ui.theme.PaletteStyle
 import com.remtrik.m3khelper.ui.theme.themeReapply
 import com.remtrik.m3khelper.util.collapseTransition
@@ -54,161 +55,235 @@ import com.remtrik.m3khelper.util.variables.LineHeight
 import com.remtrik.m3khelper.util.variables.PaddingValue
 import com.remtrik.m3khelper.util.variables.sdp
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
 @Composable
 fun ThemeEngineScreen(navigator: DestinationsNavigator) {
-    var enableThemeEngine by rememberSaveable {
-        mutableStateOf(
-            prefs.getBoolean("enable_theme_engine", false)
-        )
-    }
-    var enableMaterialU by rememberSaveable {
-        mutableStateOf(
-            prefs.getBoolean("enable_materialu", true)
-        )
-    }
-    var paletteStyle by rememberSaveable {
-        mutableStateOf(
-            prefs.getString("paletteStyle", "TonalSpot")
-        )
-    }
-
-    val scope = rememberCoroutineScope()
-    var expanded by remember { mutableStateOf(false) }
+    val themeState = rememberThemeState()
     val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CommonTopAppBar(
                 navigator = navigator,
                 text = R.string.theme_engine,
                 isPopBack = true
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxWidth()
-                .verticalScroll(scrollState),
+        ThemeEngineContent(
+            themeState = themeState,
+            scrollState = scrollState,
+            innerPadding = innerPadding
+        )
+    }
+}
+
+@Composable
+private fun rememberThemeState(): ThemeState {
+    var enableThemeEngine by rememberSaveable {
+        mutableStateOf(prefs.getBoolean("theme_engine_enable", false))
+    }
+    var enableMaterialU by rememberSaveable {
+        mutableStateOf(prefs.getBoolean("theme_engine_enable_materialu", true))
+    }
+    var paletteStyle by rememberSaveable {
+        mutableStateOf(prefs.getString("theme_engine_palette_style", "TonalSpot") ?: "TonalSpot")
+    }
+
+    return remember(enableThemeEngine, enableMaterialU, paletteStyle) {
+        ThemeState(
+            enableThemeEngine = enableThemeEngine,
+            enableMaterialU = enableMaterialU,
+            paletteStyle = paletteStyle,
+            onThemeEngineChanged = { newValue ->
+                enableThemeEngine = newValue
+                if (newValue) {
+                    enableMaterialU = false
+                }
+                savePreference("theme_engine_enable", newValue)
+                if (newValue) {
+                    savePreference("theme_engine_enable_materialu", false)
+                }
+                triggerThemeReapply()
+            },
+            onMaterialUChanged = { newValue ->
+                enableMaterialU = newValue
+                if (newValue) {
+                    enableThemeEngine = false
+                }
+                savePreference("theme_engine_enable_materialu", newValue)
+                if (newValue) {
+                    savePreference("theme_engine_enable", false)
+                }
+                triggerThemeReapply()
+            },
+            onPaletteStyleChanged = { newStyle ->
+                paletteStyle = newStyle
+                savePreference("theme_engine_palette_style", newStyle)
+                triggerThemeReapply()
+            }
+        )
+    }
+}
+
+@Composable
+private fun ThemeEngineContent(
+    themeState: ThemeState,
+    scrollState: androidx.compose.foundation.ScrollState,
+    innerPadding: PaddingValues
+) {
+    Column(
+        modifier = Modifier
+            .verticalScroll(scrollState)
+            .padding(top = innerPadding.calculateTopPadding())
+            .padding(horizontal = PaddingValue)
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
+        ThemeSwitchItems(themeState)
+        PaletteSelector(themeState)
+    }
+}
+
+@Composable
+private fun ThemeSwitchItems(themeState: ThemeState) {
+    SwitchItem(
+        icon = Icons.Filled.Brush,
+        title = stringResource(R.string.enable_materialu),
+        summary = stringResource(R.string.enable_materialu_summary),
+        checked = themeState.enableMaterialU,
+        onCheckedChange = themeState.onMaterialUChanged
+    )
+
+    SwitchItem(
+        icon = Icons.Filled.FormatPaint,
+        title = stringResource(R.string.theme_engine_enable),
+        summary = stringResource(R.string.theme_engine_enable_summary),
+        checked = themeState.enableThemeEngine,
+        onCheckedChange = themeState.onThemeEngineChanged
+    )
+}
+
+@Composable
+private fun PaletteSelector(themeState: ThemeState) {
+    AnimatedVisibility(
+        visible = themeState.enableThemeEngine,
+        enter = expandTransition,
+        exit = collapseTransition,
+        modifier = Modifier
+            .padding(PaddingValue)
+            .fillMaxWidth()
+    ) {
+        PaletteCard(themeState)
+    }
+}
+
+@Composable
+private fun PaletteCard(themeState: ThemeState) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        modifier = Modifier.padding(PaddingValue)
+    ) {
+        PaletteDropdown(
+            expanded = expanded,
+            paletteStyle = themeState.paletteStyle,
+            onExpandedChange = { expanded = it },
+            onPaletteStyleSelected = themeState.onPaletteStyleChanged
+        )
+        ColorPicker()
+    }
+}
+
+@Composable
+private fun PaletteDropdown(
+    expanded: Boolean,
+    paletteStyle: String,
+    onExpandedChange: (Boolean) -> Unit,
+    onPaletteStyleSelected: (String) -> Unit
+) {
+    IconButton(
+        onClick = { onExpandedChange(!expanded) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .size(25.sdp())
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(5.sdp())
         ) {
-            SwitchItem(
-                icon = Icons.Filled.Brush,
-                title = stringResource(R.string.enable_materialu),
-                summary = stringResource(R.string.enable_materialu_summary),
-                checked = enableMaterialU
-            ) {
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        prefs.edit { putBoolean("enable_materialu", it) }
-                        enableMaterialU = it
-                        if (it) {
-                            prefs.edit { putBoolean("enable_theme_engine", false) }
-                            enableThemeEngine = false
-                        }
-                        themeReapply.value = !themeReapply.value
-                    }
-                }
-            }
-            SwitchItem(
-                icon = Icons.Filled.FormatPaint,
-                title = stringResource(R.string.theme_engine_enable),
-                summary = stringResource(R.string.theme_engine_enable_summary),
-                checked = enableThemeEngine
-            ) {
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        prefs.edit { putBoolean("enable_theme_engine", it) }
-                        enableThemeEngine = it
-                        if (it) {
-                            prefs.edit { putBoolean("enable_materialu", false) }
-                            enableMaterialU = false
-                        }
-                        themeReapply.value = !themeReapply.value
-                    }
-                }
-            }
-            AnimatedVisibility(
-                visible = enableThemeEngine,
-                enter = expandTransition,
-                exit = collapseTransition,
+            Icon(
+                Icons.Filled.Palette,
+                contentDescription = "More options",
                 modifier = Modifier
-                    .padding(PaddingValue)
-                    .fillMaxWidth()
-            ) {
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                    modifier = Modifier.padding(PaddingValue)
-                ) {
-                    IconButton(
-                        onClick = { expanded = !expanded },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .size(25.sdp())
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(5.sdp())
-                        ) {
-                            Icon(
-                                Icons.Filled.Palette,
-                                contentDescription = "More options",
-                                modifier = Modifier
-                                    .size(25.sdp())
-                                    .align(Alignment.CenterVertically),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = M3KApp.getString(
-                                    R.string.theme_engine_current_palette,
-                                    paletteStyle
-                                ),
-                                modifier = Modifier.fillMaxWidth(),
-                                fontSize = FontSize,
-                                lineHeight = LineHeight
-                            )
-                        }
+                    .size(25.sdp())
+                    .align(Alignment.CenterVertically),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = M3KApp.getString(
+                    R.string.theme_engine_current_palette,
+                    paletteStyle
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = FontSize,
+                lineHeight = LineHeight
+            )
+        }
+    }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { onExpandedChange(false) },
+        modifier = Modifier.padding(PaddingValue)
+    ) {
+        PaletteStyle.entries
+            .filterNot { it.name == paletteStyle }
+            .forEach { palette ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = palette.name,
+                            fontSize = FontSize,
+                            lineHeight = LineHeight
+                        )
+                    },
+                    onClick = {
+                        onPaletteStyleSelected(palette.name)
+                        onExpandedChange(false)
                     }
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                        modifier = Modifier.padding(PaddingValue)
-                    ) {
-                        PaletteStyle.entries
-                            .filterNot { it.name == paletteStyle }
-                            .forEach {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = it.name,
-                                            fontSize = FontSize,
-                                            lineHeight = LineHeight
-                                        )
-                                    },
-                                    onClick = {
-                                        scope.launch {
-                                            withContext(Dispatchers.IO) {
-                                                prefs.edit {
-                                                    putString(
-                                                        "paletteStyle",
-                                                        it.name
-                                                    )
-                                                }; paletteStyle = it.name; expanded =
-                                                !expanded; themeReapply.value = !themeReapply.value
-                                            }
-                                        }
-                                    }
-                                )
-                            }
-                    }
-                    ColorPicker()
-                }
+                )
+            }
+    }
+}
+
+private data class ThemeState(
+    val enableThemeEngine: Boolean,
+    val enableMaterialU: Boolean,
+    val paletteStyle: String,
+    val onThemeEngineChanged: (Boolean) -> Unit,
+    val onMaterialUChanged: (Boolean) -> Unit,
+    val onPaletteStyleChanged: (String) -> Unit
+)
+
+private fun savePreference(key: String, value: Any) {
+    kotlinx.coroutines.runBlocking(Dispatchers.IO) {
+        prefs.edit {
+            when (value) {
+                is Boolean -> putBoolean(key, value)
+                is String -> putString(key, value)
+                is Int -> putInt(key, value)
+                is Long -> putLong(key, value)
+                is Float -> putFloat(key, value)
             }
         }
     }
+}
+
+private fun triggerThemeReapply() {
+    themeReapply.value = !themeReapply.value
 }

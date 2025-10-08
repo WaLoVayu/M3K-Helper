@@ -43,6 +43,7 @@ import com.remtrik.m3khelper.R.drawable.ic_folder_open
 import com.remtrik.m3khelper.R.drawable.ic_windows
 import com.remtrik.m3khelper.R.string
 import com.remtrik.m3khelper.util.funcs.ErrorType
+import com.remtrik.m3khelper.util.funcs.MountStatus
 import com.remtrik.m3khelper.util.variables.CommandHandler
 import com.remtrik.m3khelper.util.variables.Device
 import com.remtrik.m3khelper.util.variables.FontSize
@@ -145,10 +146,10 @@ fun LinkButton(
     subtitle: String?,
     link: String,
     icon: Any?,
-    localUriHandler: UriHandler
+    uriHandler: UriHandler
 ) {
     ElevatedCard(
-        onClick = { localUriHandler.openUri(link) },
+        onClick = { uriHandler.openUri(link) },
         modifier = Modifier
             .height(105.sdp())
             .fillMaxWidth(),
@@ -376,7 +377,7 @@ fun MountButton() {
     ) {
         when {
             showDialog.value -> {
-                if (isMounted) {
+                if (isMounted == MountStatus.MOUNTED) {
                     Dialog(
                         painterResource(id = ic_folder),
                         null,
@@ -432,7 +433,7 @@ fun MountButton() {
                 modifier = Modifier
                     .size(40.sdp()),
                 painter = painterResource(
-                    id = if (isMounted) {
+                    id = if (isMounted == MountStatus.MOUNTED) {
                         ic_folder
                     } else {
                         ic_folder_open
@@ -443,7 +444,7 @@ fun MountButton() {
             )
             Column {
                 val mounted: Int =
-                    if (isMounted) {
+                    if (isMounted == MountStatus.MOUNTED) {
                         string.umnt_title
                     } else {
                         string.mnt_title

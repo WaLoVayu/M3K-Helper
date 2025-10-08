@@ -50,9 +50,13 @@ fun M3KHelperTheme(
             red = prefs.getFloat("theme_engine_color_R", 0f),
             green = prefs.getFloat("theme_engine_color_G", 0f),
             blue = prefs.getFloat("theme_engine_color_B", 0f),
-            enableThemeEngine = prefs.getBoolean("enable_theme_engine", false),
-            enableMaterialU = prefs.getBoolean("enable_materialu", true),
-            style = PaletteStyle.valueOf(prefs.getString("paletteStyle", "TonalSpot").toString())
+            enableThemeEngine = prefs.getBoolean("theme_engine_enable", false),
+            enableMaterialU = prefs.getBoolean("theme_engine_enable_materialu", true),
+            style = runCatching {
+                PaletteStyle.valueOf(
+                    prefs.getString("theme_engine_palette_style", "TonalSpot").toString()
+                )
+            }.getOrDefault(PaletteStyle.TonalSpot)
         )
     }
     val colorScheme = remember(darkTheme, themeSettings) {
@@ -73,9 +77,7 @@ fun M3KHelperTheme(
                     style = themeSettings.style
                 )
 
-            darkTheme && !themeSettings.enableThemeEngine && !themeSettings.enableMaterialU -> DarkColorScheme
-
-            else -> LightColorScheme
+            else -> if (darkTheme) DarkColorScheme else LightColorScheme
         }
     }
     MaterialTheme(

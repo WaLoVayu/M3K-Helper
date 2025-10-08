@@ -11,9 +11,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.ui.Alignment
 
-private const val FADE_ANIMATION_DURATION = 340
-private const val SLIDE_DIVIDER = 4
-
 private object AnimationConfig {
     const val FADE_DURATION = 340
     const val SLIDE_DIVIDER = 4

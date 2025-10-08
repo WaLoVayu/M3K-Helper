@@ -45,7 +45,7 @@
     <string name="backup_both">Да, и в Windows и в Android</string>
 
     <string name="home">Главная</string>
-    <string name="links">Дополнительные материалы</string>
+    <string name="links">Полезное</string>
     <string name="device_unknown">ВАШЕ УСТРОЙСТВО НЕ ПОДДЕРЖИВАЕТСЯ!\n ПОЛЬЗУЙТЕСЬ ДАННЫМ ПРИЛОЖЕНИЕМ НА ВАШ СТРАХ И РИСК</string>
     <string name="device_unknown_confirm">Меня это устраивает</string>
     <string name="about">О приложении</string>

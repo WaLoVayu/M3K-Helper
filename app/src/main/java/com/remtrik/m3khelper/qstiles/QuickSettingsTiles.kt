@@ -6,6 +6,7 @@ import android.service.quicksettings.Tile.STATE_UNAVAILABLE
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresPermission
 import com.remtrik.m3khelper.R
+import com.remtrik.m3khelper.util.funcs.MountStatus
 import com.remtrik.m3khelper.util.funcs.string
 import com.remtrik.m3khelper.util.variables.CommandHandler
 import com.remtrik.m3khelper.util.variables.Device
@@ -40,7 +41,7 @@ class MountTile : CommonTileService() { // more than just a PoC
             return
         }
 
-        if (CommandHandler.isMounted()) {
+        if (CommandHandler.isMounted() == MountStatus.NOT_MOUNTED) {
             enableTile(R.string.mnt_question)
         } else {
             enableTile(R.string.umnt_question)
@@ -50,7 +51,7 @@ class MountTile : CommonTileService() { // more than just a PoC
     override fun onClick() {
         super.onClick()
 
-        if (CommandHandler.isMounted()) CommandHandler.mountWindows() else CommandHandler.umountWindows()
+        if (CommandHandler.isMounted() == MountStatus.NOT_MOUNTED) CommandHandler.mountWindows() else CommandHandler.umountWindows()
         onStartListening()
     }
 

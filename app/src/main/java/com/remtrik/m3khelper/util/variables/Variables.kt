@@ -72,7 +72,10 @@ data class DeviceData(
 private val backgroundExecutor = Executors.newFixedThreadPool(2)
 
 val Device: DeviceData by lazy { DeviceData() }
-val SdcardPath: String by lazy { Environment.getExternalStorageDirectory().path }
+
+//val SdcardPath: String by lazy { Environment.getExternalStorageDirectory().path }
+const val SdcardPath: String = "/sdcard"
+
 val CurrentDeviceCommands: DeviceCommands by lazy { DeviceCommands() }
 
 
@@ -114,11 +117,13 @@ fun vars() {
     }
 
     // TODO: Examine the OS behavior with different paths
-    CurrentDeviceCommands.mountPath = when {
+    /*CurrentDeviceCommands.mountPath = when {
         ShellUtils.fastCmd("find /mnt/pass_through -maxdepth 0")
             .isNotEmpty() -> "/mnt/pass_through/0/emulated/0" // passthrough+getExternalStorageDirectory maybe?
         else -> Environment.getExternalStorageDirectory().path
-    }
+    }*/
+
+    CurrentDeviceCommands.mountPath = "/sdcard"
 
     dynamicVars()
     bootBackupStatus()
@@ -130,11 +135,19 @@ fun vars() {
 }
 
 fun fetchDeviceCard() {
-    deviceCardsArray.forEachIndexed { cardNum, card ->
-        if (card.deviceCodename.any { Device.deviceCodenames.contains(it) }) {
-            updateDeviceCard(cardNum, card)
-            return
-        }
+    var tmp = 0
+    deviceCardsArray
+        .find { card ->
+            card.deviceCodename.any { deviceCodename ->
+                Device.deviceCodenames.any { normalizedCodename -> normalizedCodename == deviceCodename }
+            }
+        }?.let { card -> updateDeviceCard(deviceCardsArray.indexOf(card), card); tmp = 1 }
+    if (tmp != 1) { // fallback to at least somewhat close device if cant find the exact match
+        deviceCardsArray
+            .find { card -> card.deviceCodename.any { Device.deviceCodenames.contains(it) } }
+            ?.let { card ->
+                updateDeviceCard(deviceCardsArray.indexOf(card), card)
+            }
     }
 }
 
@@ -163,6 +176,7 @@ fun fastLoadSavedDevice(override: Boolean = Device.overrideDeviceCard.value) {
     } else {
         Device.savedDeviceCard
     }
+    if (Device.panelType.value == string.unknown_panel.string()) getPanel()
     isSpecial(Device.currentDeviceCard)
     Warning.value = false
 }
@@ -175,11 +189,14 @@ private fun getPanel() {
 
 fun bootBackupStatus() {
     backgroundExecutor.execute {
-        BootIsPresent.value = when (checkBootImages(Device.currentDeviceCard.noMount, SdcardPath)) {
-            3 -> string.backup_both
-            2 -> string.backup_windows
-            1 -> string.backup_android
-            else -> string.no
+        CommandHandler.withMountedWindows(ErrorType.MOUNT_ERROR) {
+            BootIsPresent.value =
+                when (checkBootImages(Device.currentDeviceCard.noMount, SdcardPath)) {
+                    3 -> string.backup_both
+                    2 -> string.backup_windows
+                    1 -> string.backup_android
+                    else -> string.no
+                }
         }
     }
 }

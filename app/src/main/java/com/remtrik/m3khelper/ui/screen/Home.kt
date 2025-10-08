@@ -32,7 +32,7 @@ import com.remtrik.m3khelper.ui.component.ErrorDialog
 import com.remtrik.m3khelper.ui.component.InfoCard
 import com.remtrik.m3khelper.ui.component.MountButton
 import com.remtrik.m3khelper.ui.component.QuickBootButton
-import com.remtrik.m3khelper.ui.component.TopAppBar
+import com.remtrik.m3khelper.ui.component.CommonTopAppBar
 import com.remtrik.m3khelper.util.variables.Device
 import com.remtrik.m3khelper.util.variables.PaddingValue
 import com.remtrik.m3khelper.util.variables.commandError
@@ -51,26 +51,25 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CommonTopAppBar(
                 navigator = navigator,
                 text = R.string.app_name,
-                isNavigate = true,
+                isNavigate = if (isLandscape) null else true,
                 destination = SettingsScreenDestination,
-                icon = Filled.Settings
+                icon = Filled.Settings,
             )
-        }
-    )
-    { innerPadding ->
+        },
+    ) { innerPadding ->
+        ErrorDialogs()
         Column(
             verticalArrangement = Arrangement.spacedBy(10.sdp()),
             modifier = Modifier
                 .verticalScroll(scrollState)
-                .padding(innerPadding)
+                .padding(top = innerPadding.calculateTopPadding())
                 .padding(horizontal = PaddingValue)
                 .fillMaxWidth()
                 .fillMaxHeight(),
         ) {
-            ErrorDialogs()
             if (isLandscape) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.sdp()),

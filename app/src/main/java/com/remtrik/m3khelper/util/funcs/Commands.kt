@@ -15,8 +15,9 @@ import com.remtrik.m3khelper.util.variables.showQuickBootErrorDialog
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 
-private val BlockWindowsPath =
+internal val BlockWindowsPath by lazy {
     ShellUtils.fastCmd("readlink -fn /dev/block/bootdevice/by-name/win")
+}
 
 abstract class Commands {
     lateinit var internalLastCommandResult: Shell.Result
@@ -94,9 +95,9 @@ abstract class Commands {
         )
     }
 
-    fun isMounted(): Boolean {
-        val tmp = Shell.cmd("mount | grep $BlockWindowsPath").exec()
-        return tmp.isSuccess && tmp.out[0].contains("Windows")
+    fun isMounted(): MountStatus {
+        val result = Shell.cmd("mount | grep $BlockWindowsPath").exec()
+        return if (result.isSuccess && result.out[0].contains("Windows")) MountStatus.MOUNTED else MountStatus.NOT_MOUNTED
     }
 
     private fun checkSensors(type: ErrorType): Boolean {
@@ -147,8 +148,7 @@ abstract class Commands {
     }
 
     private fun uefitell(uefiPath: String): Shell.Result {
-        val slot = ShellUtils.fastCmd("getprop ro.boot.slot_suffix")
-        return Shell.cmd("dd if=$uefiPath of=/dev/block/bootdevice/by-name/boot$slot").exec()
+        return Shell.cmd("dd if=$uefiPath of=/dev/block/bootdevice/by-name/boot${Device.slot}").exec()
     }
 
     fun flashUEFI(uefiPath: String): CommandResult {
@@ -206,7 +206,7 @@ abstract class Commands {
     fun withMountedWindows(type: ErrorType, block: () -> Unit): Boolean {
         val wasMounted = isMounted()
         try {
-            if (wasMounted) commandResult = CommandHandler.mountWindows()
+            if (wasMounted == MountStatus.NOT_MOUNTED && !Device.currentDeviceCard.noMount) commandResult = CommandHandler.mountWindows()
             if (
                 try {
                     !internalCommandResult.isSuccess
@@ -221,7 +221,7 @@ abstract class Commands {
             }
             block()
         } finally {
-            if (wasMounted) commandResult = CommandHandler.umountWindows()
+            if (wasMounted == MountStatus.NOT_MOUNTED && !Device.currentDeviceCard.noMount) commandResult = CommandHandler.umountWindows()
             if (
                 try {
                     !internalCommandResult.isSuccess
@@ -246,12 +246,12 @@ abstract class Commands {
 }
 
 fun Context.restart() {
-    try {
+    runCatching {
         packageManager.getLaunchIntentForPackage(packageName)?.let {
             startService(Intent.makeRestartActivityTask(it.component))
             Runtime.getRuntime().exit(0)
         }
-    } catch (e: Exception) {
+    }.onFailure { e ->
         println("M3K Helper - $e")
     }
 }
@@ -266,4 +266,9 @@ enum class ErrorType {
     MOUNT_ERROR,
     BOOTBACKUP_ERROR,
     QUICKBOOT_ERROR
+}
+
+enum class MountStatus {
+    NOT_MOUNTED,
+    MOUNTED,
 }

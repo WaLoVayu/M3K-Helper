@@ -26,10 +26,11 @@ import com.remtrik.m3khelper.util.variables.sdp
 @Composable
 fun InfoCard(modifier: Modifier) {
     val deviceStrings = rememberDeviceStrings()
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     ElevatedCard(
         modifier =
-            if (Device.special.value && LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            if (Device.special.value && !isLandscape) {
                 modifier
             } else {
                 Modifier

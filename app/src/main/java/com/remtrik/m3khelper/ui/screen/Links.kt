@@ -4,11 +4,15 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -27,7 +31,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.ui.component.LinkButton
-import com.remtrik.m3khelper.ui.component.TopAppBar
+import com.remtrik.m3khelper.ui.component.CommonTopAppBar
 import com.remtrik.m3khelper.util.variables.Device
 import com.remtrik.m3khelper.util.variables.PaddingValue
 import com.remtrik.m3khelper.util.variables.sdp
@@ -42,16 +46,16 @@ fun LinksScreen(navigator: DestinationsNavigator) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CommonTopAppBar(
                 navigator = navigator,
                 text = R.string.links,
             )
-        })
-    { innerPadding ->
+        }
+    ) { innerPadding ->
         LinksContent(
             isLandscape = isLandscape,
             scrollState = scrollState,
-            modifier = Modifier.padding(innerPadding)
+            innerPadding = innerPadding
         )
     }
 }
@@ -60,15 +64,16 @@ fun LinksScreen(navigator: DestinationsNavigator) {
 private fun LinksContent(
     isLandscape: Boolean,
     scrollState: androidx.compose.foundation.ScrollState,
-    modifier: Modifier = Modifier
+    innerPadding: PaddingValues
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(10.sdp()),
-        modifier = modifier
+        modifier = Modifier
             .verticalScroll(scrollState)
+            .padding(top = innerPadding.calculateTopPadding())
             .padding(horizontal = PaddingValue)
             .fillMaxWidth()
-            .fillMaxHeight(),
+            .fillMaxHeight()
     ) {
         if (isLandscape) {
             LandscapeLinksLayout()
@@ -130,7 +135,7 @@ private fun FilesLinks() {
                 subtitle = null,
                 link = deviceCard.deviceDrivers,
                 icon = R.drawable.ic_drivers,
-                localUriHandler = uriHandler
+                uriHandler = uriHandler
             )
         }
 
@@ -140,7 +145,7 @@ private fun FilesLinks() {
                 subtitle = null,
                 link = deviceCard.deviceDrivers,
                 icon = R.drawable.ic_drivers,
-                localUriHandler = uriHandler
+                uriHandler = uriHandler
             )
         }
 
@@ -150,7 +155,7 @@ private fun FilesLinks() {
                 subtitle = null,
                 link = deviceCard.deviceUEFI,
                 icon = R.drawable.ic_uefi,
-                localUriHandler = uriHandler
+                uriHandler = uriHandler
             )
         }
     }
@@ -167,7 +172,7 @@ private fun SocialLinks() {
             subtitle = null,
             link = deviceCard.deviceGroup,
             icon = Icons.AutoMirrored.Filled.Message,
-            localUriHandler = uriHandler
+            uriHandler = uriHandler
         )
     }
 
@@ -177,7 +182,7 @@ private fun SocialLinks() {
             subtitle = null,
             link = deviceCard.deviceGuide,
             icon = Icons.Filled.Book,
-            localUriHandler = uriHandler
+            uriHandler = uriHandler
         )
     }
 }
