@@ -38,10 +38,11 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -67,8 +68,8 @@ import com.remtrik.m3khelper.util.collapseTransition
 import com.remtrik.m3khelper.util.expandTransition
 import com.remtrik.m3khelper.util.fadeEnterTransition
 import com.remtrik.m3khelper.util.fadeExitTransition
+import com.remtrik.m3khelper.util.funcs.Download.checkNewVersion
 import com.remtrik.m3khelper.util.funcs.LatestVersionInfo
-import com.remtrik.m3khelper.util.funcs.checkNewVersion
 import com.remtrik.m3khelper.util.slideFromRightEnterTransition
 import com.remtrik.m3khelper.util.slideToLeftExitTransition
 import com.remtrik.m3khelper.util.slideToRightExitTransition
@@ -79,10 +80,7 @@ import com.remtrik.m3khelper.util.variables.PaddingValue
 import com.remtrik.m3khelper.util.variables.showWarningCard
 import com.remtrik.m3khelper.util.variables.sdp
 import com.remtrik.m3khelper.util.variables.ssp
-import com.remtrik.m3khelper.util.variables.vars
 import com.topjohnwu.superuser.Shell
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -93,25 +91,21 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         window.isNavigationBarContrastEnforced = false
 
+        requestedOrientation =
+            if (shouldForceRotation()) SCREEN_ORIENTATION_FULL_USER
+            else SCREEN_ORIENTATION_USER_PORTRAIT
 
         setContent {
-            requestedOrientation =
-                if (shouldForceRotation()) SCREEN_ORIENTATION_FULL_USER
-                else SCREEN_ORIENTATION_USER_PORTRAIT
-
-            vars()
-
             M3KHelperTheme {
-
+                InitDimens()
                 if (Shell.isAppGrantedRoot() == true) {
-                    InitDimens()
                     M3KRootContent()
                 } else NoRoot()
             }
         }
     }
 
-    private fun shouldForceRotation() = Build.DEVICE == "nabu" ||
+    private fun shouldForceRotation(): Boolean = Build.DEVICE == "nabu" ||
             (BuildConfig.DEBUG && Build.DEVICE == "emu64xa") ||
             prefs.getBoolean("force_rotation", false)
 }
@@ -128,30 +122,29 @@ internal fun InitDimens() {
 internal fun M3KRootContent() {
     val navController = rememberNavController()
     val navigator = navController.rememberDestinationsNavigator()
+    val orientation = LocalConfiguration.current.orientation
+
+    var latestVersion by remember { mutableStateOf(LatestVersionInfo()) }
+    LaunchedEffect(Unit) {
+        if (prefs.getBoolean("check_update", true)) {
+            latestVersion = checkNewVersion()
+        }
+    }
+
+    val hasNewVersion = latestVersion.versionCode > BuildConfig.VERSION_CODE
+
     val bottomBarRoutes = remember {
         Destinations.entries.map { it.route.route }.toSet()
     }
 
-    val latestVersionInfo = LatestVersionInfo()
-    val newVersion by produceState(initialValue = latestVersionInfo) {
-        if (mutableStateOf(prefs.getBoolean("check_update", true)).value) {
-            value = withContext(Dispatchers.IO) {
-                checkNewVersion()
-            }
-        }
-    }
-
-    val currentVersionCode = BuildConfig.VERSION_CODE
-    val newVersionCode = newVersion.versionCode
-
     Scaffold(
         bottomBar = {
-            if (LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            if (orientation != Configuration.ORIENTATION_LANDSCAPE) {
                 BottomNavigationBar(navController, navigator) }
         },
     ) { innerPadding ->
         Row {
-            if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 LeftNavigationBar(navController, navigator, innerPadding)
             }
 
@@ -167,40 +160,35 @@ internal fun M3KRootContent() {
                         override val enterTransition:
                                 AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition =
                             {
-                                if (targetState.destination.route !in bottomBarRoutes) {
+                                if (targetState.destination.route !in bottomBarRoutes)
                                     slideFromRightEnterTransition
-                                } else {
-                                    fadeEnterTransition
-                                }
+                                else fadeEnterTransition
+
                             }
                         override val exitTransition:
                                 AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition =
                             {
-                                if (targetState.destination.route !in bottomBarRoutes) {
+                                if (targetState.destination.route !in bottomBarRoutes)
                                     if (targetState.destination.route in listOf(
                                             "settings_screen",
                                             "theme_engine_screen"
                                         )
                                     ) slideToLeftExitTransition
                                     else slideToRightExitTransition
-                                } else {
-                                    fadeExitTransition
-                                }
+                                else fadeExitTransition
                             }
                     }
                 )
-                when {
-                    showWarningCard.value -> {
-                        UnknownDevice()
-                    }
+                if (showWarningCard.value) {
+                    UnknownDevice()
                 }
             }
             AnimatedVisibility(
-                visible = newVersionCode > currentVersionCode,
+                visible = hasNewVersion,
                 enter = expandTransition,
                 exit = collapseTransition
             ) {
-                UpdateDialog(newVersion)
+                UpdateDialog(latestVersion)
             }
         }
     }
@@ -283,7 +271,6 @@ private fun LeftNavigationBar(
         modifier = Modifier.width(110.sdp()),
         windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Bottom + WindowInsetsSides.Top)
     ) {
-        println(innerPadding.calculateTopPadding())
         Destinations.entries.forEach { destination ->
             if (device.currentDeviceCard.noLinks && destination.route == LinksScreenDestination) return@forEach
             if (destination.route == SettingsScreenDestination) Spacer(

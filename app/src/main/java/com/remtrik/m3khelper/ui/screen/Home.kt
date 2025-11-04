@@ -1,11 +1,12 @@
 package com.remtrik.m3khelper.ui.screen
 
+import android.R.attr.maxWidth
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -33,6 +38,7 @@ import com.remtrik.m3khelper.ui.component.InfoCard
 import com.remtrik.m3khelper.ui.component.MountButton
 import com.remtrik.m3khelper.ui.component.QuickBootButton
 import com.remtrik.m3khelper.ui.component.CommonTopAppBar
+import com.remtrik.m3khelper.util.DeviceCard
 import com.remtrik.m3khelper.util.variables.device
 import com.remtrik.m3khelper.util.variables.PaddingValue
 import com.remtrik.m3khelper.util.variables.commandError
@@ -49,6 +55,18 @@ fun HomeScreen(navigator: DestinationsNavigator) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     val scrollState = rememberScrollState()
 
+    val spacing = 10.sdp()
+    val padding = remember { PaddingValue }
+
+    val deviceCard by derivedStateOf { device.currentDeviceCard }
+
+    val bootError by remember { derivedStateOf { showBootBackupErrorDialog.value } }
+    val mountError by remember { derivedStateOf { showMountErrorDialog.value } }
+    val quickBootError by remember { derivedStateOf { showQuickBootErrorDialog.value } }
+    val commandErrorText by remember { derivedStateOf { commandError.value } }
+
+    println(maxWidth)
+
     Scaffold(
         topBar = {
             CommonTopAppBar(
@@ -60,24 +78,25 @@ fun HomeScreen(navigator: DestinationsNavigator) {
             )
         },
     ) { innerPadding ->
-        ErrorDialogs()
         Column(
-            verticalArrangement = Arrangement.spacedBy(10.sdp()),
+            verticalArrangement = Arrangement.spacedBy(spacing),
             modifier = Modifier
                 .verticalScroll(scrollState)
-                .padding(top = innerPadding.calculateTopPadding())
-                .padding(horizontal = PaddingValue)
-                .fillMaxWidth()
-                .fillMaxHeight(),
+                .padding(
+                    top = innerPadding.calculateTopPadding(),
+                    start = padding,
+                    end = padding
+                )
+                .fillMaxSize()
         ) {
             if (isLandscape) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.sdp()),
+                    horizontalArrangement = Arrangement.spacedBy(spacing),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(10.sdp()),
+                        verticalArrangement = Arrangement.spacedBy(spacing),
                         modifier = Modifier.width(300.sdp())
                     ) {
                         DeviceInfo(
@@ -86,12 +105,7 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                                 .width(300.sdp())
                         )
                     }
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(10.sdp()),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Buttons()
-                    }
+                    Buttons(deviceCard)
                 }
             } else {
                 Row(
@@ -99,26 +113,25 @@ fun HomeScreen(navigator: DestinationsNavigator) {
                 ) {
                     DeviceInfo(Modifier.height(416.sdp()))
                 }
-                Buttons()
+                Buttons(deviceCard)
             }
         }
+
+        ErrorDialogs(
+            bootErrorVisible = bootError,
+            mountErrorVisible = mountError,
+            quickBootErrorVisible = quickBootError,
+            errorText = commandErrorText
+        )
     }
 }
 
 @Composable
-private fun Buttons() {
-    val deviceCard = device.currentDeviceCard
-
-    if (!deviceCard.noBoot) {
-        BackupButton()
-    }
-
-    if (!deviceCard.noMount) {
-        MountButton()
-    }
-
-    if (!deviceCard.noFlash) {
-        QuickBootButton()
+private fun Buttons(deviceCard: DeviceCard) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.sdp())) {
+        if (!deviceCard.noBoot) BackupButton()
+        if (!deviceCard.noMount) MountButton()
+        if (!deviceCard.noFlash) QuickBootButton()
     }
 }
 
@@ -129,39 +142,36 @@ private fun DeviceInfo(modifier: Modifier) {
 }
 
 @Composable
-private fun ErrorDialogs() {
-    val errorDialogs = listOf(
-        ErrorDialogConfig(
-            showDialog = showBootBackupErrorDialog.value,
+private fun ErrorDialogs(
+    bootErrorVisible: Boolean,
+    mountErrorVisible: Boolean,
+    quickBootErrorVisible: Boolean,
+    errorText: String
+) {
+    if (bootErrorVisible) {
+        ErrorDialog(
             title = stringResource(R.string.backupboot_error),
+            description = stringResource(R.string.error_reason, errorText),
+            showDialog = true,
             onDismiss = { showBootBackupErrorDialog.value = false }
-        ),
-        ErrorDialogConfig(
-            showDialog = showMountErrorDialog.value,
-            title = "Failed to mount\\umount Windows",
+        )
+    }
+
+    if (mountErrorVisible) {
+        ErrorDialog(
+            title = "Failed to mount/unmount Windows",
+            description = stringResource(R.string.error_reason, errorText),
+            showDialog = true,
             onDismiss = { showMountErrorDialog.value = false }
-        ),
-        ErrorDialogConfig(
-            showDialog = showQuickBootErrorDialog.value,
+        )
+    }
+
+    if (quickBootErrorVisible) {
+        ErrorDialog(
             title = "Failed to QuickBoot to Windows",
+            description = stringResource(R.string.error_reason, errorText),
+            showDialog = true,
             onDismiss = { showQuickBootErrorDialog.value = false }
         )
-    )
-
-    errorDialogs.forEach { config ->
-        if (config.showDialog) {
-            ErrorDialog(
-                title = config.title,
-                description = stringResource(R.string.error_reason, commandError.value),
-                showDialog = config.showDialog,
-                onDismiss = config.onDismiss
-            )
-        }
     }
 }
-
-private data class ErrorDialogConfig(
-    val showDialog: Boolean,
-    val title: String,
-    val onDismiss: () -> Unit
-)

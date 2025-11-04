@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +56,7 @@ import com.remtrik.m3khelper.util.variables.LineHeight
 import com.remtrik.m3khelper.util.variables.PaddingValue
 import com.remtrik.m3khelper.util.variables.sdp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,6 +85,8 @@ fun ThemeEngineScreen(navigator: DestinationsNavigator) {
 
 @Composable
 private fun rememberThemeState(): ThemeState {
+    val coroutineScope = rememberCoroutineScope()
+
     var enableThemeEngine by rememberSaveable {
         mutableStateOf(prefs.getBoolean("theme_engine_enable", false))
     }
@@ -90,7 +94,25 @@ private fun rememberThemeState(): ThemeState {
         mutableStateOf(prefs.getBoolean("theme_engine_enable_materialu", true))
     }
     var paletteStyle by rememberSaveable {
-        mutableStateOf(prefs.getString("theme_engine_palette_style", "TonalSpot") ?: "TonalSpot")
+        mutableStateOf(
+            prefs.getString("theme_engine_palette_style", PaletteStyle.TonalSpot.name)
+                ?: PaletteStyle.TonalSpot.name
+        )
+    }
+
+    fun save(key: String, value: Any) {
+        coroutineScope.launch(Dispatchers.IO) {
+            prefs.edit(commit = false) {
+                when (value) {
+                    is Boolean -> putBoolean(key, value)
+                    is String -> putString(key, value)
+                }
+            }
+        }
+    }
+
+    fun triggerThemeReapply() {
+        themeReapply.value = !themeReapply.value
     }
 
     return remember(enableThemeEngine, enableMaterialU, paletteStyle) {
@@ -98,31 +120,23 @@ private fun rememberThemeState(): ThemeState {
             enableThemeEngine = enableThemeEngine,
             enableMaterialU = enableMaterialU,
             paletteStyle = paletteStyle,
-            onThemeEngineChanged = { newValue ->
-                enableThemeEngine = newValue
-                if (newValue) {
-                    enableMaterialU = false
-                }
-                savePreference("theme_engine_enable", newValue)
-                if (newValue) {
-                    savePreference("theme_engine_enable_materialu", false)
-                }
+            onThemeEngineChanged = { new ->
+                enableThemeEngine = new
+                if (new) enableMaterialU = false
+                save("theme_engine_enable", new)
+                if (new) save("theme_engine_enable_materialu", false)
                 triggerThemeReapply()
             },
-            onMaterialUChanged = { newValue ->
-                enableMaterialU = newValue
-                if (newValue) {
-                    enableThemeEngine = false
-                }
-                savePreference("theme_engine_enable_materialu", newValue)
-                if (newValue) {
-                    savePreference("theme_engine_enable", false)
-                }
+            onMaterialUChanged = { new ->
+                enableMaterialU = new
+                if (new) enableThemeEngine = false
+                save("theme_engine_enable_materialu", new)
+                if (new) save("theme_engine_enable", false)
                 triggerThemeReapply()
             },
             onPaletteStyleChanged = { newStyle ->
                 paletteStyle = newStyle
-                savePreference("theme_engine_palette_style", newStyle)
+                save("theme_engine_palette_style", newStyle)
                 triggerThemeReapply()
             }
         )
@@ -140,8 +154,7 @@ private fun ThemeEngineContent(
             .verticalScroll(scrollState)
             .padding(top = innerPadding.calculateTopPadding())
             .padding(horizontal = PaddingValue)
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .fillMaxSize()
     ) {
         ThemeSwitchItems(themeState)
         PaletteSelector(themeState)
@@ -269,21 +282,3 @@ private data class ThemeState(
     val onMaterialUChanged: (Boolean) -> Unit,
     val onPaletteStyleChanged: (String) -> Unit
 )
-
-private fun savePreference(key: String, value: Any) {
-    kotlinx.coroutines.runBlocking(Dispatchers.IO) {
-        prefs.edit {
-            when (value) {
-                is Boolean -> putBoolean(key, value)
-                is String -> putString(key, value)
-                is Int -> putInt(key, value)
-                is Long -> putLong(key, value)
-                is Float -> putFloat(key, value)
-            }
-        }
-    }
-}
-
-private fun triggerThemeReapply() {
-    themeReapply.value = !themeReapply.value
-}

@@ -52,6 +52,10 @@ namespace {
         waitpid(pid, nullptr, 0);
         return result;
     }
+
+    bool file_exists(const char *path) {
+        return access(path, F_OK) == 0;
+    }
 }
 
 extern "C" {
@@ -144,10 +148,10 @@ Java_com_remtrik_m3khelper_util_variables_VariablesKt_checkBootImages(
         jboolean noMount,
         jstring path
 ) {
-    if (!noMount && access("/sdcard/Windows/boot.img", F_OK) == 0) {
-        return access("/sdcard/boot.img", F_OK) == 0 ? BOTH : ONLY_WINDOWS;
+    if (!noMount && file_exists("/sdcard/Windows/boot.img")) {
+        return file_exists("/sdcard/boot.img") ? BOTH : ONLY_WINDOWS;
     }
-    return access("/sdcard/boot.img", F_OK) == 0 ? ONLY_ANDROID : NONE;
+    return file_exists("/sdcard/boot.img") ? ONLY_ANDROID : NONE;
 }
 
 }

@@ -5,19 +5,19 @@ import android.content.Context
 import com.remtrik.m3khelper.M3KApp
 import java.io.File
 
-private data class MemoryThreshold(val minMB: Long, val label: String)
+private data class MemoryRange(val minMB: Long, val maxMB: Long, val label: String)
 
-private val memoryThresholds = listOf(
-    MemoryThreshold(12_000L, "16GB"),
-    MemoryThreshold(8_000L, "12GB"),
-    MemoryThreshold(6_000L, "8GB"),
-    MemoryThreshold(4_000L, "6GB"),
-    MemoryThreshold(0L, "4GB")
+private val memoryRanges = listOf(
+    MemoryRange(14_000L, Long.MAX_VALUE, "16GB"),
+    MemoryRange(10_000L, 13_999L, "12GB"),
+    MemoryRange(7_000L, 9_999L, "8GB"),
+    MemoryRange(5_000L, 6_999L, "6GB"),
+    MemoryRange(0L, 4_999L, "4GB")
 )
 
 fun getMemory(): String {
     val totalMemMB = getTotalMemoryInMB()
-    return memoryThresholds.first { totalMemMB > it.minMB }.label
+    return memoryRanges.firstOrNull { totalMemMB in it.minMB..it.maxMB }?.label ?: "Unknown"
 }
 
 private fun getTotalMemoryInMB(): Long = runCatching {
@@ -34,6 +34,6 @@ private fun readTotalMemFromProc(): Long = runCatching {
             ?.trim()
             ?.toLongOrNull()
             ?.div(1024)
-            ?: 4_000L
+            ?: 4000L
     }
-}.getOrElse { 4_000L }
+}.getOrElse { 4000L }

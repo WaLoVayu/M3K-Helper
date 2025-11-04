@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -68,6 +67,10 @@ import kotlinx.coroutines.launch
 @Destination<RootGraph>
 @Composable
 fun SettingsScreen(navigator: DestinationsNavigator) {
+    val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     var checkUpdate by rememberSaveable {
         mutableStateOf(
             prefs.getBoolean("check_update", true)
@@ -91,11 +94,6 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
 
     var expanded by rememberSaveable { mutableStateOf(false) }
 
-    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    val scope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
-
     Scaffold(
         topBar = {
             CommonTopAppBar(
@@ -111,7 +109,6 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 .padding(top = innerPadding.calculateTopPadding())
                 .padding(horizontal = PaddingValue)
                 .fillMaxWidth()
-                .fillMaxHeight()
         ) {
             ButtonItem(
                 icon = Icons.Filled.Style,
@@ -125,8 +122,8 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 checked = checkUpdate
             ) {
                 scope.launch(Dispatchers.IO) {
-                    prefs.edit { putBoolean("check_update", it) }
                     checkUpdate = it
+                    prefs.edit { putBoolean("check_update", it) }
                 }
             }
             SwitchItem(
@@ -136,8 +133,8 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 checked = overrideDevice
             ) {
                 scope.launch(Dispatchers.IO) {
-                    prefs.edit { putBoolean("override_device", it) }
                     overrideDevice = it
+                    prefs.edit { putBoolean("override_device", it) }
                     fastLoadSavedDevice(it)
                 }
             }
@@ -145,7 +142,6 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 visible = overrideDevice,
                 enter = expandTransition,
                 exit = collapseTransition,
-                modifier = Modifier.fillMaxWidth()
             ) {
                 Card(
                     colors = CardDefaults.cardColors(
@@ -219,10 +215,9 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 }
             }
             AnimatedVisibility(
-                visible = !device.special.value,
+                visible = !device.isSpecial.value,
                 enter = expandTransition,
                 exit = collapseTransition,
-                modifier = Modifier.fillMaxWidth()
             ) {
                 SwitchItem(
                     icon = R.drawable.ic_rotation,
@@ -244,11 +239,7 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                 title = stringResource(R.string.about),
                 onClick = { showAboutCard.value = true }
             )
-            when {
-                showAboutCard.value -> {
-                    AboutCard()
-                }
-            }
+            if (showAboutCard.value) AboutCard()
         }
     }
 }

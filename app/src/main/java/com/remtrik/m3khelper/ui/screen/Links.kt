@@ -2,11 +2,12 @@ package com.remtrik.m3khelper.ui.screen
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,17 +19,21 @@ import androidx.compose.material.icons.filled.Book
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.remtrik.m3khelper.R
 import com.remtrik.m3khelper.ui.component.LinkButton
 import com.remtrik.m3khelper.ui.component.CommonTopAppBar
+import com.remtrik.m3khelper.util.DeviceCard
 import com.remtrik.m3khelper.util.variables.device
 import com.remtrik.m3khelper.util.variables.PaddingValue
 import com.remtrik.m3khelper.util.variables.sdp
@@ -60,59 +65,74 @@ fun LinksScreen(navigator: DestinationsNavigator) {
 @Composable
 private fun LinksContent(
     isLandscape: Boolean,
-    scrollState: androidx.compose.foundation.ScrollState,
+    scrollState: ScrollState,
     innerPadding: PaddingValues
 ) {
+    val spacing = 10.sdp()
+    val deviceCard = remember { device.currentDeviceCard }
+    val uriHandler = LocalUriHandler.current
+
     Column(
         verticalArrangement = Arrangement.spacedBy(10.sdp()),
         modifier = Modifier
             .verticalScroll(scrollState)
-            .padding(top = innerPadding.calculateTopPadding())
-            .padding(horizontal = PaddingValue)
-            .fillMaxWidth()
-            .fillMaxHeight()
+            .padding(
+                top = innerPadding.calculateTopPadding(),
+                start = PaddingValue,
+                end = PaddingValue
+            )
+            .fillMaxSize()
     ) {
         if (isLandscape) {
-            LandscapeLinksLayout()
+            LandscapeLinksLayout(spacing, deviceCard, uriHandler)
         } else {
-            PortraitLinksLayout()
+            PortraitLinksLayout(spacing, deviceCard, uriHandler)
         }
     }
 }
 
 @Composable
-private fun LandscapeLinksLayout() {
+private fun LandscapeLinksLayout(
+    spacing: Dp,
+    deviceCard: DeviceCard,
+    uriHandler: UriHandler
+) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(10.sdp()),
+        horizontalArrangement = Arrangement.spacedBy(spacing),
         modifier = Modifier.fillMaxWidth()
     ) {
         LinksColumn(
             modifier = Modifier.width(500.sdp())
         ) {
-            FilesLinks()
+            FilesLinks(deviceCard, uriHandler)
         }
         LinksColumn(
             modifier = Modifier.width(500.sdp())
         ) {
-            SocialLinks()
+            SocialLinks(deviceCard, uriHandler)
         }
     }
 }
 
 @Composable
-private fun PortraitLinksLayout() {
-    FilesLinks()
-    SocialLinks()
+private fun PortraitLinksLayout(
+    spacing: Dp,
+    deviceCard: DeviceCard,
+    uriHandler: UriHandler
+) {
+    FilesLinks(deviceCard, uriHandler)
+    SocialLinks(deviceCard, uriHandler)
 }
 
 @Composable
 private fun LinksColumn(
     modifier: Modifier = Modifier,
+    verticalSpacing: Dp = 10.sdp(),
     content: @Composable () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.sdp()),
+        verticalArrangement = Arrangement.spacedBy(verticalSpacing),
         modifier = modifier
     ) {
         content()
@@ -120,10 +140,10 @@ private fun LinksColumn(
 }
 
 @Composable
-private fun FilesLinks() {
-    val deviceCard = device.currentDeviceCard
-    val uriHandler = LocalUriHandler.current
-
+private fun FilesLinks(
+    deviceCard: DeviceCard,
+    uriHandler: UriHandler
+) {
     when {
         deviceCard.unifiedDriversUEFI &&
                 !(deviceCard.noDrivers || deviceCard.noUEFI) -> {
@@ -159,10 +179,10 @@ private fun FilesLinks() {
 }
 
 @Composable
-private fun SocialLinks() {
-    val deviceCard = device.currentDeviceCard
-    val uriHandler = LocalUriHandler.current
-
+private fun SocialLinks(
+    deviceCard: DeviceCard,
+    uriHandler: UriHandler
+) {
     if (!deviceCard.noGroup) {
         LinkButton(
             title = stringResource(R.string.group, deviceCard.deviceName),

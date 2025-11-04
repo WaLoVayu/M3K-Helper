@@ -24,7 +24,7 @@
     <string name="backup_boot_subtitle">Backup current boot image to Android/Windows</string>
     <string name="mnt_subtitle">Toggle mounting Windows partition in order to edit content inside</string>
     <string name="quickboot_subtitle">Dump Modem, Flash UEFI, and Reboot to Windows in one click</string>
-    <string name="quickboot_subtitle_nomodem">Flash UEFI, and Reboot to Windows in one click</string>
+    <string name="quickboot_subtitle_nomodem">Reboot to Windows in one click</string>
     <string name="uefi_not_found_subtitle">Download UEFI for your device and place it under /sdcard/UEFI folder</string>
 
     <string name="no_root">Please grant M3K Helper Root-access to use it!</string>

@@ -1,8 +1,8 @@
 [versions]
 agp = "8.13.0"
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 ksp = "2.2.20-2.0.3"
-compose-destination = "2.2.0"
+compose-destination = "2.3.0"
 libsu = "6.0.0"
 apksign = "1.4"
 cmaker = "1.2"

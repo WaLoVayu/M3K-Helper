@@ -62,7 +62,7 @@ class QuickBootTile : CommonTileService() { // more than just a PoC
         get() = !firstBoot && !device.savedDeviceCard.noFlash
 
     private val uefiPath: String?
-        get() = device.uefiCardsArray.firstOrNull()?.uefiPath
+        get() = device.uefiCards.firstOrNull()?.uefiPath
 
     override fun onStartListening() {
         super.onStartListening()

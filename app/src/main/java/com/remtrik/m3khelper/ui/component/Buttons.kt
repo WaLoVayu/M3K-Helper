@@ -470,7 +470,7 @@ fun QuickBootButton() {
     val showDialog = remember { mutableStateOf(false) }
     val showSpinner = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val hasUefi = device.uefiCardsArray.isNotEmpty()
+    val hasUefi = device.uefiCards.isNotEmpty()
 
     ElevatedCard(
         onClick = { showDialog.value = true },
@@ -515,7 +515,7 @@ fun QuickBootButton() {
                             Modifier.align(Alignment.CenterHorizontally),
                             horizontalArrangement = Arrangement.spacedBy(10.sdp())
                         ) {
-                            device.uefiCardsArray.forEach {
+                            device.uefiCards.forEach {
                                 AssistChip(
                                     onClick = {
                                         scope.launch {

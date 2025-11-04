@@ -30,7 +30,7 @@ fun InfoCard(modifier: Modifier) {
 
     ElevatedCard(
         modifier =
-            if (device.special.value && !isLandscape) {
+            if (device.isSpecial.value && !isLandscape) {
                 modifier
             } else {
                 Modifier

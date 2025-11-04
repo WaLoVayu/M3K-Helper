@@ -15,7 +15,7 @@
     <string name="backup_boot_subtitle">Резервное копирование текущего boot образа</string>
     <string name="mnt_subtitle">Нужно для редактирования содержимого раздела Windows</string>
     <string name="quickboot_subtitle">Исправить модем, прошить UEFI и перезагрузиться в Windows в одно нажатие</string>
-    <string name="quickboot_subtitle_nomodem">Прошейте UEFI и перезагрузитесь в Windows в одно нажатие</string>
+    <string name="quickboot_subtitle_nomodem">Перезагрузитесь в Windows в одно нажатие</string>
     <string name="uefi_not_found_subtitle">Скачайте UEFI для вашего устройства и поместите его в папку /sdcard/UEFI</string>
 
     <string name="no_root">M3K Helper нужны Root-права для работы!</string>

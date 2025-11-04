@@ -37,6 +37,15 @@ private val LightColorScheme = lightColorScheme(
     onSecondaryContainer = m3k_theme_light_onSecondaryContainer
 )
 
+private data class ThemeSettings(
+    val red: Float,
+    val green: Float,
+    val blue: Float,
+    val enableThemeEngine: Boolean,
+    val enableMaterialU: Boolean,
+    val style: PaletteStyle
+)
+
 val themeReapply: MutableState<Boolean> = mutableStateOf(false)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -87,12 +96,3 @@ fun M3KHelperTheme(
         motionScheme = MotionScheme.expressive()
     )
 }
-
-private data class ThemeSettings(
-    val red: Float,
-    val green: Float,
-    val blue: Float,
-    val enableThemeEngine: Boolean,
-    val enableMaterialU: Boolean,
-    val style: PaletteStyle
-)

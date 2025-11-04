@@ -13,7 +13,7 @@ import com.remtrik.m3khelper.util.variables.sdp
 fun DeviceImage(modifier: Modifier) {
     Image(
         alignment = Alignment.TopStart,
-        modifier = if (device.special.value) {
+        modifier = if (device.isSpecial.value) {
             modifier
         } else {
             Modifier
